@@ -119,7 +119,16 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-    
+st.write(
+        "By default, this P&L is for 2023 May reporting. "
+        )
+st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
+
+if st.button('Run Checking'):
+    main(template_path_filename,finical_path_filename)
+
+
+
 operator_folder=pd.DataFrame(columns=["Operator","Tempalte_file","Financial_file","Tempalte_file2","Financial_file2"])
 operator_folder.loc[len(operator_folder.index)]=["North America","TTM INCOME STATEMENT 04.2022_template.xlsx","TTM INCOME STATEMENT 04.2022.xlsx",None,None]
 operator_folder.loc[len(operator_folder.index)]=["Signature Healthcare","Signiture HealthCare 08.31.21 - 12 Month Detail Trend by ASBR_template.xlsx","03.31.23 - 12 Month Detail Trend by ASBR.xlsx",None,None]
@@ -171,7 +180,8 @@ Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE',
 
 template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
 financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-
+#\\172.26.10.16\company_shared\Public Files\Accounting and Finance
+st.write("Operator",operator)
 operator_folder=operator_folder.set_index("Operator")
 template_filename=operator_folder.loc[operator,"Tempalte_file"]
 financial_filename=operator_folder.loc[operator,"Tempalte_file"]
@@ -181,6 +191,7 @@ if finical_path_filename[-5:]=='.xlsx':
     finicial_sheet_list=openpyxl.load_workbook(finical_path_filename).sheetnames 
 else:
     finicial_sheet_list = xlrd.open_workbook(finical_path_filename, on_demand=True).sheet_names()
+
 
 
 month_dic={1:["January","Jan","01/","1/","-1","-01","/1","/01"],\
