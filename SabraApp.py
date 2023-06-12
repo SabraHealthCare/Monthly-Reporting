@@ -6,10 +6,10 @@ import statistics
 import math
 import os
 import time
-import xlwt
-from xlwt.Workbook import *
+#import xlwt
+#from xlwt.Workbook import *
 from pandas import ExcelWriter
-import xlsxwriter
+#import xlsxwriter
 #import matplotlib.ticker as mtick
 #import datetime
 import pyodbc
@@ -22,7 +22,6 @@ from itertools import compress
 #from os import walk
 from openpyxl import load_workbook
 import openpyxl
-import xlrd
 import tkinter as tk
 from tkinter import * 
 import warnings
