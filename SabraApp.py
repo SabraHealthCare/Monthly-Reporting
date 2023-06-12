@@ -1,15 +1,10 @@
 import pandas as pd
-#import seaborn as sns
 import numpy as np
-#import matplotlib.pyplot as plt
 import statistics
 import math
 import os
 import time
-# Find more emojis here: https://www.webfx.com/tools/emoji-cheat-sheet/
-st.set_page_config(page_title="My Webpage", page_icon=":tada:", layout="wide")
 from io import BytesIO
-#from pyxlsb import open_workbook as open_xlsb
 import streamlit as st
 import streamlit.components.v1 as stc
 
@@ -17,7 +12,6 @@ import streamlit.components.v1 as stc
 
 
 st.title("Sabra HealthCare Reporting App")
-
 st.subheader("Operator name:")
 operator= st.selectbox(
     ' ',
