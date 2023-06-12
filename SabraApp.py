@@ -1,7 +1,7 @@
 import pandas as pd
 #import seaborn as sns
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import statistics
 import math
 import os
@@ -10,9 +10,8 @@ import xlwt
 from xlwt.Workbook import *
 from pandas import ExcelWriter
 import xlsxwriter
-import matplotlib.ticker as mtick
+#import matplotlib.ticker as mtick
 #import datetime
-import pandas as pd
 import pyodbc
 import numpy as np
 from calendar import monthrange
