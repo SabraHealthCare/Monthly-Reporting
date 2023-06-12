@@ -127,6 +127,23 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 if st.button('Run Checking'):
     main(template_path_filename,finical_path_filename)
 
+def save_uploadedfile(uploadedfile,address):
+     with open(address+uploadedfile.name,"wb") as f:
+         f.write(uploadedfile.getbuffer())
+     return st.success(uploadedfile.name +" saved")
+
+st.subheader("Upload P&L:")
+uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
+
+template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
+financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
+
+if uploaded_file: 
+    file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
+    df = pd.read_excel(uploaded_file)
+    save_uploadedfile(uploaded_file,financial_path)
+
+
 
 
 operator_folder=pd.DataFrame(columns=["Operator","Tempalte_file","Financial_file","Tempalte_file2","Financial_file2"])
@@ -535,21 +552,6 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
 
 
-def save_uploadedfile(uploadedfile,address):
-     with open(address+uploadedfile.name,"wb") as f:
-         f.write(uploadedfile.getbuffer())
-     return st.success(uploadedfile.name +" saved")
-
-st.subheader("Upload P&L:")
-uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
-
-template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-
-if uploaded_file: 
-    file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
-    df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file,financial_path)
 
 	
 def Identify_Tenant_Account_Col(financial,mapping,sheet_name):
