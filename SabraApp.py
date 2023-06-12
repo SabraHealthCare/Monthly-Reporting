@@ -12,7 +12,7 @@ from pandas import ExcelWriter
 #import xlsxwriter
 #import matplotlib.ticker as mtick
 #import datetime
-import pyodbc
+#import pyodbc
 import numpy as np
 from calendar import monthrange
 import sys
