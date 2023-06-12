@@ -6,29 +6,6 @@ import statistics
 import math
 import os
 import time
-#import xlwt
-#from xlwt.Workbook import *
-from pandas import ExcelWriter
-#import xlsxwriter
-#import matplotlib.ticker as mtick
-#import datetime
-#import pyodbc
-import numpy as np
-from calendar import monthrange
-import sys
-from datetime import datetime, timedelta
-from datetime import date
-from itertools import compress
-#from os import walk
-#from openpyxl import load_workbook
-#import openpyxl
-import tkinter as tk
-from tkinter import * 
-import warnings
-from prettytable import PrettyTable
-import streamlit as st
-warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
-from openpyxl.utils.dataframe import dataframe_to_rows
 # Find more emojis here: https://www.webfx.com/tools/emoji-cheat-sheet/
 st.set_page_config(page_title="My Webpage", page_icon=":tada:", layout="wide")
 from io import BytesIO
