@@ -119,13 +119,6 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-st.write(
-        "By default, this P&L is for 2023 May reporting. "
-        )
-st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
-
-if st.button('Run Checking'):
-    main(template_path_filename,finical_path_filename)
 
 def save_uploadedfile(uploadedfile,address):
      with open(address+uploadedfile.name,"wb") as f:
@@ -140,9 +133,18 @@ financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
 
 if uploaded_file: 
     file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
-    df = pd.read_excel(uploaded_file)
+    #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file,financial_path)
 
+
+
+st.write(
+        "By default, this P&L is for 2023 May reporting. "
+        )
+st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
+
+if st.button('Run Checking'):
+    main(template_path_filename,finical_path_filename)
 
 
 
