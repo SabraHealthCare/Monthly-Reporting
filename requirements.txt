@@ -1,17 +1,13 @@
 pandas
 seaborn
 numpy
-matplotlib.pyplot
+matplotlib
 statistics
 math
 os
 time
 xlwt
-xlwt.Workbook
-xlsxwriter
-matplotlib.ticker
 pyodbc
-numpy as np
 sys
 datetime
 itertools
