@@ -134,8 +134,10 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-df=pd.read_excel("https://sabrahealthcare-my.sharepoint.com/:x:/r/personal/sli_sabrahealth_com/_layouts/15/Doc.aspx?sourcedoc=%7BCD8B9C15-464C-4B33-8583-D8D776617AD4%7D&file=Main_Report.xlsx&action=default&mobileredirect=true")
-st.write(df)
+#df=pd.read_excel("https://sabrahealthcare-my.sharepoint.com/:x:/r/personal/sli_sabrahealth_com/_layouts/15/Doc.aspx?sourcedoc=%7BCD8B9C15-464C-4B33-8583-D8D776617AD4%7D&file=Main_Report.xlsx&action=default&mobileredirect=true")
+#st.write(df)
+htp7='https://storage.googleapis.com/imajo/media/planner_resim.jpg'
+st.image(htp7, caption= 'Inventory Planner', width=800)
 def save_uploadedfile(uploadedfile,address):
      with open(address+uploadedfile.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
