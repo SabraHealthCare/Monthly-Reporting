@@ -1,0 +1,23 @@
+pandas
+seaborn
+numpy
+matplotlib.pyplot
+statistics
+math
+os
+time
+xlwt
+xlwt.Workbook
+pandas ExcelWriter
+xlsxwriter
+matplotlib.ticker
+pyodbc
+numpy as np
+sys
+datetime
+itertools
+openpyxl
+xlrd
+tkinter
+prettytable
+streamlit
