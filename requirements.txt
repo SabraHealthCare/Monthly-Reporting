@@ -1,6 +1,7 @@
 pandas
 xlsxwriter
 seaborn
+
 numpy
 matplotlib
 statistics
