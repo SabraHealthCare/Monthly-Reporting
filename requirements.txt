@@ -1,9 +1,9 @@
 pandas
+xlsxwriter
 seaborn
 numpy
 matplotlib
 statistics
-os
 time
 xlwt
 pyodbc
