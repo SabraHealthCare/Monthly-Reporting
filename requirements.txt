@@ -7,7 +7,6 @@ statistics
 xlwt
 pyodbc
 datetime
-itertools
 openpyxl
 xlrd
 tkinter
