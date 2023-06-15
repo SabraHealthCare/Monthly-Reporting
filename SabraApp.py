@@ -162,18 +162,6 @@ st.write(
         )
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
-if st.button('Run Checking'):
-    main(template_path_filename,finical_path_filename)
-
-
-
-
-
-	
-st.write(
-        "By default, this P&L is for 2023 May reporting. "
-        )
-st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
-
 #if st.button('Run Checking'):
- #   main(template_path_filename,finical_path_filename)
+#    main(template_path_filename,finical_path_filename)
+
