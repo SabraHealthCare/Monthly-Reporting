@@ -8,7 +8,6 @@ os
 time
 xlwt
 xlwt.Workbook
-pandas ExcelWriter
 xlsxwriter
 matplotlib.ticker
 pyodbc
