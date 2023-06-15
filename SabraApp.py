@@ -8,7 +8,6 @@ import os
 import time
 import xlwt
 from xlwt.Workbook import *
-from pandas import ExcelWriter
 import xlsxwriter
 import matplotlib.ticker as mtick
 import pyodbc
