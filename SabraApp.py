@@ -142,9 +142,9 @@ DATA_URL = (
 
 @st.cache(persist=True)
 def load_data(nrows):
-    data = pd.read_excel(DATA_URL, nrows=nrows)
+    data = pd.read_excel(DATA_URL)
     return data
-data = load_data(20)
+data = load_data(DATA_UR)
 st.write(data)
 def save_uploadedfile(uploadedfile,address):
      with open(address+uploadedfile.name,"wb") as f:
