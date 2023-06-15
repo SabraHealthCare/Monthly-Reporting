@@ -4,9 +4,7 @@ import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 import statistics
-import math
 import os
-import time
 import xlwt
 from xlwt.Workbook import *
 import xlsxwriter
@@ -17,18 +15,16 @@ from calendar import monthrange
 import sys
 from datetime import datetime, timedelta
 from datetime import date
-from itertools import compress
+#from itertools import compress
 from os import walk
-from openpyxl import load_workbook
+#from openpyxl import load_workbook
 import openpyxl
 import xlrd
-import tkinter as tk
-from tkinter import * 
 import warnings
-from prettytable import PrettyTable
+#from prettytable import PrettyTable
 import streamlit as st
-warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
-from openpyxl.utils.dataframe import dataframe_to_rows
+#warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+#from openpyxl.utils.dataframe import dataframe_to_rows
 
 
 
