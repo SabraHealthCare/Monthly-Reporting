@@ -137,8 +137,7 @@ operator= st.selectbox(
 #df=pd.read_excel("https://sabrahealthcare-my.sharepoint.com/:x:/r/personal/sli_sabrahealth_com/_layouts/15/Doc.aspx?sourcedoc=%7BCD8B9C15-464C-4B33-8583-D8D776617AD4%7D&file=Main_Report.xlsx&action=default&mobileredirect=true")
 #st.write(df)
 DATA_URL = (
-    "https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/guestaccess.aspx?docid=1cd8b9c15464c4b338583d8d776617ad4&authkey=Aa8j07B1ANILhEn-y2KyrUU&e=eJZf31"
-)
+    "https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0/Main_Report.xlsx")
 
 @st.cache(persist=True)
 def load_data(DATA_URL):
