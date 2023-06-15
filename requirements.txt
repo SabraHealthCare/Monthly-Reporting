@@ -9,6 +9,4 @@ pyodbc
 datetime
 openpyxl
 xlrd
-tkinter
-prettytable
 streamlit
