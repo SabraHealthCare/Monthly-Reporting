@@ -21,10 +21,11 @@ from os import walk
 import openpyxl
 import xlrd
 import warnings
-#from prettytable import PrettyTable
 import streamlit as st
-#warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
-#from openpyxl.utils.dataframe import dataframe_to_rows
+
+df=pd.read_excel("https://storage.cloud.google.com/timeseriesdata/devicedetails.csv")
+st.write(df)
+
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -134,16 +135,8 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-#df=pd.read_excel("https://sabrahealthcare-my.sharepoint.com/:x:/r/personal/sli_sabrahealth_com/_layouts/15/Doc.aspx?sourcedoc=%7BCD8B9C15-464C-4B33-8583-D8D776617AD4%7D&file=Main_Report.xlsx&action=default&mobileredirect=true")
-#st.write(df)
-DATA_URL = (
-    "https://storage.cloud.google.com/timeseriesdata/devicedetails.csv")
 
-@st.cache(persist=True)
-def load_data(DATA_URL):
-    data = pd.read_excel(DATA_URL)
-    return data
-data = load_data(DATA_URL)
+
 st.write(data)
 def save_uploadedfile(uploadedfile,address):
      with open(address+uploadedfile.name,"wb") as f:
