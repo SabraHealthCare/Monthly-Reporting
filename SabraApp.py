@@ -11,8 +11,6 @@ from xlwt.Workbook import *
 from pandas import ExcelWriter
 import xlsxwriter
 import matplotlib.ticker as mtick
-#import datetime
-import pandas as pd
 import pyodbc
 import numpy as np
 from calendar import monthrange
@@ -20,7 +18,7 @@ import sys
 from datetime import datetime, timedelta
 from datetime import date
 from itertools import compress
-#from os import walk
+from os import walk
 from openpyxl import load_workbook
 import openpyxl
 import xlrd
