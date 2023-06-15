@@ -6,7 +6,6 @@ matplotlib
 statistics
 xlwt
 pyodbc
-sys
 datetime
 itertools
 openpyxl
