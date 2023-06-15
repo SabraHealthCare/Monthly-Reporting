@@ -136,8 +136,16 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 #df=pd.read_excel("https://sabrahealthcare-my.sharepoint.com/:x:/r/personal/sli_sabrahealth_com/_layouts/15/Doc.aspx?sourcedoc=%7BCD8B9C15-464C-4B33-8583-D8D776617AD4%7D&file=Main_Report.xlsx&action=default&mobileredirect=true")
 #st.write(df)
-htp7='https://storage.googleapis.com/imajo/media/planner_resim.jpg'
-st.image(htp7, caption= 'Inventory Planner', width=800)
+DATA_URL = (
+    "https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/guestaccess.aspx?docid=1cd8b9c15464c4b338583d8d776617ad4&authkey=Aa8j07B1ANILhEn-y2KyrUU&e=eJZf31"
+)
+
+@st.cache(persist=True)
+def load_data(nrows):
+    data = pd.read_excel(DATA_URL, nrows=nrows)
+    return data
+data = load_data(20)
+st.write(data)
 def save_uploadedfile(uploadedfile,address):
      with open(address+uploadedfile.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
