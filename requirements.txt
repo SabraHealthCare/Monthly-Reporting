@@ -3,7 +3,6 @@ seaborn
 numpy
 matplotlib
 statistics
-math
 os
 time
 xlwt
