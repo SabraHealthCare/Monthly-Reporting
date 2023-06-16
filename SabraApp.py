@@ -153,7 +153,7 @@ if uploaded_file:
 
 # Create connection object and retrieve file contents.
 # Specify input format is a csv and to cache the result for 600 seconds.
-conn = st.experimental_connection('gcs', type=FilesConnection)
+conn = st.experimental_connection('googlecloud', type=FilesConnection)
 df = conn.read("streamlit-bucket/test.xlsx", input_format="xlsx", ttl=600)
 
 # Print results.
