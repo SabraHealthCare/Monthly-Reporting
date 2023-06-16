@@ -38,8 +38,9 @@ st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
     ' ',
-    ("Advanced Recovery Systems",
+    (
 "Affinity",
+"Advanced Recovery Systems",
 "Andrew Residence",
 "Atrium Health",
 "Aurora",
