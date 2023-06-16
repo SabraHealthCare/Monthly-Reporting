@@ -22,6 +22,8 @@ import openpyxl
 import xlrd
 import warnings
 import streamlit as st
+from st_files_connection import FilesConnection
+
 
 
 
@@ -147,6 +149,18 @@ if uploaded_file:
     file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file,"https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0/")
+
+
+# Create connection object and retrieve file contents.
+# Specify input format is a csv and to cache the result for 600 seconds.
+conn = st.experimental_connection('gcs', type=FilesConnection)
+df = conn.read("streamlit-bucket/test.xlsx", input_format="xlsx", ttl=600)
+
+# Print results.
+for row in df.itertuples():
+    st.write(f"{row.Owner} has a :{row.Pet}:")
+
+
 
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
