@@ -22,7 +22,7 @@ import openpyxl
 import xlrd
 import warnings
 import streamlit as st
-from st_files_connection import FilesConnection
+#from st_files_connection import FilesConnection
 
 
 
@@ -148,7 +148,7 @@ uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multip
 if uploaded_file: 
     file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file,"https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0/")
+    save_uploadedfile(uploaded_file,"")
 
 
 # Create connection object and retrieve file contents.
