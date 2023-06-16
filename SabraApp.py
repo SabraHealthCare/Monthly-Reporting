@@ -133,11 +133,11 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-
+#("/"+uploadedfile.name
 def save_uploadedfile(uploadedfile):
-     with open("/"+uploadedfile.name,"wb") as f:
+     with open(test.xlsx,"wb") as f:
          f.write(uploadedfile.getbuffer())
-     return st.success(uploadedfile.name +" saved")
+     return st.success( " saved")
 
 
 st.subheader("Upload P&L:")
