@@ -23,9 +23,24 @@ import xlrd
 import warnings
 import streamlit as st
 
-df=pd.read_excel("https://storage.cloud.google.com/timeseriesdata/devicedetails.csv")
-st.write(df)
+#df=pd.read_excel("https://storage.cloud.google.com/timeseriesdata/devicedetails.csv")
+#st.write(df)
 
+def save_uploadedfile(uploadedfile,address):
+     with open(address+uploadedfile.name,"wb") as f:
+         f.write(uploadedfile.getbuffer())
+     return st.success(uploadedfile.name +" saved")
+
+st.subheader("Upload P&L:")
+uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
+
+#template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
+#financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
+address="https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0"
+if uploaded_file: 
+    file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
+    #df = pd.read_excel(uploaded_file)
+    save_uploadedfile(uploaded_file,address)
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -137,22 +152,7 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 
 
-st.write(data)
-def save_uploadedfile(uploadedfile,address):
-     with open(address+uploadedfile.name,"wb") as f:
-         f.write(uploadedfile.getbuffer())
-     return st.success(uploadedfile.name +" saved")
 
-st.subheader("Upload P&L:")
-uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
-
-template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-
-if uploaded_file: 
-    file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
-    #df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file,financial_path)
 
 
 
