@@ -144,7 +144,7 @@ st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
 
 if uploaded_file: 
-    uploaded_file = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
+    file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file)
 
