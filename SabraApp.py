@@ -134,8 +134,8 @@ operator= st.selectbox(
 "Welcov Healthcare",
 "Wingate Healthcare"))
 
-def save_uploadedfile(uploadedfile,directory):
-     with open(directory+uploadedfile.name,"wb") as f:
+def save_uploadedfile(uploadedfile):
+     with open(uploadedfile.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
      return st.success(uploadedfile.name +" saved")
 
@@ -146,7 +146,7 @@ uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multip
 if uploaded_file: 
     uploaded_file = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file,"/Mapping/"+operator+"/")
+    save_uploadedfile(uploaded_file)
 
 
 
