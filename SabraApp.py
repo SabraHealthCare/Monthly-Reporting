@@ -134,10 +134,10 @@ operator= st.selectbox(
 "Welcov Healthcare",
 "Wingate Healthcare"))
 #("/"+uploadedfile.name
-def save_uploadedfile(uploadedfile):
-     with open(test.xlsx,"wb") as f:
+def save_uploadedfile(uploadedfile,directory):
+     with open(directory+uploaded_file.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
-     return st.success( " saved")
+     return st.success(uploadedfile.name +" saved")
 
 
 st.subheader("Upload P&L:")
@@ -146,13 +146,10 @@ uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multip
 if uploaded_file: 
     file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file)
+    save_uploadedfile(uploaded_file,"Mapping/"+operator+"/")
 
 
-
-st.write(
-        "By default, this P&L is for 2023 May reporting. "
-        )
+st.write( "By default, this P&L is for 2023 May reporting. ")
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
 #if st.button('Run Checking'):
