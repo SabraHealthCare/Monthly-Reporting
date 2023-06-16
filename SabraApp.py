@@ -31,16 +31,16 @@ def save_uploadedfile(uploadedfile,address):
          f.write(uploadedfile.getbuffer())
      return st.success(uploadedfile.name +" saved")
 
+
+address="https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0"
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
-
-#template_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-#financial_path="C://Users//Sha Li//Desktop//Uploading project//"+operator+"//"
-address="https://sabrahealthcare-my.sharepoint.com/personal/sli_sabrahealth_com/_layouts/15/onedrive.aspx?view=0"
 if uploaded_file: 
     file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
     #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file,address)
+
+
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
