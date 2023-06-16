@@ -135,7 +135,7 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 
 def save_uploadedfile(uploadedfile):
-     with open(uploadedfile.name,"wb") as f:
+     with open("/"+uploadedfile.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
      return st.success(uploadedfile.name +" saved")
 
