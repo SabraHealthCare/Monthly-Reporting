@@ -1,11 +1,4 @@
 import pandas as pd
-
-import streamlit as st
-from st_files_connection import FilesConnection
-
-
-
-import pandas as pd
 from pandas import ExcelWriter
 import seaborn as sns
 import numpy as np
@@ -31,15 +24,11 @@ import warnings
 import streamlit as st
 from st_files_connection import FilesConnection
 
-
-
-
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
     ' ',
-    (
-"Affinity",
+    ("Affinity",
 "Advanced Recovery Systems",
 "Andrew Residence",
 "Atrium Health",
@@ -149,7 +138,6 @@ def save_uploadedfile(uploadedfile,directory):
          f.write(uploadedfile.getbuffer())
      return st.success(uploadedfile.name +" saved")
 
-
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
 
@@ -158,7 +146,12 @@ if uploaded_file:
     #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file,"")
 
+conn = st.experimental_connection('gcs', type=FilesConnection)
+df = conn.read("sabra-healthcare/test.csv", input_format="csv", ttl=600)
 
+# Print results.
+for row in df.itertuples():
+    st.write(f"{row.Owner} has a :{row.Pet}:")
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
