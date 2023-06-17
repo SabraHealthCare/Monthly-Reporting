@@ -149,7 +149,7 @@ if uploaded_file:
 
 conn = st.experimental_connection('gcs', type=FilesConnection)
 st.write(conn.fs.ls("sabra-healthcare/"))
-df = conn.read(""gcs://sabra-healthcare/test.csv", input_format="csv", ttl=600)
+df = conn.read("gcs://sabra-healthcare/test.csv", input_format="csv", ttl=600)
 
 
 # Print results.
