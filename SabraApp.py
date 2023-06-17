@@ -146,12 +146,12 @@ if uploaded_file:
     #df = pd.read_excel(uploaded_file)
     save_uploadedfile(uploaded_file,"")
 
-conn = st.experimental_connection('gcs', type=FilesConnection)
-df = conn.read("sabra-healthcare/test.csv", input_format="csv", ttl=600)
+#conn = st.experimental_connection('gcs', type=FilesConnection)
+#df = conn.read("sabra-healthcare/test.csv", input_format="csv", ttl=600)
 
 # Print results.
-for row in df.itertuples():
-    st.write(f"{row.Owner} has a :{row.Pet}:")
+#for row in df.itertuples():
+#    st.write(f"{row.Owner} has a :{row.Pet}:")
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
