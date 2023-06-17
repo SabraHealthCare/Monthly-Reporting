@@ -11,4 +11,5 @@ openpyxl
 xlrd
 streamlit
 gcsfs
+pyodbc
 git+https://github.com/streamlit/files-connection
