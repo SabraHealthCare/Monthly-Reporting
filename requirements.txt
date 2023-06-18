@@ -12,4 +12,5 @@ xlrd
 streamlit
 gcsfs
 pyodbc
+gsheetsdb
 git+https://github.com/streamlit/files-connection
