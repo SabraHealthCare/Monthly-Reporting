@@ -168,16 +168,14 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
 
 
-with open('filename', 'rb') as data:
-    s3.upload_fileobj(data, 'mybucket', 'mykey')
     
 import boto3
 def uploadMP4ToS3(file, bucket, s3_file):
     s3 = boto3.client('s3')
     
     try:
-        with open('filename', 'rb') as data:
-            s3.upload_fileobj(file, bucket, "lUU1C5GLW59BoQTEpy4OUb5xsH48QRo0hYOGFtEb")
+        with open(file, 'rb') as data:
+            s3.upload_fileobj(uploaded_mp4, bucket, "lUU1C5GLW59BoQTEpy4OUb5xsH48QRo0hYOGFtEb")
         #s3.upload_file(file, bucket, s3_file)
         st.success('File Successfully Uploaded')
         return True
