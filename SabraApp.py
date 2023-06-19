@@ -23,7 +23,7 @@ import xlrd
 import warnings
 import streamlit as st
 from st_files_connection import FilesConnection
-
+import boto3
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -148,10 +148,7 @@ def save_uploadedfile(uploadedfile,directory):
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
 
-if uploaded_file: 
-    file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
-    df = pd.read_excel(uploaded_file)
-    save_uploadedfile(uploaded_file,"")
+
 
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
@@ -160,21 +157,23 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 #if st.button('Run Checking'):
 #    main(template_path_filename,finical_path_filename)
 
+def Upload_file_S3(file, bucket,filename):
+    s3 = boto3.client('s3')
+
+    try:
+        s3.upload_file(file,bucket,filename)
+        st.success('File Successfully Uploaded')
+        return True
+    except FileNotFoundError:
+        time.sleep(6)
+        st.error('File wasn't upload.')
+        return False     
 
 
-    
-import boto3
 
-uploaded_mp4 = st.file_uploader("Select an MP4 file")
-if uploaded_mp4 is not None:
-                st.success(uploaded_mp4.name + ' Selected')
-                #bytes_data = uploaded_mp4.getvalue()
+if uploaded_file is not None:
+                st.success(uploaded_file.name + ' Selected')
                 if st.button('Upload'):
                     with st.spinner('Uploading...'):
-                        s3 = boto3.client('s3')
-    
- 
-                        #with open("test2.xlsx", 'wb') as data:
-                        s3.upload_fileobj(uploaded_mp4, "sabramapping", "test.xlsx")
-                        #s3.upload_file(file, bucket, s3_file)
-                        st.success('File Successfully Uploaded')
+                        Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+                        
