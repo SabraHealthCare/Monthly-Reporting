@@ -167,15 +167,18 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 #    main(template_path_filename,finical_path_filename)
 
 
+
+with open('filename', 'rb') as data:
+    s3.upload_fileobj(data, 'mybucket', 'mykey')
+    
 import boto3
 def uploadMP4ToS3(file, bucket, s3_file):
-    s3 = boto3.client('s3',
-                      region_name='[REDACTED]',
-                      aws_access_key_id='[REDACTED]',
-                      aws_secret_access_key='[REDACTED]')
+    s3 = boto3.client('s3')
     
     try:
-        s3.upload_file(file, bucket, s3_file)
+        with open('filename', 'rb') as data:
+            s3.upload_fileobj(file, bucket, "lUU1C5GLW59BoQTEpy4OUb5xsH48QRo0hYOGFtEb")
+        #s3.upload_file(file, bucket, s3_file)
         st.success('File Successfully Uploaded')
         return True
     except FileNotFoundError:
@@ -190,6 +193,7 @@ uploaded_mp4 = st.file_uploader("Select an MP4 file")
             
             st.success(uploaded_mp4.name + ' Selected')
                 bytes_data = uploaded_mp4.getvalue()
-                if c1.button('Upload'):
+                if st.button('Upload'):
                     with st.spinner('Uploading...'):
+                        
                         uploadMP4ToS3(uploaded_mp4.name,'sabramapping',uploaded_mp4.name)
