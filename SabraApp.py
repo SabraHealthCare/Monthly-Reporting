@@ -157,7 +157,7 @@ def Upload_file_S3(file,bucket,filename):
         return True
     except FileNotFoundError:
         time.sleep(6)
-        st.error('File wasn't upload.')
+        st.error('File wasn not uploaded.')
         return False     
 
 
