@@ -170,27 +170,19 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
     
 import boto3
-def uploadMP4ToS3(file, bucket, s3_file):
-    s3 = boto3.client('s3')
-    
-    try:
-        with open(file, 'rb') as data:
-            s3.upload_fileobj(uploaded_mp4, bucket, "lUU1C5GLW59BoQTEpy4OUb5xsH48QRo0hYOGFtEb")
-        #s3.upload_file(file, bucket, s3_file)
-        st.success('File Successfully Uploaded')
-        return True
-    except FileNotFoundError:
-        time.sleep(9)
-        st.error('File not found.')
-        return False     
+
 
 
 uploaded_mp4 = st.file_uploader("Select an MP4 file")
-        
 if uploaded_mp4 is not None:
-            
                 st.success(uploaded_mp4.name + ' Selected')
                 #bytes_data = uploaded_mp4.getvalue()
                 if st.button('Upload'):
                     with st.spinner('Uploading...'):
-                        uploadMP4ToS3(uploaded_mp4.name,'sabramapping',uploaded_mp4.name)
+                        s3 = boto3.client('s3')
+    
+ 
+                        with open("test2.xlsx", 'wb') as data:
+                            s3.upload_fileobj(uploaded_mp4, bucket, "lUU1C5GLW59BoQTEpy4OUb5xsH48QRo0hYOGFtEb")
+                        #s3.upload_file(file, bucket, s3_file)
+                        st.success('File Successfully Uploaded')
