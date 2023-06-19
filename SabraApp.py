@@ -145,25 +145,56 @@ st.write(df)
 
 
 
+def save_uploadedfile(uploadedfile,directory):
+     with open(directory+uploaded_file.name,"wb") as f:
+         f.write(uploadedfile.getbuffer())
+     return st.success(uploadedfile.name +" saved")
+
+
+st.subheader("Upload P&L:")
+uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
+
+if uploaded_file: 
+    file_detail = {"FileName":uploaded_file.name,"FileType":uploaded_file.type}
+    df = pd.read_excel(uploaded_file)
+    save_uploadedfile(uploaded_file,"")
+
+
+st.write( "By default, this P&L is for 2023 May reporting. ")
+st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
+
+#if st.button('Run Checking'):
+#    main(template_path_filename,finical_path_filename)
+
+
 import boto3
+def uploadMP4ToS3(file, bucket, s3_file):
+    s3 = boto3.client('s3',
+                      region_name='[REDACTED]',
+                      aws_access_key_id='[REDACTED]',
+                      aws_secret_access_key='[REDACTED]')
+    
+    try:
+        s3.upload_file(file, bucket, s3_file)
+        st.success('File Successfully Uploaded')
+        return True
+    except FileNotFoundError:
+        time.sleep(9)
+        st.error('File not found.')
+        return False     
 
-pdf = st.file_uploader(label="Drag the PDF file here. Limit 100MB")
-if pdf is not None:
-    s3 = boto3.client(
-        service_name="s3",
-        region_name="xxx",
-        aws_access_key_id="xxx",
-        aws_secret_access_key="xxx",
-    )
-
-    id = 123
-    bucket_name = "xxx"
-    print(pdf)
-    print(type(pdf))
-    pdf.seek(0)
-    name = "pdf_" + str(id) + ".pdf"
-    print(name)
-    s3.upload_fileobj(pdf, "pdf_storage", name)
-
-
-
+c1, c2 = st.columns(2)
+c1.subheader("Upload MP4 Video/Audio File")
+        uploaded_mp4 = c1.file_uploader("Select an MP4 file")
+        
+        if uploaded_mp4 is not None:
+            
+            if uploaded_mp4.type != "video/mp4":
+                c1.error('Only MP4 videos are supported. Please upload a different file')
+                
+            else:
+                c1.success(uploaded_mp4.name + ' Selected')
+                bytes_data = uploaded_mp4.getvalue()
+                if c1.button('Upload'):
+                    with st.spinner('Uploading...'):
+                        uploadMP4ToS3(uploaded_mp4.name,'[REDACTED]',uploaded_mp4.name)
