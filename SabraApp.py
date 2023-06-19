@@ -147,12 +147,10 @@ uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multip
 st.write( "By default, this P&L is for 2023 May reporting. ")
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
-#if st.button('Run Checking'):
-
 def Upload_file_S3(file,bucket,filename):
     s3 = boto3.client('s3')
     try:
-        s3.upload_fileobj(file,bucket,filename)
+        s3.upload_fileobj(file,bucket,"test/Jan/"+filename)
         st.success('File Successfully Uploaded')
         return True
     except FileNotFoundError:
@@ -168,3 +166,4 @@ if uploaded_file is not None:
                     with st.spinner('Uploading...'):
                         Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
                         
+#if st.button('Run Checking'):
