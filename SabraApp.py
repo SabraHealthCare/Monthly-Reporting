@@ -25,13 +25,10 @@ import streamlit as st
 from st_files_connection import FilesConnection
 
 
-
-
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
-    ' ',
-    ("Advanced Recovery Systems",
+    ' ',("Advanced Recovery Systems",
 "Affinity",
 "Andrew Residence",
 "Atrium Health",
@@ -143,12 +140,10 @@ df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
 st.write(df)
 
 
-
 def save_uploadedfile(uploadedfile,directory):
      with open(directory+uploaded_file.name,"wb") as f:
          f.write(uploadedfile.getbuffer())
      return st.success(uploadedfile.name +" saved")
-
 
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
@@ -169,8 +164,6 @@ st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
     
 import boto3
-
-
 
 uploaded_mp4 = st.file_uploader("Select an MP4 file")
 if uploaded_mp4 is not None:
