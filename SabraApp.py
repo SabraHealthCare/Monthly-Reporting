@@ -191,8 +191,8 @@ uploaded_mp4 = st.file_uploader("Select an MP4 file")
         
 if uploaded_mp4 is not None:
             
-            st.success(uploaded_mp4.name + ' Selected')
-                bytes_data = uploaded_mp4.getvalue()
+                st.success(uploaded_mp4.name + ' Selected')
+                #bytes_data = uploaded_mp4.getvalue()
                 if st.button('Upload'):
                     with st.spinner('Uploading...'):
                         uploadMP4ToS3(uploaded_mp4.name,'sabramapping',uploaded_mp4.name)
