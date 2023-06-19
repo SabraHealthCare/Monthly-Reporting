@@ -161,7 +161,7 @@ def Upload_file_S3(file, bucket,filename):
     s3 = boto3.client('s3')
 
     try:
-        s3.upload_file(file,bucket,filename)
+        s3.upload_fileobj(file,bucket,filename)
         st.success('File Successfully Uploaded')
         return True
     except FileNotFoundError:
