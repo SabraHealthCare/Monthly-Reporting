@@ -140,26 +140,17 @@ df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
 st.write(df)
 
 
-def save_uploadedfile(uploadedfile,directory):
-     with open(directory+uploaded_file.name,"wb") as f:
-         f.write(uploadedfile.getbuffer())
-     return st.success(uploadedfile.name +" saved")
-
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
-
-
 
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
 st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
 #if st.button('Run Checking'):
-#    main(template_path_filename,finical_path_filename)
 
-def Upload_file_S3(file, bucket,filename):
+def Upload_file_S3(file,bucket,filename):
     s3 = boto3.client('s3')
-
     try:
         s3.upload_fileobj(file,bucket,filename)
         st.success('File Successfully Uploaded')
