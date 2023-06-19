@@ -183,18 +183,13 @@ def uploadMP4ToS3(file, bucket, s3_file):
         st.error('File not found.')
         return False     
 
-c1, c2 = st.columns(2)
-c1.subheader("Upload MP4 Video/Audio File")
-        uploaded_mp4 = c1.file_uploader("Select an MP4 file")
+
+uploaded_mp4 = st.file_uploader("Select an MP4 file")
         
-        if uploaded_mp4 is not None:
+    if uploaded_mp4 is not None:
             
-            if uploaded_mp4.type != "video/mp4":
-                c1.error('Only MP4 videos are supported. Please upload a different file')
-                
-            else:
-                c1.success(uploaded_mp4.name + ' Selected')
+            st.success(uploaded_mp4.name + ' Selected')
                 bytes_data = uploaded_mp4.getvalue()
                 if c1.button('Upload'):
                     with st.spinner('Uploading...'):
-                        uploadMP4ToS3(uploaded_mp4.name,'[REDACTED]',uploaded_mp4.name)
+                        uploadMP4ToS3(uploaded_mp4.name,'sabramapping',uploaded_mp4.name)
