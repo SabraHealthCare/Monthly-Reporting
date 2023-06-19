@@ -189,7 +189,7 @@ def uploadMP4ToS3(file, bucket, s3_file):
 
 uploaded_mp4 = st.file_uploader("Select an MP4 file")
         
-    if uploaded_mp4 is not None:
+if uploaded_mp4 is not None:
             
             st.success(uploaded_mp4.name + ' Selected')
                 bytes_data = uploaded_mp4.getvalue()
