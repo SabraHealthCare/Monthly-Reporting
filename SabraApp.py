@@ -146,23 +146,20 @@ if uploaded_file:
             "FileType":uploaded_file.type,
             "FileSize":uploaded_file.size}
     
-    wb = openpyxl.load_workbook(uploaded_file)
+    #wb = openpyxl.load_workbook(uploaded_file)
     ## Show Excel file
     st.sidebar.subheader("File details:")
     st.sidebar.json(file_details,expanded=False)
     st.sidebar.markdown("----")
     
      ## Select sheet
-    sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
-    df = pd.read_excel(uploaded_file,sheet_selector)
-    st.markdown(f"### Currently Selected: `{sheet_selector}`")
+    #sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
+    df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
+    #st.markdown(f"### Currently Selected: `{sheet_selector}`")
     st.write(df)
     
         ## Do something after a button
-    doLogic_btn = st.button("➕")
-    if doLogic_btn:
-        df2 = df.sum().transpose()
-        st.write(df2)
+
 
 
 st.write( "By default, this P&L is for 2023 May reporting. ")
