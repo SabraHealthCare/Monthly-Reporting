@@ -178,7 +178,7 @@ if uploaded_file:
     if st.button('Upload'):
         with st.spinner('Uploading...'):
             Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
-        df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
+        df = pd.read_excel(uploaded_file,sheet_name = "Delaney_Creek_IS")
         st.write(df)
                         
 #if st.button('Run Checking'):
