@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from datetime import date
 #from itertools import compress
 from os import walk
-#from openpyxl import load_workbook
+from openpyxl import load_workbook
 import openpyxl
 import xlrd
 import warnings
