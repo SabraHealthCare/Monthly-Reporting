@@ -145,16 +145,12 @@ uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multip
     
      ## Select sheet
     #sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
-    #df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
-    #st.markdown(f"### Currently Selected: `{sheet_selector}`")
+
     #st.write(df)
     
         ## Do something after a button
 
 
-
-st.write( "By default, this P&L is for 2023 May reporting. ")
-st.write("[Learn More >](https://sabrahealthcare.sharepoint.com/)")
 
 def Upload_file_S3(file,bucket,filename):
     s3 = boto3.client('s3')
@@ -170,13 +166,11 @@ def Upload_file_S3(file,bucket,filename):
 
 
 if uploaded_file:
-    st.success(uploaded_file.name + ' Selected')
-    file_details = {
-            "Filename":uploaded_file.name,
-            "FileType":uploaded_file.type,
-            "FileSize":uploaded_file.size}
+    st.success(uploaded_file.name + ' '+uploaded_file.size)
     df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
     st.write(df)
+    wb = openpyxl.load_workbook(uploaded_file)
+    st.write(wb.sheetnames)
     if st.button('Upload'):
         with st.spinner('Uploading...'):
             Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
