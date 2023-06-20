@@ -134,7 +134,7 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 
 conn = st.experimental_connection('s3', type=FilesConnection)
-df = conn.read("sabramapping/test.xlsx", input_format="excel", ttl=600)
+df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
 st.write(sf)
 
 
