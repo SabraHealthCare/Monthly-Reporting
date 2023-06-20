@@ -154,9 +154,9 @@ if uploaded_file:
     
      ## Select sheet
     #sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
-    df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
+    #df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
     #st.markdown(f"### Currently Selected: `{sheet_selector}`")
-    st.write(df)
+    #st.write(df)
     
         ## Do something after a button
 
