@@ -141,9 +141,9 @@ st.write(df)
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
 file_details = {
-        "Filename":data_file.name,
-        "FileType":data_file.type,
-        "FileSize":data_file.size}
+        "Filename":uploaded_file.name,
+        "FileType":uploaded_file.type,
+        "FileSize":uploaded_file.size}
 
 wb = openpyxl.load_workbook(uploaded_file)
 ## Show Excel file
