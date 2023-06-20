@@ -134,12 +134,14 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 
 conn = st.experimental_connection('s3', type=FilesConnection)
-df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
-#st.write(df)
+df = conn.read("sabramapping/Mapping/Affinity/"+operator+"_Mapping.xlsx", input_format="csv",ttl=600)
+df = pd.read_excel(df,sheet_name ="Format")
+
+
 
 
 st.subheader("Upload P&L:")
-uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
+uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm"}, accept_multiple_files=False)
 
 
 
