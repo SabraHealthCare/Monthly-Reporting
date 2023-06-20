@@ -140,17 +140,8 @@ df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
 
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
-if uploaded_file:
-    file_details = {
-            "Filename":uploaded_file.name,
-            "FileType":uploaded_file.type,
-            "FileSize":uploaded_file.size}
-    
-    #wb = openpyxl.load_workbook(uploaded_file)
-    ## Show Excel file
-    st.sidebar.subheader("File details:")
-    st.sidebar.json(file_details,expanded=False)
-    st.sidebar.markdown("----")
+
+   
     
      ## Select sheet
     #sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
@@ -178,10 +169,16 @@ def Upload_file_S3(file,bucket,filename):
 
 
 
-if uploaded_file is not None:
-                st.success(uploaded_file.name + ' Selected')
-                if st.button('Upload'):
-                    with st.spinner('Uploading...'):
-                        Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+if uploaded_file:
+    st.success(uploaded_file.name + ' Selected')
+    file_details = {
+            "Filename":uploaded_file.name,
+            "FileType":uploaded_file.type,
+            "FileSize":uploaded_file.size}
+    if st.button('Upload'):
+        with st.spinner('Uploading...'):
+            Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+        df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
+        st.write(df)
                         
 #if st.button('Run Checking'):
