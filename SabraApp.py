@@ -141,15 +141,6 @@ df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xls","xlsm"}, accept_multiple_files=False)
 
-   
-    
-     ## Select sheet
-    #sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
-
-    #st.write(df)
-    
-        ## Do something after a button
-
 
 
 def Upload_file_S3(file,bucket,filename):
@@ -166,7 +157,6 @@ def Upload_file_S3(file,bucket,filename):
 
 
 if uploaded_file:
-    st.success(uploaded_file.name + ' '+uploaded_file.size)
     df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
     st.write(df)
     wb = openpyxl.load_workbook(uploaded_file)
