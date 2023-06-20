@@ -132,12 +132,10 @@ operator= st.selectbox(
 "Wachusett Ventures",
 "Welcov Healthcare",
 "Wingate Healthcare"))
-#("/"+uploadedfile.name
-
 
 conn = st.experimental_connection('s3', type=FilesConnection)
-df = conn.read("sabramapping/test.csv", input_format="csv", ttl=600)
-st.write(df)
+df = conn.read("sabramapping/test.xlsx", input_format="excel", ttl=600)
+st.write(sf)
 
 
 st.subheader("Upload P&L:")
