@@ -157,7 +157,7 @@ def Upload_file_S3(file,bucket,filename):
 
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file,"Delaney_Creek_IS")
+    df = pd.read_excel(uploaded_file,sheet_name ="Delaney_Creek_IS")
     st.write(df)
     wb = openpyxl.load_workbook(uploaded_file)
     st.write(wb.sheetnames)
