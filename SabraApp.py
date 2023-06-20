@@ -153,7 +153,7 @@ st.sidebar.markdown("----")
 
  ## Select sheet
 sheet_selector = st.sidebar.selectbox("Select sheet:",wb.sheetnames)     
-df = pd.read_excel(data_file,sheet_selector)
+df = pd.read_excel(uploaded_file,sheet_selector)
 st.markdown(f"### Currently Selected: `{sheet_selector}`")
 st.write(df)
 
