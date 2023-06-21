@@ -24,114 +24,17 @@ import warnings
 import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
+s3 = boto3.client('s3')
+obj = s3.get_object(Bucket="sabramapping", Key="Operator_list.xlsx")
+data = obj['Body'].read()
+df = pd.read_excel(data, sheet_name='Operator_list')
+st.write(df)
+
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
-    ' ',("Advanced Recovery Systems",
-"Affinity",
-"Andrew Residence",
-"Atrium Health",
-"Aurora",
-"Avalon",
-"Avalon Realty",
-"Avamere Family",
-"Avista",
-"Baybridge",
-"Baylor Scott & White",
-"Bear Mountain",
-"Brickyard",
-"Cadia",
-"Celebration",
-"Chai",
-"Civitas",
-"Claiborne",
-"CommuniCare",
-"Consulate",
-"Covenant Care",
-"Discovery",
-"Dwight",
-"EBS",
-"EHG",
-"Emerald",
-"EmpRes Healthcare",
-"Encore",
-"Enlivant",
-"Ensign",
-"Epic Group",
-"Focused Post Acute",
-"Forest Park",
-"Fox",
-"Fundamental",
-"Genesis",
-"Golden Living",
-"Haven",
-"Health Systems",
-"Health_Dimension",
-"Healthmark Group",
-"Holiday",
-"Ignite",
-"Inspirit Senior Living",
-"Landmark Recovery",
-"Legacy Living",
-"LeoBrownGroup",
-"LifeHouse",
-"Lifes Journey",
-"Magnolia Health Sys",
-"Maison",
-"Marlin Spring - Excelsoins",
-"Marlin Spring - Spring Living",
-"Maxwell Group",
-"Meridian",
-"Meridian Health Care",
-"National Healthcare",
-"NeuroRestorative",
-"New Dawn",
-"New Haven",
-"New Orange Hills",
-"Nexion Health Mgmt",
-"Nexus Systems",
-"NMS",
-"No Relationship",
-"North Shore",
-"Nye",
-"Oakbrook",
-"Paradigm",
-"Parkside",
-"Pathways",
-"Peregrine",
-"RCA",
-"ResCare HomeCare",
-"Retirement Living",
-"RoseCastle",
-"Saber",
-"Sacred Heart",
-"Salem Villages",
-"Senior Care Centers",
-"Shelbourne",
-"Sienna",
-"Signature Behavioral",
-"Signature Healthcare",
-"Sinceri Senior Living",
-"Solvere",
-"Southern Admin",
-"Southern Healthcare",
-"Southwest LTC",
-"Spectrum Healthcare",
-"Spring Hills",
-"Stoney River",
-"Sundara",
-"Tenet",
-"The McGuire Group",
-"Titan",
-"Trinity",
-"TRMC",
-"Tryko Partners",
-"Vibra Healthcare",
-"Vivra",
-"Wachusett Ventures",
-"Welcov Healthcare",
-"Wingate Healthcare"))
+    ' ',("test"))
 
 #conn = st.experimental_connection('s3', type=FilesConnection)
 
@@ -139,10 +42,10 @@ operator= st.selectbox(
 
 
 s3 = boto3.client('s3')
-obj = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
+obj = s3.get_oexcel(data, sheet_name='Format')
+st.write(df)bject(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
 data = obj['Body'].read()
-df = pd.read_excel(data, sheet_name='Format')
-st.write(df)
+df = pd.read_
 
 
 
