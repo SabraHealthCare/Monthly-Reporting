@@ -26,15 +26,14 @@ from st_files_connection import FilesConnection
 import boto3
 s3 = boto3.client('s3')
 obj = s3.get_object(Bucket="sabramapping", Key="Operator_list.xlsx")
-data = obj['Body'].read()
-df = pd.read_excel(data, sheet_name='Operator_list')
-st.write(df)
+#data = obj['Body'].read()
+operator_list = pd.read_excel(obj['Body'].read(), sheet_name='Operator_list')
 
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
-    ' ',("test"))
+    ' ',(operator_list))
 
 #conn = st.experimental_connection('s3', type=FilesConnection)
 
