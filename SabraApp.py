@@ -106,7 +106,7 @@ if uploaded_file:
     if uploaded_file.name[-5:]=='.xlsx':
         finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames 
     else:
-        finicial_sheet_list = xlrd.open_workbook(uploaded_file, on_demand=True).sheet_names()
+        finicial_sheet_list = xlrd.open_workbook(uploaded_file.name, on_demand=True).sheet_names()
     #wb = openpyxl.load_workbook(uploaded_file)
     st.write(finicial_sheet_list)
     if st.button('Upload'):
