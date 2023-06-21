@@ -343,23 +343,23 @@ if operator != 'select operator':
    
     
 
-st.subheader("Upload P&L:")
-uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
-    
-if uploaded_file:
-    if uploaded_file.name[-5:]=='.xlsx':
-        finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames
+    st.subheader("Upload P&L:")
+    uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
         
-    PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
-    tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
-    st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
-   
-
-    if st.button('Upload'):
-        with st.spinner('Uploading...'):
-            Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
-
-
-   
-                        
-#if st.button('Run Checking'):
+    if uploaded_file:
+        if uploaded_file.name[-5:]=='.xlsx':
+            finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames
+            
+        PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
+        tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
+        st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
+       
+    
+        if st.button('Upload'):
+            with st.spinner('Uploading...'):
+                Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+    
+    
+       
+                            
+    #if st.button('Run Checking'):
