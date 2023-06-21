@@ -24,10 +24,21 @@ import warnings
 import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
+#---------------------------define parameters--------------------------
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 bucket_mapping="sabramapping"
-
+Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
+ 'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
+'T_GEN_ADMIN_OTHER','T_ANCILLARY_THERAPY', 'T_ANCILLARY_PHARMACY','T_ANCILLARY_OTHER', 'T_EXPENSES','T_MGMT_FEE', 'T_OTHER_OP_EXO','T_DEPR_AMORT', 'T_INT_INC_EXP','T_RENT_EXP', 'T_SL_RENT_ADJ_EXP','T_NURSING_LABOR', 'T_N_CONTRACT_LABOR',
+ 'T_OTHER_NN_LABOR', 'T_CASH_AND_EQUIV','T_AR_GROSS', 'T_AR_VAL_RES','T_INV', 'T_OTH_CUR_ASSETS','T_TRADE_PAY', 'T_OTHER_CUR_LIAB','T_LOC_OUT', 'T_OTHER_DEBT','T_CAPEX', 'T_AR_WRT_OFF','T_LOC_AVAIL', 'REV_ANCILLARY',
+ 'REV_CONT_ALLOW', 'T_NURSING_HOURS','T_N_CONTRACT_HOURS', 'T_OTHER_HOURS','G_REV_PRF', 'G_SEQ_SUSPENSION','G_FMAP_FUND', 'G_REV_EXTR_COVID','G_EXP_EXTR_COVID']
+month_dic={1:["January","Jan","01/","1/","-1","-01","/1","/01"],2:["February","Feb","02/","2/","-2","-02","/2","/02"],3:["March","Mar","03/","3/","-3","-03","/3","/03"],4:["April","Apr","04/","4/","-4","-04","/4","/04"],5:["May","05/","5/","-5","-05","/5","/05"],6:["June","Jun","06/","6/","-06","-6","/6","/06"],\
+           7:["July","Jul","07/","7/","-7","-07","/7","/07"],8:["August","Aug","08/","8/","-8","-08","/8","/08"],9:["September","Sep","09/","9/","-09","-9","/9","/09"],10:["October","Oct","10/","-10","/10",],11:["November","Nov","11/","-11","/11"],12:["December","Dec","12/","-12","/12"]}
+year_dic={2021:["2021","21"],2022:["2022","22"],2023:["2023","23"],2024:["2024","24"],2025:["2025","25"],2026:["2026","26"],2019:["2019","19"],2018:["2018","18"],2020:["2020","20"]} 
+dropdown_title_account='Map to Sabra Account'
+dropdown_title_entity='Map sheet name to Property'  
+#------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     #read mapping format
     obj = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
@@ -52,13 +63,11 @@ def strip_lower_col(series_or_list):
     return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
-
-
+#-------------------------------website widges---------------------------------
+# drop down list of operator
 s3 = boto3.client('s3')
 obj = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(obj['Body'].read(), sheet_name='Operator_list')
-
-
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(
@@ -72,10 +81,9 @@ if operator != 'select operator':
 
 
 st.subheader("Upload P&L:")
-uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm"}, accept_multiple_files=False)
+uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
 
 
-# get account mapping 
 
     
 def Upload_file_S3(file,bucket,filename):
@@ -94,12 +102,18 @@ def Upload_file_S3(file,bucket,filename):
 if uploaded_file:
     df = pd.read_excel(uploaded_file,sheet_name ="Delaney_Creek_IS")
     st.write(df)
-    wb = openpyxl.load_workbook(uploaded_file)
-    st.write(wb.sheetnames)
+
+    if uploaded_file.name[-5:]=='.xlsx':
+        finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames 
+    else:
+        finicial_sheet_list = xlrd.open_workbook(uploaded_file, on_demand=True).sheet_names()
+    #wb = openpyxl.load_workbook(uploaded_file)
+    st.write(finicial_sheet_list)
     if st.button('Upload'):
         with st.spinner('Uploading...'):
             Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
-        
-       
+
+
+   
                         
 #if st.button('Run Checking'):
