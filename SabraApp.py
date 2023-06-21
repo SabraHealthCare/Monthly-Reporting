@@ -133,18 +133,15 @@ operator= st.selectbox(
 "Welcov Healthcare",
 "Wingate Healthcare"))
 
-conn = st.experimental_connection('s3', type=FilesConnection)
+#conn = st.experimental_connection('s3', type=FilesConnection)
 
-import boto3
-import io
-import json
+
 
 
 s3 = boto3.client('s3')
-obj = s3.get_object(Bucket="sabramapping", Key="Mapping/Affinity/Affinity_Mapping.xlsx")
+obj = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
 data = obj['Body'].read()
 df = pd.read_excel(data, sheet_name='Format')
-#df = conn.read("sabramapping/Mapping/Affinity/Affinity_Mapping.xlsx", input_format="xlsx",ttl=600)
 st.write(df)
 
 
