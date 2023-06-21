@@ -42,12 +42,11 @@ operator= st.selectbox(
 
 
 s3 = boto3.client('s3')
-obj = s3.get_oexcel(data, sheet_name='Format')
-st.write(df)bject(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
+
+obj = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
 data = obj['Body'].read()
-df = pd.read_
-
-
+df = pd.read_excel(data, sheet_name='Format')
+st.write(df)
 
 
 st.subheader("Upload P&L:")
