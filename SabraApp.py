@@ -326,7 +326,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 return financial_date_header,month_sort_index[month_index_i]
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
-st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
+
 #-------------------------------website widges---------------------------------
 # drop down list of operator
 s3 = boto3.client('s3')
@@ -352,6 +352,7 @@ if uploaded_file:
         
     PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
     tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
+    st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
    
 
     if st.button('Upload'):
