@@ -134,7 +134,7 @@ operator= st.selectbox(
 "Wingate Healthcare"))
 
 conn = st.experimental_connection('s3', type=FilesConnection)
-df = conn.read("sabramapping/Mapping/Affinity/test.csv", input_format="csv",ttl=600)
+df = conn.read("sabramapping/Mapping/Affinity/Affinity_Mapping.xlsx", input_format="csv",ttl=600)
 st.write(df)
 
 
