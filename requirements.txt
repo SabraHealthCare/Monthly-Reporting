@@ -15,7 +15,7 @@ pyodbc
 gsheetsdb
 s3fs
 boto3
-json
+
 
 # Direct pypi install coming soon
 git+https://github.com/streamlit/files-connection
