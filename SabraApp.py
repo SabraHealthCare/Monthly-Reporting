@@ -105,7 +105,7 @@ def Identify_Tenant_Account_Col(PL,mapping,sheet_name):
     
     # didn't find accounts col
     print("Can't find account column in sheet—— '"+sheet_name+"'")
-st.write(Get_Year("2023/03/01"))
+
 def Get_Year(single_string):
     if single_string!=single_string or single_string==None or type(single_string)==float:
         return 0,""
@@ -116,7 +116,6 @@ def Get_Year(single_string):
                     return Year,Year_keyword
         return 0,""
 
-st.write(Get_Month_Year("2023/03/01"))
 def Get_Month_Year(single_string):
     if single_string!=single_string or single_string==None or type(single_string)==float:
         return 0,0
@@ -143,7 +142,9 @@ def Get_Month_Year(single_string):
             # only year without month, length>3
             else:
                 continue
-    return 0,Year       
+    return 0,Year      
+st.write(Get_Year("2023/03/01"))
+st.write(Get_Month_Year("2023/03/01"))
 #-------------------------------website widges---------------------------------
 # drop down list of operator
 s3 = boto3.client('s3')
