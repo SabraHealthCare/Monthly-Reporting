@@ -105,7 +105,45 @@ def Identify_Tenant_Account_Col(PL,mapping,sheet_name):
     
     # didn't find accounts col
     print("Can't find account column in sheet—— '"+sheet_name+"'")
-        
+st.write(Get_Year("2023/03/01"))
+def Get_Year(single_string):
+    if single_string!=single_string or single_string==None or type(single_string)==float:
+        return 0,""
+    else:
+        for Year in year_dic.keys():
+            for Year_keyword in year_dic[Year]:
+                if Year_keyword in single_string:
+                    return Year,Year_keyword
+        return 0,""
+
+st.write(Get_Month_Year("2023/03/01"))
+def Get_Month_Year(single_string):
+    if single_string!=single_string or single_string==None or type(single_string)==float:
+        return 0,0
+    if type(single_string)==datetime:
+        return int(single_string.month),int(single_string.year)
+    
+    single_string=str(single_string)
+    Year,Year_keyword=Get_Year(single_string)
+    
+    # remove year from string
+    single_string=single_string.replace(Year_keyword,"")
+ 
+    for Month in month_dic.keys() :#[01,02,03...12]
+        for  Month_keyword in month_dic[Month]: #["Jan","January","01","-1","/1",'1/']
+            if Month_keyword.lower() in single_string.lower():
+                remaining=single_string.lower().replace(Month_keyword.lower(),"").replace("/","")\
+                                .replace("-","").replace(" ","").replace("_","")
+
+                #if there are more than 3 other char in the string, this string maybe not the date 
+                if len(remaining)>=3:
+                    return 0,0
+                else:   
+                    return Month,Year
+            # only year without month, length>3
+            else:
+                continue
+    return 0,Year       
 #-------------------------------website widges---------------------------------
 # drop down list of operator
 s3 = boto3.client('s3')
@@ -122,17 +160,16 @@ if operator != 'select operator':
    
     
 
-
 st.subheader("Upload P&L:")
 uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
     
 if uploaded_file:
     if uploaded_file.name[-5:]=='.xlsx':
         finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames
-        st.write(finicial_sheet_list)
+        
     PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
     tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
-    st.write(tenantAccount_col_no)
+   
 
     if st.button('Upload'):
         with st.spinner('Uploading...'):
