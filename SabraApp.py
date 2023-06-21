@@ -46,7 +46,7 @@ Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month
-Uploading_Lastyear
+
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     #read mapping format
@@ -143,8 +143,190 @@ def Get_Month_Year(single_string):
             else:
                 continue
     return 0,Year      
-st.write(Get_Year("2023/03/01"))
-st.write(Get_Month_Year("2023/03/01"))
+
+def Month_continuity_check(month_list):
+    inv=[]
+    month_list=list(filter(lambda x:x!=0,month_list))
+    if len(month_list)==0:
+        return False
+    else:
+        inv=[int(month_list[month_i+1])-int(month_list[month_i]) for month_i in range(len(month_list)-1) ]
+        if  len(set(inv))<=2 and all([x in [1,-1,11,-11] for x in set(inv)]):
+            #continues month, it is month row
+            return True
+        else:
+            return False
+
+def Year_continuity_check(year_list):
+    inv=[]
+    year_list=list(filter(lambda x:x!=0,year_list))
+    if len(year_list)==0:
+        return False
+    else:
+        inv=[int(year_list[year_i+1])-int(year_list[year_i]) for year_i in range(len(year_list)-1) ]
+        if len(set(inv))<=2 and all([x in [1,0,-1] for x in set(inv)]):
+            #continues year, it is year row
+            return True        
+        else:
+            return False
+# add year to month_header: identify current year/last year giving a list of month
+
+def Add_year_to_header(month_list):
+    available_month=list(filter(lambda x:x!=0,month_list))
+    
+    today=date.today()
+    current_year= today.year
+    last_year=today.year-1
+
+    if len(available_month)==1:
+        
+        if datetime.strptime(available_month[0]+"/01/"+current_year,'%m/%d/%Y').date()<today:
+            year=current_year
+        else:
+            year=today.year-1
+        return year
+     
+    year_change=0     
+    # month decending  #and available_month[0]<today.month
+    if (available_month[0]>available_month[1] and available_month[0]!=12) or \
+    (available_month[0]==1 and available_month[1]==12) : 
+        date_of_assumption=datetime.strptime(str(available_month[0])+"/01/"+str(current_year),'%m/%d/%Y').date()
+        if date_of_assumption<today and date_of_assumption.month<today.month:
+            report_year_start=current_year
+        elif date_of_assumption>=today:
+            report_year_start=last_year
+        for i in range(len(available_month)):
+            available_month[i]=report_year_start-year_change
+            if i<len(available_month)-1 and available_month[i+1]==12:
+                year_change+=1
+            
+    # month ascending   
+    elif (available_month[0]<available_month[1] and available_month[0]!=12) \
+        or (available_month[0]==12 and available_month[1]==1): #and int(available_month[-1])<today.month
+        date_of_assumption=datetime.strptime(str(available_month[-1])+"/01/"+str(current_year),'%m/%d/%Y').date()    
+        if date_of_assumption<today:
+            report_year_start=current_year
+        elif date_of_assumption>=today:
+            report_year_start=last_year
+        for i in range(-1,len(available_month)*(-1)-1,-1):
+   
+            available_month[i]=report_year_start-year_change
+            if i>len(available_month)*(-1) and available_month[i-1]==12:
+                #print("year_change",year_change)
+                year_change+=1
+    
+    else:
+        return False
+ 
+    j=0
+    for i in range(len(month_list)):
+        if month_list[i]!=0:
+            month_list[i]=available_month[j]
+            j+=1
+
+    return month_list  
+
+# find the Month/year row and return row number
+def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
+    PLrow=PL.shape[0]
+    PLcol=PL.shape[1]
+    row_size=min(20,PLrow)
+    month_table=pd.DataFrame(0,index=range(row_size), columns=range(PLcol))
+    year_table=pd.DataFrame(0,index=range(row_size), columns=range(PLcol))
+    
+    for row_i in range(min(20,PLrow)):
+        for col_i in range(PLcol):
+            if type(PL.iloc[row_i,col_i])==int or type(PL.iloc[row_i,col_i])==float:
+                continue
+            month_table.iloc[row_i,col_i],year_table.iloc[row_i,col_i]=Get_Month_Year(PL.iloc[row_i,col_i])
+    year_count=[]
+    month_count=[]
+    max_len=0
+    for row_i in range(row_size):
+        valid_month=list(filter(lambda x:x!=0,month_table.iloc[row_i,]))
+        valid_year=list(filter(lambda x:x!=0,year_table.iloc[row_i,]))
+        month_count.append(len(valid_month))
+        year_count.append(len(valid_year))
+
+    # didn't find any month in all the rows
+    if all(map(lambda x:x==0,month_count)):
+        print("Can't identify month/year columns in sheet——'"+sheet_name+"'")   
+        return [0],0
+    month_sort_index = np.argsort(np.array(month_count))
+    year_sort_index = np.argsort(np.array(year_count))
+    for month_index_i in range(-1,-4,-1): # only check three of the most possible rows
+        
+        #month_sort_index[-1] is the index number of month_count in which has max month count
+        #month_sort_index[i] is also the index/row number of finicial
+        
+        #print(month_count[month_sort_index[month_index_i]])
+        if month_count[month_sort_index[month_index_i]]>1:
+            #check validation of month
+            #print(Month_continuity_check(month_table.iloc[month_sort_index[month_index_i],]))
+            if Month_continuity_check(month_table.iloc[month_sort_index[month_index_i],]):
+                for year_index_i in range(-1,-4,-1):
+                    # check validation of year
+                    if Year_continuity_check(year_table.iloc[year_sort_index[year_index_i],]) \
+                        and year_count[year_sort_index[year_index_i]]==month_count[month_sort_index[month_index_i]]:
+                       
+                        PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
+                        month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
+                        return PL_date_header,month_sort_index[month_index_i]
+                    
+                    # all the year rows are not valid, add year to month
+                    else:
+                        continue
+                    # all the year rows are not valid, add year to month
+                year_table.iloc[year_sort_index[year_index_i],]=Add_year_to_header(list(month_table.iloc[month_sort_index[month_index_i],]))
+                PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
+                month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
+                
+                st.write("Missing year in date header in sheet '"+sheet_name+"'. Filled year as below: ")
+                st.write(list(filter(lambda x:str(x)!='0',financial_date_header)))
+                return PL_date_header,month_sort_index[month_index_i]
+                        
+            # month is not continuous, check next one
+            else:
+                continue
+                
+        # only one month in header:month and year must exist for one month header
+        elif month_count[month_sort_index[month_index_i]]==1:
+            # month and year must match 
+            st.write("There is only one month in sheet——'"+sheet_name+"'")
+            col_month=0
+            #find the col number of month
+            while(month_table.iloc[month_sort_index[month_index_i],col_month]==0):
+                col_month+=1
+                
+                #if month_table.iloc[month_sort_index[index_i],col_month]!=1:
+                #if column of month is smaller than column of account, or there is no year in month, continue 
+            if col_month<tenantAccount_col_no or year_table.iloc[month_sort_index[month_index_i],col_month]==0:
+                st.write("There is no year in date row in sheet——'"+sheet_name+"'")
+                continue
+           
+            count_num=0
+            count_str=0
+            for row_month in range(month_sort_index[month_index_i],financial.shape[0]):
+                if financial.iloc[row_month,col_month]==None or pd.isna(financial.iloc[row_month,col_month]) or financial.iloc[row_month,col_month]=="":
+                    continue
+
+                elif type(financial.iloc[row_month,col_month])==float or type(financial.iloc[row_month,col_month])==int:
+                    count_num+=1
+                else:
+                    count_str+=1
+                # count_num/str is count of numous/character data under month
+                # for a real month column, numous data is supposed to be more than character data
+            if count_str>0 and count_num/count_str<0.8:
+                continue
+                
+            else:
+                financial_date_header=year_table.iloc[month_sort_index[month_index_i],].apply(lambda x:str(int(x)))+\
+                        month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
+                        
+                return financial_date_header,month_sort_index[month_index_i]
+    st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
+    return [0],0
+st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
 #-------------------------------website widges---------------------------------
 # drop down list of operator
 s3 = boto3.client('s3')
