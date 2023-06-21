@@ -35,17 +35,11 @@ st.subheader("Operator name:")
 operator= st.selectbox(
     ' ',(operator_list))
 
-#conn = st.experimental_connection('s3', type=FilesConnection)
 
-
-
-
-s3 = boto3.client('s3')
-
-obj = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
-data = obj['Body'].read()
-df = pd.read_excel(data, sheet_name='Format')
-st.write(df)
+if operator!=''
+    obj1 = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
+    df = pd.read_excel(obj1['Body'].read(), sheet_name='Format')
+    st.write(df)
 
 
 st.subheader("Upload P&L:")
