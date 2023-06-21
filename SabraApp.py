@@ -44,6 +44,15 @@ def Read_Account_Mapping():
     mapping=mapping.drop_duplicates()
     mapping=mapping.reset_index(drop=True)
     return mapping
+def get_row_no(dataset,row_header):
+    return list(dataset.index).index(row_header)
+def get_column_no(dataset,col_header):
+    return list(dataset.columns).index(col_header)
+def strip_lower_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
+def strip_upper_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
+
 
 s3 = boto3.client('s3')
 obj = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
