@@ -100,8 +100,8 @@ def Upload_file_S3(file,bucket,filename):
 
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file,sheet_name ="Delaney_Creek_IS")
-    st.write(df)
+    #df = pd.read_excel(uploaded_file,sheet_name ="Delaney_Creek_IS")
+    #st.write(df)
 
     if uploaded_file.name[-5:]=='.xlsx':
         finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames 
