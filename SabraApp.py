@@ -36,7 +36,7 @@ operator= st.selectbox(
     ' ',(operator_list))
 
 
-if operator != ' ':
+if operator != 'select operator':
     obj1 = s3.get_object(Bucket="sabramapping", Key="Mapping/"+operator+"/"+operator+"_Mapping.xlsx")
     df = pd.read_excel(obj1['Body'].read(), sheet_name='Format')
     st.write(df)
