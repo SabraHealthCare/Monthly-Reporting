@@ -119,7 +119,7 @@ operator= st.selectbox(
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     mapping=Read_Account_Mapping()
-    st.write(mapping)
+   
     
 
 
@@ -131,7 +131,6 @@ if uploaded_file:
         finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames
         st.write(finicial_sheet_list)
     PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
-    st.write(df)
     tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
     st.write(tenantAccount_col_no)
 
