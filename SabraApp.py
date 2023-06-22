@@ -327,6 +327,70 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
 
+def Map_New_Account(PL,mapping,sheet_name):
+    new_accounts=[x if x not in list(mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
+    new_accounts=list(filter(lambda x:x!="",new_accounts))
+    
+    #has no new account
+    if len(new_accounts)==0:
+        return mapping
+
+    maplist=[]
+    fenetre= tk.Tk()
+    fenetre.geometry("800x500")
+    text1 = Label(fenetre, text="Found new accounts in worksheet: "+sheet_name,fg="black", font =("Montserrat" ,22) ,height ="1",)
+    text1.pack()
+ 
+    fenetre.title("Found new accounts in worksheet: "+sheet_name)
+
+    boutonlaunch=Button(fenetre,text="Submit",width=15,height=1,bg="white",bd=5,command=fenetre.destroy)
+    boutonlaunch.pack(side=RIGHT)  
+
+    for account_i in range(len(new_accounts)):
+        cadre1=Frame(fenetre)
+        cadre1.pack(side=TOP,anchor=NW)
+        cadre=Frame(cadre1)
+        cadre.pack()
+
+        new_account_label=Label(cadre, width=35,text=new_accounts[account_i])
+        new_account_label.pack(side=LEFT)
+
+        value_inside = StringVar()
+        value_inside.set(dropdown_title_account)
+        mapbox = OptionMenu(cadre, value_inside, *["No need to map"]+\
+                            list(mapping["Sabra_account"].unique()))
+        mapbox.config(width=30)
+        mapbox.config(bg="#1544CB", fg="WHITE")
+        mapbox.pack(side=LEFT)
+        maplist.append(value_inside) 
+   
+    fenetre.mainloop()
+
+    # update mapping list:insert new accounts in to mapping
+    len_mapping=len(mapping.index)
+    j=0
+    for i in range(len(maplist)):
+        if maplist[i].get()!=dropdown_title_account: #and maplist[i].get()!="No need to map":
+            mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i].get()
+            mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            j+=1
+        elif maplist[i].get()==dropdown_title_account:
+            mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
+            mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            j+=1
+            
+        
+            
+    # update mapping workbook        
+    
+    workbook = load_workbook(template_path_filename)
+    workbook.remove(workbook[sheet_name_account_mapping])
+    new_worksheet = workbook.create_sheet(sheet_name_account_mapping)
+    for r in dataframe_to_rows(mapping, index=False, header=True):
+        new_worksheet.append(r)
+    workbook.save(template_path_filename)
+    
+    return mapping
 #-------------------------------website widges---------------------------------
 # drop down list of operator
 s3 = boto3.client('s3')
