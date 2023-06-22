@@ -373,7 +373,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):
         new_worksheet.append(r)
     st.write(workbook)
 
- def Sheet_process((PL,sheet_name,account_mapping):
+def Sheet_Process((PL,sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
@@ -429,9 +429,8 @@ if operator != 'select operator':
                 st.write("Start checking sheet：",sheet_name)
             if sheet_name==sheet_name \ # sheet_name is not nan
                 and sheet_name in PL_sheet_list:
-                    PL,account_mapping=Sheet_process(PL,sheet_name,account_mapping)
+                    PL,account_mapping=Sheet_Process(PL,sheet_name,account_mapping)
                     PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
-                    #print(entity,sheet_name,financial)
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                 
             elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
