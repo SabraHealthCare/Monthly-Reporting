@@ -382,7 +382,7 @@ if operator != 'select operator':
         
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
-            finicial_sheet_list=openpyxl.load_workbook(uploaded_file).sheetnames
+            finicial_sheet_list=load_workbook(uploaded_file).sheetnames
             
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
