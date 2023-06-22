@@ -341,7 +341,7 @@ def Map_New_Account(PL,mapping,sheet_name):
         return mapping
 
     maplist=[]
-    drop_down_list=["No need to map"]+list(mapping["Sabra_account"].unique()
+    drop_down_list=["No need to map"]+list(mapping["Sabra_account"].unique())
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
