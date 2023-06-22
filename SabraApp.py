@@ -427,22 +427,22 @@ if operator != 'select operator':
             for entity_i in range(len(entity_mapping['Entity'])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 st.write("Start checking sheet：",sheet_name)
-            # sheet_name is not nan
-            if sheet_name==sheet_name and sheet_name in PL_sheet_list:
+                # sheet_name is not nan
+                if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(PL,sheet_name,account_mapping)
                     PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
-                
-            elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
-                continue
+                    
+                elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
+                    continue
             
-            if entity_i==len(entity_mapping['Entity'])-1:
-                start_date=min(Total_PL.columns)+"00"
-                end_date=max(Total_PL.columns)+"00"
-                BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
-                # if found new entities in BPC which is not in entity_mapping,
-                # ask for mapping and update entity_mapping, re-do sheet process for new entities.
-                entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
+                if entity_i==len(entity_mapping['Entity'])-1:
+                    start_date=min(Total_PL.columns)+"00"
+                    end_date=max(Total_PL.columns)+"00"
+                    BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
+                    # if found new entities in BPC which is not in entity_mapping,
+                    # ask for mapping and update entity_mapping, re-do sheet process for new entities.
+                    entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
        
     
         if st.button('Upload'):
