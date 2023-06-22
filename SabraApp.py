@@ -414,7 +414,7 @@ if operator != 'select operator':
 
          # def main   
         format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
-        entity_mapping=pd.read_excel(mapping_file['Body'].read(),,sheet_name=sheet_name_entity_mapping,header=0)
+        entity_mapping=pd.read_excel(mapping_file['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
         account_mapping=Read_Account_Mapping()
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_tenant_financial=pd.DataFrame()
