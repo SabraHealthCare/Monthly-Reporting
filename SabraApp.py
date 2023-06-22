@@ -387,31 +387,30 @@ def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):
         PL.columns=date_header[0]
         #tenant_account is index of PL, only keep rows with accounts and columns with valid month
        
-        financial=financial.set_index(financial.iloc[:,tenantAccount_col_no].values)
+        PL=PL.set_index(PL.iloc[:,tenantAccount_col_no].values)
         #remove row above date row and remove column without date col name
         PL=PL.iloc[date_header[1]+1:,PL.columns!='0']
         PL.index=map(lambda x:str(x).lower().strip(),PL.index)
-        PL.index.name='Tenant_account
+        PL.index.name='Tenant_account'
         
         #if there are duplicated accounts in finicial, only keep the last one
-        financial=financial[~financial.index.duplicated(keep='last')]
+        PL=PL[~PL.index.duplicated(keep='last')]
        
         # remove columns what are all zero/blank 
         PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
         #remove rows with nan tenant account
-        financial=financial.loc[list(filter(lambda x:x!='nan',financial.index))]
+        PL=PL.loc[list(filter(lambda x:x!='nan',PL.index))]
+        #  new accounts don't counted yet
         account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
-        return financial,account_mapping    
-           
+        return PL,account_mapping    
 #-------------------------------website widges---------------------------------
-
 if operator != 'select operator':
     st.subheader("Upload P&L:")
     uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
         
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
-            finicial_sheet_list=load_workbook(uploaded_file).sheetnames
+            PL_sheet_list=load_workbook(uploaded_file).sheetnames
 
          # def main   
         format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
@@ -428,21 +427,21 @@ if operator != 'select operator':
             for entity_i in range(len(entity_mapping['Entity'])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 st.write("Start checking sheet：",sheet_name)
-        if sheet_name==sheet_name \ # sheet_name is not nan
-            and sheet_name in finicial_sheet_list:
-                financial,account_mapping=Sheet_process(finical_path_filename,sheet_name,account_mapping)
-                financial,financial_with_detail_PLaccounts=Aggregated_Metrix(financial,account_mapping,entity_mapping.loc[entity_i,"Entity"])
-                #print(entity,sheet_name,financial)
-                Total_tenant_financial=pd.concat([Total_tenant_financial, financial], ignore_index=False, sort=False)
-            
-            elif (sheet_name!=sheet_name or sheet_name not in finicial_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
+            if sheet_name==sheet_name \ # sheet_name is not nan
+                and sheet_name in PL_sheet_list:
+                    PL,account_mapping=Sheet_process(PL,sheet_name,account_mapping)
+                    PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
+                    #print(entity,sheet_name,financial)
+                    Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
+                
+            elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                 continue
             
             if entity_i==len(entity_mapping['Entity'])-1:
-                start_date=min(Total_tenant_financial.columns)+"00"
-                end_date=max(Total_tenant_financial.columns)+"00"
+                start_date=min(Total_PL.columns)+"00"
+                end_date=max(Total_PL.columns)+"00"
                 BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
-                # if found new entities in BPC which is not in template,
+                # if found new entities in BPC which is not in entity_mapping,
                 # ask for mapping and update entity_mapping, re-do sheet process for new entities.
                 entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
        
