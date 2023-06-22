@@ -427,8 +427,8 @@ if operator != 'select operator':
             for entity_i in range(len(entity_mapping['Entity'])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 st.write("Start checking sheet：",sheet_name)
-            if sheet_name==sheet_name \ # sheet_name is not nan
-                and sheet_name in PL_sheet_list:
+            # sheet_name is not nan
+            if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(PL,sheet_name,account_mapping)
                     PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
