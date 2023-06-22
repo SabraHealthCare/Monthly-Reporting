@@ -32,7 +32,7 @@ operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
-mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
 
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
