@@ -32,7 +32,7 @@ operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
-    mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
 
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
@@ -60,6 +60,7 @@ Uploading_month=Uploading_date.month
 def Read_Account_Mapping():
     # read account mapping
     account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    st.write(account_mapping)
         #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
@@ -413,9 +414,10 @@ if operator != 'select operator':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
 
          # def main   
+        
+        account_mapping=Read_Account_Mapping()
         format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
         entity_mapping=pd.read_excel(mapping_file['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-        account_mapping=Read_Account_Mapping()
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_tenant_financial=pd.DataFrame()
         TENANT_ID=format_table["Tenant_ID"][0]
