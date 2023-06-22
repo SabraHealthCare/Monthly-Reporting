@@ -22,6 +22,7 @@ import boto3
 
 #---------------------------define parameters--------------------------
 s3 = boto3.client('s3')
+bucket_mapping="sabramapping"
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
@@ -31,11 +32,11 @@ operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
+mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
 
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
-bucket_mapping="sabramapping"
-mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
