@@ -21,16 +21,17 @@ from st_files_connection import FilesConnection
 import boto3
 
 #---------------------------define parameters--------------------------
+s3 = boto3.client('s3')
 # drop down list of operator
-obj = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(obj['Body'].read(), sheet_name='Operator_list')
+operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
+operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
-s3 = boto3.client('s3')
+
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 bucket_mapping="sabramapping"
