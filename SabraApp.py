@@ -6,28 +6,35 @@ import matplotlib.pyplot as plt
 import statistics
 import os
 import xlwt
-from xlwt.Workbook import *
 import xlsxwriter
 import matplotlib.ticker as mtick
 import pyodbc
 import numpy as np
 from calendar import monthrange
 import sys
-from datetime import datetime, timedelta
-from datetime import date
-#from itertools import compress
-from os import walk
+from datetime import datetime, timedelta,date
 from openpyxl import load_workbook
-import openpyxl
 import xlrd
 import warnings
 import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
+
 #---------------------------define parameters--------------------------
+# drop down list of operator
+obj = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
+operator_list = pd.read_excel(obj['Body'].read(), sheet_name='Operator_list')
+st.title("Sabra HealthCare Reporting App")
+st.subheader("Operator name:")
+operator= st.selectbox(' ',(operator_list))
+
+if operator != 'select operator':
+    mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
+s3 = boto3.client('s3')
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 bucket_mapping="sabramapping"
+mapping_file = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -49,9 +56,8 @@ Uploading_month=Uploading_date.month
 
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
-    #read mapping format
-    obj = s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    format = pd.read_excel(obj['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    # read mapping format
+    format = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
         #convert tenant_account to lower case
     format["Tenant_account"]=strip_lower_col(format["Tenant_account"])
     format["Sabra_second_account"]=strip_upper_col(format["Sabra_second_account"])
@@ -330,82 +336,44 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
 def Map_New_Account(PL,mapping,sheet_name):
     new_accounts=[x if x not in list(mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
-    
-    #has no new account
+   
     if len(new_accounts)==0:
         return mapping
 
     maplist=[]
-    fenetre= tk.Tk()
-    fenetre.geometry("800x500")
-    text1 = Label(fenetre, text="Found new accounts in worksheet: "+sheet_name,fg="black", font =("Montserrat" ,22) ,height ="1",)
-    text1.pack()
+    drop_down_list=["No need to map"]+list(mapping["Sabra_account"].unique()
+    new_account_len=len(new_accounts)
+    for account_i in range(new_account_len):
+        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
  
-    fenetre.title("Found new accounts in worksheet: "+sheet_name)
-
-    boutonlaunch=Button(fenetre,text="Submit",width=15,height=1,bg="white",bd=5,command=fenetre.destroy)
-    boutonlaunch.pack(side=RIGHT)  
-
-    for account_i in range(len(new_accounts)):
-        cadre1=Frame(fenetre)
-        cadre1.pack(side=TOP,anchor=NW)
-        cadre=Frame(cadre1)
-        cadre.pack()
-
-        new_account_label=Label(cadre, width=35,text=new_accounts[account_i])
-        new_account_label.pack(side=LEFT)
-
-        value_inside = StringVar()
-        value_inside.set(dropdown_title_account)
-        mapbox = OptionMenu(cadre, value_inside, *["No need to map"]+\
-                            list(mapping["Sabra_account"].unique()))
-        mapbox.config(width=30)
-        mapbox.config(bg="#1544CB", fg="WHITE")
-        mapbox.pack(side=LEFT)
-        maplist.append(value_inside) 
-   
-    fenetre.mainloop()
-
-    # update mapping list:insert new accounts in to mapping
+ # update mapping list, insert new accounts into mapping
     len_mapping=len(mapping.index)
     j=0
-    for i in range(len(maplist)):
-        if maplist[i].get()!=dropdown_title_account: #and maplist[i].get()!="No need to map":
-            mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i].get()
+    for i in range(new_account_len):
+        if maplist[i]!="No need to map":
+            mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
             mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
             j+=1
-        elif maplist[i].get()==dropdown_title_account:
+        elif maplist[i]=="No need to map":
             mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
             mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
             j+=1
-            
-        
-            
-    # update mapping workbook        
+           
+    # update mapping workbook       
+    Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,mapping)
+    return mapping
+def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):
     
-    workbook = load_workbook(template_path_filename)
+    workbook = load_workbook(mapping_file['Body'].read())
     workbook.remove(workbook[sheet_name_account_mapping])
     new_worksheet = workbook.create_sheet(sheet_name_account_mapping)
     for r in dataframe_to_rows(mapping, index=False, header=True):
         new_worksheet.append(r)
-    workbook.save(template_path_filename)
-    
-    return mapping
+    st.write(workbook)
 #-------------------------------website widges---------------------------------
-# drop down list of operator
-s3 = boto3.client('s3')
-obj = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(obj['Body'].read(), sheet_name='Operator_list')
-st.title("Sabra HealthCare Reporting App")
-st.subheader("Operator name:")
-operator= st.selectbox(
-    ' ',(operator_list))
 
 if operator != 'select operator':
-    mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     mapping=Read_Account_Mapping()
-   
-    
 
     st.subheader("Upload P&L:")
     uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
