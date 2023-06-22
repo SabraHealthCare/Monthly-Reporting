@@ -36,7 +36,7 @@ if operator != 'select operator':
 
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
-
+sheet_name_format='Format'
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -58,20 +58,20 @@ Uploading_month=Uploading_date.month
 
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
-    # read mapping format
-    format = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    # read account mapping
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
         #convert tenant_account to lower case
-    format["Tenant_account"]=strip_lower_col(format["Tenant_account"])
-    format["Sabra_second_account"]=strip_upper_col(format["Sabra_second_account"])
-    format["Sabra_account"]=strip_upper_col(format["Sabra_account"])
+    account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
+    account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
+    account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
         # remove nan in col Sabra_account
-    mapping=format.loc[list(map(lambda x:x==x,format["Sabra_account"])),\
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_account"])),\
                                      ["Sabra_account","Tenant_account","Sabra_second_account"]]
-    mapping=mapping.loc[list(map(lambda x:x==x,mapping["Tenant_account"])),\
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
                                      ["Sabra_account","Tenant_account","Sabra_second_account"]]
-    mapping=mapping.drop_duplicates()
-    mapping=mapping.reset_index(drop=True)
-    return mapping
+    account_mapping=account_mapping.drop_duplicates()
+    account_mapping=account_mapping.reset_index(drop=True)
+    return account_mapping
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
 def get_column_no(dataset,col_header):
@@ -96,15 +96,15 @@ def Upload_file_S3(file,bucket,filename):
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
 sheet_name="Delaney_Creek_IS"
-def Identify_Tenant_Account_Col(PL,mapping,sheet_name):
+def Identify_Tenant_Account_Col(PL,account_mapping,sheet_name):
     for tenantAccount_col_no in range(0,PL.shape[1]):
         #trim and lower case column
         account_column=strip_lower_col(PL.iloc[:,tenantAccount_col_no])
         
-        #find out how many tenant accounts match with mapping list
-        match=[x in  list(account_column) for x in mapping["Tenant_account"]]
+        #find out how many tenant accounts match with account_mapping list
+        match=[x in  list(account_column) for x in account_mapping["Tenant_account"]]
 
-        #If 50% of accounts match with mapping list, identify this col as tenant account.
+        #If 50% of accounts match with account_mapping list, identify this col as tenant account.
         if len(match)>0 and sum(x for x in match)/len(match)>0.1:
             return tenantAccount_col_no  
         else:
@@ -335,58 +335,116 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
 
-def Map_New_Account(PL,mapping,sheet_name):
-    new_accounts=[x if x not in list(mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
+def Map_New_Account(PL,account_mapping,sheet_name):
+    new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
    
     if len(new_accounts)==0:
-        return mapping
+        return account_mapping
 
     maplist=[]
-    drop_down_list=["No need to map"]+list(mapping["Sabra_account"].unique())
+    drop_down_list=["No need to map"]+list(account_mapping["Sabra_account"].unique())
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
  
- # update mapping list, insert new accounts into mapping
-    len_mapping=len(mapping.index)
+ # update account_mapping list, insert new accounts into account_mapping
+    len_mapping=len(account_mapping.index)
     j=0
     for i in range(new_account_len):
         if maplist[i]!="No need to map":
-            mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
-            mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
+            account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
             j+=1
         elif maplist[i]=="No need to map":
-            mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
-            mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
+            account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
             j+=1
            
-    # update mapping workbook       
-    Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,mapping)
-    return mapping
-def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):
-    
+    # update account_mapping workbook       
+    Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
+    return account_mapping
+
+def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
     workbook = load_workbook(mapping_file['Body'].read())
-    workbook.remove(workbook[sheet_name_account_mapping])
-    new_worksheet = workbook.create_sheet(sheet_name_account_mapping)
-    for r in dataframe_to_rows(mapping, index=False, header=True):
+    workbook.remove(workbook[sheet_name])
+    new_worksheet = workbook.create_sheet(sheet_name)
+    for r in dataframe_to_rows(DataFrame, index=False, header=True):
         new_worksheet.append(r)
     st.write(workbook)
+
+ def Sheet_process((PL,sheet_name,account_mapping):
+        PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
+        tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
+        if tenantAccount_col_no==None:
+            st.write("didn't find tenant account col")
+            return False,account_mapping
+        date_header=Identify_Month_Row(financial,tenantAccount_col_no,sheet_name)
+        if len(date_header[0])==1 and date_header[0]==0:
+            st.write("didn't find date row")
+            return False,account_mapping
+        
+        PL.columns=date_header[0]
+        #tenant_account is index of PL, only keep rows with accounts and columns with valid month
+       
+        financial=financial.set_index(financial.iloc[:,tenantAccount_col_no].values)
+        #remove row above date row and remove column without date col name
+        PL=PL.iloc[date_header[1]+1:,PL.columns!='0']
+        PL.index=map(lambda x:str(x).lower().strip(),PL.index)
+        PL.index.name='Tenant_account
+        
+        #if there are duplicated accounts in finicial, only keep the last one
+        financial=financial[~financial.index.duplicated(keep='last')]
+       
+        # remove columns what are all zero/blank 
+        PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
+        #remove rows with nan tenant account
+        financial=financial.loc[list(filter(lambda x:x!='nan',financial.index))]
+        account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
+        return financial,account_mapping    
+           
 #-------------------------------website widges---------------------------------
 
 if operator != 'select operator':
-    mapping=Read_Account_Mapping()
-
     st.subheader("Upload P&L:")
     uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
         
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             finicial_sheet_list=load_workbook(uploaded_file).sheetnames
+
+         # def main   
+        format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
+        entity_mapping=pd.read_excel(mapping_file['Body'].read(),,sheet_name=sheet_name_entity_mapping,header=0)
+        account_mapping=Read_Account_Mapping()
+        TENANT_ID=format_table["Tenant_ID"][0]
+        Total_tenant_financial=pd.DataFrame()
+        TENANT_ID=format_table["Tenant_ID"][0]
+        
+        
+        if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
+        #All accounts are in one sheet
+        # how about if entity is sold? it is in entity but not in finicial anymore
+            for entity_i in range(len(entity_mapping['Entity'])):
+                sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
+                st.write("Start checking sheet：",sheet_name)
+        if sheet_name==sheet_name \ # sheet_name is not nan
+            and sheet_name in finicial_sheet_list:
+                financial,account_mapping=Sheet_process(finical_path_filename,sheet_name,account_mapping)
+                financial,financial_with_detail_PLaccounts=Aggregated_Metrix(financial,account_mapping,entity_mapping.loc[entity_i,"Entity"])
+                #print(entity,sheet_name,financial)
+                Total_tenant_financial=pd.concat([Total_tenant_financial, financial], ignore_index=False, sort=False)
             
-        PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
-        tenantAccount_col_no=Identify_Tenant_Account_Col(PL,mapping,sheet_name)
-        st.write(Identify_Month_Row(PL,tenantAccount_col_no,sheet_name))
+            elif (sheet_name!=sheet_name or sheet_name not in finicial_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
+                continue
+            
+            if entity_i==len(entity_mapping['Entity'])-1:
+                start_date=min(Total_tenant_financial.columns)+"00"
+                end_date=max(Total_tenant_financial.columns)+"00"
+                BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
+                # if found new entities in BPC which is not in template,
+                # ask for mapping and update entity_mapping, re-do sheet process for new entities.
+                entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
        
     
         if st.button('Upload'):
