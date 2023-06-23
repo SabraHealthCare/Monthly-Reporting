@@ -441,7 +441,7 @@ if operator != 'select operator':
         
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
-            PL_sheet_list=(uploaded_file).sheetnames
+            PL_sheet_list=load_workbook(uploaded_file).sheetnames
 
          # def main  
         account_mapping=Read_Account_Mapping()
