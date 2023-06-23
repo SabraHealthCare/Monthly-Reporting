@@ -32,8 +32,6 @@ operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
-    
-
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 sheet_name_format='Format'
@@ -82,7 +80,7 @@ def strip_lower_col(series_or_list):
     return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
-    
+
 def Upload_file_S3(file,bucket,filename):
     #s3 = boto3.client('s3')
     try:
@@ -444,7 +442,7 @@ if operator != 'select operator':
         format_table=pd.read_excel(mapping_file_format['Body'].read(), sheet_name=sheet_name_format,header=0)
   
         TENANT_ID=format_table["Tenant_ID"][0]
-        Total_tenant_PL=pd.DataFrame()
+        Total_PL=pd.DataFrame()
         TENANT_ID=format_table["Tenant_ID"][0]
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
@@ -456,7 +454,7 @@ if operator != 'select operator':
                 # sheet_name is not nan
                 if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
-                    PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
+                    PL,PL_with_detail_PLaccounts=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
