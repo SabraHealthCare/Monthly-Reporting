@@ -347,6 +347,17 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
         new_worksheet.append(r)
 
 
+
+
+
+
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    workbook.save(writer)
+    
+    wt.write(output)
+
+    
     workbook.save(writer)
     
     writer = pd.ExcelWriter('update2.xlsx')
