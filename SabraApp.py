@@ -411,7 +411,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     second_account_mapping=account_mapping[account_mapping["Sabra_second_account"]==account_mapping["Sabra_second_account"]][["Sabra_second_account","Tenant_account"]].\
                             rename(columns={"Sabra_second_account": "Sabra_account"})
     
-    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(mapping[["Sabra_account","Tenant_account"]],on='Tenant_account',how='right')])
+    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_account","Tenant_account"]],on='Tenant_account',how='right')])
     
     PL=PL.set_index('Sabra_account',drop=True)
     
