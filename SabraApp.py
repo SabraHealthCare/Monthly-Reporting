@@ -14,7 +14,6 @@ from calendar import monthrange
 import sys
 from datetime import datetime, timedelta,date
 from openpyxl import load_workbook
-from openpyxl.utils.dataframe import dataframe_to_rows
 import xlrd
 import warnings
 import streamlit as st
@@ -75,6 +74,17 @@ def strip_lower_col(series_or_list):
     return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
+def Upload_file_S3(file,bucket,filename):
+    #s3 = boto3.client('s3')
+    try:
+        s3.upload_fileobj(file,bucket,"test/Jan/"+filename)
+        st.success('File Successfully Uploaded')
+        return True
+    except FileNotFoundError:
+        time.sleep(6)
+        st.error('File wasn not uploaded.')
+        return False 
+     
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
@@ -304,26 +314,6 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 return PL_date_header,month_sort_index[month_index_i]
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
-
-def Upload_file_to_S3(file,bucket,key):
-    try:
-        s3.upload_fileobj(file,bucket,key)
-        st.success('Successfully uploaded to S3')
-        return True
-    except FileNotFoundError:
-        time.sleep(6)
-        st.error('Fail to upload to S3')
-        return False 
-
-def Update_Sheet_inS3(bucket,key,sheet_name,df):    
-    mapping_file =s3.get_object(Bucket=bucket, Key=key)
-    workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-    workbook.remove(workbook[sheet_name])
-    new_worksheet = workbook.create_sheet(sheet_name)
-    for r in dataframe_to_rows(df, index=False, header=True):
-        new_worksheet.append(r)
-    return Upload_file_to_S3(BytesIO(workbook),bucket,key)
-
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
@@ -335,46 +325,34 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
-        st.write(new_accounts[account_i],maplist)
-    if st.button('Submit account mapping'):
-        with st.spinner('Updating mapping...'):
-        # update account_mapping list, insert new accounts into account_mapping
-            len_mapping=len(account_mapping.index)
-            j=0
-            for i in range(new_account_len):
-                if maplist[i]!="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
-                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
-                    j+=1
-                elif maplist[i]=="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
-                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
-                    j+=1
-                   
-            # update account_mapping workbook       
-            Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
-            return account_mapping
-def Upload_file_S3(file,bucket,key):
-    try:
-        s3.upload_fileobj(file,bucket,key)
-        st.success('Successfully uploaded to S3')
-        return True
-    except FileNotFoundError:
-        time.sleep(6)
-        st.error('Fail to upload to S3')
-        return False 
-
-def Update_Sheet_inS3(bucket,key,sheet_name,df):    
-    mapping_file =s3.get_object(Bucket=bucket, Key=key)
+ 
+ # update account_mapping list, insert new accounts into account_mapping
+    len_mapping=len(account_mapping.index)
+    j=0
+    for i in range(new_account_len):
+        if maplist[i]!="No need to map":
+            account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
+            account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            j+=1
+        elif maplist[i]=="No need to map":
+            account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
+            account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+            j+=1
+           
+    # update account_mapping workbook       
+    Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
+    return account_mapping
+def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
+    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    #workbook = load_workbook(mapping_file)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+    st.write("test"+ workbook.sheetnames) # To test if it works
+    st.write( workbook.sheetnames) # To test if it works
     workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
-    for r in dataframe_to_rows(df, index=False, header=True):
+    for r in dataframe_to_rows(DataFrame, index=False, header=True):
         new_worksheet.append(r)
-    return Upload_file_S3(workbook,bucket,key)
-
-
-
+    st.write(sheet_name+" was updated")
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
