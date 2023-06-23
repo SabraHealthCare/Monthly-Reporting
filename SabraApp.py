@@ -52,6 +52,20 @@ Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month
+#__________________________test_______________________________
+mapping_file =s3.get_object(Bucket="sabramapping", Key="test.xlsx")
+
+workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+output = BytesIO()
+writer = pd.ExcelWriter(output, engine='xlsxwriter')
+workbook.save(writer)
+wt.write(output)
+file=output.getvalue()
+s3_client = boto3.client('s3')       
+s3.upload_fileobj(file,"sabramapping","test1.xlsx")
+st.success('Successfully uploaded to S3')    
+st.write("updated to S3")
+   
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
@@ -432,6 +446,11 @@ def BPCdata_from_S3(TENANT_ID,start_date,end_date):
     BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
     BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
 #-------------------------------website widges---------------------------------
+
+
+
+
+
 if operator != 'select operator':
     st.subheader("Upload P&L:")
     uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
