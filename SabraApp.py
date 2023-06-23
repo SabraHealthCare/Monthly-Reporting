@@ -352,21 +352,21 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     if st.button('Submit account mapping'):
         with st.spinner('Updating mapping...'):
         # update account_mapping list, insert new accounts into account_mapping
-        len_mapping=len(account_mapping.index)
-        j=0
-        for i in range(new_account_len):
-            if maplist[i]!="No need to map":
-                account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
-                account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
-                j+=1
-            elif maplist[i]=="No need to map":
-                account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
-                account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
-                j+=1
-               
-        # update account_mapping workbook       
-        Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
-        return account_mapping
+            len_mapping=len(account_mapping.index)
+            j=0
+            for i in range(new_account_len):
+                if maplist[i]!="No need to map":
+                    account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
+                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+                    j+=1
+                elif maplist[i]=="No need to map":
+                    account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
+                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+                    j+=1
+                   
+            # update account_mapping workbook       
+            Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
+            return account_mapping
 
 def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
