@@ -324,7 +324,25 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 return PL_date_header,month_sort_index[month_index_i]
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
-
+def Upload_file_to_S3(file,bucket,key):
+    try:
+        s3.upload_fileobj(file,bucket,key)
+        st.success('Successfully uploaded to S3')
+        return True
+    except FileNotFoundError:
+        time.sleep(6)
+        st.error('Fail to upload to S3')
+        return False 
+     
+def Update_Sheet_inS3(bucket,key,sheet_name,df):    
+    mapping_file =s3.get_object(Bucket=bucket, Key=key)
+    workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+    workbook.remove(workbook[sheet_name])
+    new_worksheet = workbook.create_sheet(sheet_name)
+    for r in dataframe_to_rows(df, index=False, header=True):
+        new_worksheet.append(r)
+    return Upload_file_to_S3(BytesIO(workbook),bucket,key)
+    
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
@@ -356,24 +374,7 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             # update account_mapping workbook       
             Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
-def Upload_file_S3(file,bucket,key):
-    try:
-        s3.upload_fileobj(file,bucket,key)
-        st.success('Successfully uploaded to S3')
-        return True
-    except FileNotFoundError:
-        time.sleep(6)
-        st.error('Fail to upload to S3')
-        return False 
-     
-def Update_Sheet_inS3(bucket,key,sheet_name,df):    
-    mapping_file =s3.get_object(Bucket=bucket, Key=key)
-    workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-    workbook.remove(workbook[sheet_name])
-    new_worksheet = workbook.create_sheet(sheet_name)
-    for r in dataframe_to_rows(df, index=False, header=True):
-        new_worksheet.append(r)
-    return Upload_file_S3(workbook,bucket,key)
+
    
 
 def Sheet_Process(sheet_name,account_mapping):
