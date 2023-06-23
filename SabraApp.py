@@ -13,7 +13,7 @@ import numpy as np
 from calendar import monthrange
 import sys
 from datetime import datetime, timedelta,date
-from openpyxl import load_workbook
+from openpyxl import 
 import xlrd
 import warnings
 import streamlit as st
@@ -369,7 +369,8 @@ def Map_New_Account(PL,account_mapping,sheet_name):
 
 def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    workbook = load_workbook(mapping_file['Body'].read())
+    workbook = load_workbook(mapping_file)
+    st.write(workbook)
     workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(DataFrame, index=False, header=True):
@@ -440,7 +441,7 @@ if operator != 'select operator':
         
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
-            PL_sheet_list=load_workbook(uploaded_file).sheetnames
+            PL_sheet_list=(uploaded_file).sheetnames
 
          # def main  
         account_mapping=Read_Account_Mapping()
