@@ -381,7 +381,7 @@ def Sheet_Process(sheet_name,account_mapping):
         if tenantAccount_col_no==None:
             st.write("didn't find tenant account col")
             return False,account_mapping
-        date_header=Identify_Month_Row(financial,tenantAccount_col_no,sheet_name)
+        date_header=Identify_Month_Row(PL,tenantAccount_col_no,sheet_name)
         if len(date_header[0])==1 and date_header[0]==0:
             st.write("didn't find date row")
             return False,account_mapping
