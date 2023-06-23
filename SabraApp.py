@@ -53,17 +53,15 @@ Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month
 #__________________________test_______________________________
+from openpyxl import Workbook
 mapping_file =s3.get_object(Bucket="sabramapping", Key="Affinity_Mapping.xlsx")
 
 workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-st.write(workbook)
-output = BytesIO()
-writer = pd.ExcelWriter(output, engine='xlsxwriter')
-workbook.save(writer)
-wt.write(output)
-file=output.getvalue()
+with NamedTemporaryFile() as tmp:
+     workbook.save(tmp.name)
+     data = BytesIO(tmp.read())
 s3_client = boto3.client('s3')       
-s3.upload_fileobj(file,"sabramapping","test1.xlsx")
+s3.upload_fileobj(data,"sabramapping","test1.xlsx")
 st.success('Successfully uploaded to S3')    
 st.write("updated to S3")
    
