@@ -21,7 +21,6 @@ import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
 from io import BytesIO
-from io import StringIO
 #---------------------------define parameters--------------------------
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
@@ -37,31 +36,25 @@ if operator != 'select operator':
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 sheet_name_format='Format'
-
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
 'T_GEN_ADMIN_OTHER','T_ANCILLARY_THERAPY', 'T_ANCILLARY_PHARMACY','T_ANCILLARY_OTHER', 'T_EXPENSES','T_MGMT_FEE', 'T_OTHER_OP_EXO','T_DEPR_AMORT', 'T_INT_INC_EXP','T_RENT_EXP', 'T_SL_RENT_ADJ_EXP','T_NURSING_LABOR', 'T_N_CONTRACT_LABOR',
  'T_OTHER_NN_LABOR', 'T_CASH_AND_EQUIV','T_AR_GROSS', 'T_AR_VAL_RES','T_INV', 'T_OTH_CUR_ASSETS','T_TRADE_PAY', 'T_OTHER_CUR_LIAB','T_LOC_OUT', 'T_OTHER_DEBT','T_CAPEX', 'T_AR_WRT_OFF','T_LOC_AVAIL', 'REV_ANCILLARY',
  'REV_CONT_ALLOW', 'T_NURSING_HOURS','T_N_CONTRACT_HOURS', 'T_OTHER_HOURS','G_REV_PRF', 'G_SEQ_SUSPENSION','G_FMAP_FUND', 'G_REV_EXTR_COVID','G_EXP_EXTR_COVID']
-
 month_dic={1:["January","Jan","01/","1/","-1","-01","/1","/01"],2:["February","Feb","02/","2/","-2","-02","/2","/02"],3:["March","Mar","03/","3/","-3","-03","/3","/03"],4:["April","Apr","04/","4/","-4","-04","/4","/04"],5:["May","05/","5/","-5","-05","/5","/05"],6:["June","Jun","06/","6/","-06","-6","/6","/06"],\
            7:["July","Jul","07/","7/","-7","-07","/7","/07"],8:["August","Aug","08/","8/","-8","-08","/8","/08"],9:["September","Sep","09/","9/","-09","-9","/9","/09"],10:["October","Oct","10/","-10","/10",],11:["November","Nov","11/","-11","/11"],12:["December","Dec","12/","-12","/12"]}
 year_dic={2021:["2021","21"],2022:["2022","22"],2023:["2023","23"],2024:["2024","24"],2025:["2025","25"],2026:["2026","26"],2019:["2019","19"],2018:["2018","18"],2020:["2020","20"]} 
-
 dropdown_title_account='Map to Sabra Account'
 dropdown_title_entity='Map sheet name to Property'  
-
 Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month
-
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
-
     #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
@@ -82,7 +75,6 @@ def strip_lower_col(series_or_list):
     return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
-
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
@@ -94,7 +86,6 @@ def Identify_Tenant_Account_Col(PL,account_mapping,sheet_name):
         
         #find out how many tenant accounts match with account_mapping list
         match=[x in  list(account_column) for x in account_mapping["Tenant_account"]]
-
         #If 50% of accounts match with account_mapping list, identify this col as tenant account.
         if len(match)>0 and sum(x for x in match)/len(match)>0.1:
             return tenantAccount_col_no  
@@ -104,7 +95,6 @@ def Identify_Tenant_Account_Col(PL,account_mapping,sheet_name):
     
     # didn't find accounts col
     print("Can't find account column in sheet—— '"+sheet_name+"'")
-
 def Get_Year(single_string):
     if single_string!=single_string or single_string==None or type(single_string)==float:
         return 0,""
@@ -114,7 +104,6 @@ def Get_Year(single_string):
                 if Year_keyword in single_string:
                     return Year,Year_keyword
         return 0,""
-
 def Get_Month_Year(single_string):
     if single_string!=single_string or single_string==None or type(single_string)==float:
         return 0,0
@@ -132,7 +121,6 @@ def Get_Month_Year(single_string):
             if Month_keyword.lower() in single_string.lower():
                 remaining=single_string.lower().replace(Month_keyword.lower(),"").replace("/","")\
                                 .replace("-","").replace(" ","").replace("_","")
-
                 #if there are more than 3 other char in the string, this string maybe not the date 
                 if len(remaining)>=3:
                     return 0,0
@@ -142,7 +130,6 @@ def Get_Month_Year(single_string):
             else:
                 continue
     return 0,Year      
-
 def Month_continuity_check(month_list):
     inv=[]
     month_list=list(filter(lambda x:x!=0,month_list))
@@ -155,7 +142,6 @@ def Month_continuity_check(month_list):
             return True
         else:
             return False
-
 def Year_continuity_check(year_list):
     inv=[]
     year_list=list(filter(lambda x:x!=0,year_list))
@@ -169,14 +155,12 @@ def Year_continuity_check(year_list):
         else:
             return False
 # add year to month_header: identify current year/last year giving a list of month
-
 def Add_year_to_header(month_list):
     available_month=list(filter(lambda x:x!=0,month_list))
     
     today=date.today()
     current_year= today.year
     last_year=today.year-1
-
     if len(available_month)==1:
         
         if datetime.strptime(available_month[0]+"/01/"+current_year,'%m/%d/%Y').date()<today:
@@ -222,9 +206,7 @@ def Add_year_to_header(month_list):
         if month_list[i]!=0:
             month_list[i]=available_month[j]
             j+=1
-
     return month_list  
-
 # find the Month/year row and return row number
 def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     PLrow=PL.shape[0]
@@ -246,7 +228,6 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
         valid_year=list(filter(lambda x:x!=0,year_table.iloc[row_i,]))
         month_count.append(len(valid_month))
         year_count.append(len(valid_year))
-
     # didn't find any month in all the rows
     if all(map(lambda x:x==0,month_count)):
         print("Can't identify month/year columns in sheet——'"+sheet_name+"'")   
@@ -307,7 +288,6 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
             for row_month in range(month_sort_index[month_index_i],PL.shape[0]):
                 if PL.iloc[row_month,col_month]==None or pd.isna(PL.iloc[row_month,col_month]) or PL.iloc[row_month,col_month]=="":
                     continue
-
                 elif type(PL.iloc[row_month,col_month])==float or type(PL.iloc[row_month,col_month])==int:
                     count_num+=1
                 else:
@@ -324,13 +304,9 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 return PL_date_header,month_sort_index[month_index_i]
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
+
 def Upload_file_to_S3(file,bucket,key):
     try:
-        file.save(template_path_filename)   
-        s3_client = boto3.client('s3')
-
-
-        
         s3.upload_fileobj(file,bucket,key)
         st.success('Successfully uploaded to S3')
         return True
@@ -338,7 +314,7 @@ def Upload_file_to_S3(file,bucket,key):
         time.sleep(6)
         st.error('Fail to upload to S3')
         return False 
-     
+
 def Update_Sheet_inS3(bucket,key,sheet_name,df):    
     mapping_file =s3.get_object(Bucket=bucket, Key=key)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
@@ -346,24 +322,14 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
+    return Upload_file_to_S3(BytesIO(workbook),bucket,key)
 
-
-    bytes_to_write = workbook.save().encode()
-    fs = s3fs.S3FileSystem(key=key)
-    with fs.open('s3://'+bucket+"/"+key, 'wb') as f:
-        f.write(bytes_to_write)
-    
-    
-    st.write("updated to S3")
-    #return Upload_file_to_S3(BytesIO(workbook),bucket,key)
-    
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
    
     if len(new_accounts)==0:
         return account_mapping
-
     maplist=[]
     drop_down_list=["No need to map"]+list(account_mapping["Sabra_account"].unique())
     new_account_len=len(new_accounts)
@@ -388,8 +354,26 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             # update account_mapping workbook       
             Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
+def Upload_file_S3(file,bucket,key):
+    try:
+        s3.upload_fileobj(file,bucket,key)
+        st.success('Successfully uploaded to S3')
+        return True
+    except FileNotFoundError:
+        time.sleep(6)
+        st.error('Fail to upload to S3')
+        return False 
 
-   
+def Update_Sheet_inS3(bucket,key,sheet_name,df):    
+    mapping_file =s3.get_object(Bucket=bucket, Key=key)
+    workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+    workbook.remove(workbook[sheet_name])
+    new_worksheet = workbook.create_sheet(sheet_name)
+    for r in dataframe_to_rows(df, index=False, header=True):
+        new_worksheet.append(r)
+    return Upload_file_S3(workbook,bucket,key)
+
+
 
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
@@ -443,11 +427,9 @@ def Aggregat_PL(PL,account_mapping,entity):
     PL.index=[[entity]*len(PL.index),list(PL.index)]
     PL_with_details.index=[[entity]*len(PL_with_details.index),PL_with_details.index]
     return PL,PL_with_details
-
 def BPCdata_from_S3(TENANT_ID,start_date,end_date):
     BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
     BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
-
 #-------------------------------website widges---------------------------------
 if operator != 'select operator':
     st.subheader("Upload P&L:")
@@ -456,7 +438,6 @@ if operator != 'select operator':
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
-
          # def main  
         account_mapping=Read_Account_Mapping()
         _entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
