@@ -368,12 +368,13 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     return account_mapping
 
 def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
+    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     workbook = load_workbook(mapping_file['Body'].read())
     workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(DataFrame, index=False, header=True):
         new_worksheet.append(r)
-    st.write(workbook)
+    st.write(sheet_name+" was updated")
 
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
@@ -443,10 +444,10 @@ if operator != 'select operator':
 
          # def main  
         account_mapping=Read_Account_Mapping()
-        mapping_file_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        entity_mapping=pd.read_excel(mapping_file_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-        mapping_file_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(mapping_file_format['Body'].read(), sheet_name=sheet_name_format,header=0)
+        _entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+        entity_mapping=pd.read_excel(_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
+        _format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+        format_table=pd.read_excel(_format['Body'].read(), sheet_name=sheet_name_format,header=0)
   
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
