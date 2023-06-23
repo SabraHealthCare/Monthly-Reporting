@@ -53,9 +53,10 @@ Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month
 #__________________________test_______________________________
-mapping_file =s3.get_object(Bucket="sabramapping", Key="test.xlsx")
+mapping_file =s3.get_object(Bucket="sabramapping", Key="Affinity_Mapping.xlsx")
 
 workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+st.write(workbook)
 output = BytesIO()
 writer = pd.ExcelWriter(output, engine='xlsxwriter')
 workbook.save(writer)
