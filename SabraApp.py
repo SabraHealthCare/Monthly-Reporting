@@ -83,17 +83,6 @@ def strip_lower_col(series_or_list):
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
 
-def Upload_file_S3(file,bucket,filename):
-    #s3 = boto3.client('s3')
-    try:
-        s3.upload_fileobj(file,bucket,"test/Jan/"+filename)
-        st.success('File Successfully Uploaded')
-        return True
-    except FileNotFoundError:
-        time.sleep(6)
-        st.error('File wasn not uploaded.')
-        return False 
-     
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
@@ -367,17 +356,25 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             # update account_mapping workbook       
             Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
-
-def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
-    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    #workbook = load_workbook(mapping_file)
+def Upload_file_S3(file,bucket,key):
+    try:
+        s3.upload_fileobj(file,bucket,key)
+        st.success('Successfully uploaded to S3')
+        return True
+    except FileNotFoundError:
+        time.sleep(6)
+        st.error('Fail to upload to S3')
+        return False 
+     
+def Update_Sheet_inS3(bucket,key,sheet_name,df):    
+    mapping_file =s3.get_object(Bucket=bucket, Key=key)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-    st.write( workbook.sheetnames) # To test if it works
     workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
-    for r in dataframe_to_rows(DataFrame, index=False, header=True):
+    for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
-    st.write(sheet_name+" was updated")
+    return Upload_file_S3(workbook,bucket,key)
+   
 
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
