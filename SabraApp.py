@@ -59,11 +59,11 @@ Uploading_month=Uploading_date.month
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
-    #account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
     entity_mapping=pd.read_excel(mapping_file['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
     st.write(entity_mapping)
-    format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
-    st.write(format_table)
+    #format_table=pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_format,header=0)
+    
     #entity_mapping=pd.read_excel(mapping_file['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
         
     st.write(account_mapping)
