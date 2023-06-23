@@ -370,8 +370,8 @@ def Map_New_Account(PL,account_mapping,sheet_name):
 def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):    
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     #workbook = load_workbook(mapping_file)
-    workbook = load_workbook(BytesIO(mapping_file['Body'].read())
-    #st.write("updated "+workbook)
+    workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+   
     st.write("test"+ workbook) # To test if it works
     workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
