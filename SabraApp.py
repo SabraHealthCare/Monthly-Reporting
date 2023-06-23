@@ -346,7 +346,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
         new_worksheet.append(r)
 
 
-    bytes_to_write = workbook.save("affinitytest.xlsx").encode()
+    bytes_to_write = workbook.save("affinitytest.xlsx")
     fs = s3fs.S3FileSystem(key=key)
     with fs.open('s3://'+bucket+"/"+key, 'wb') as f:
         f.write(bytes_to_write)
