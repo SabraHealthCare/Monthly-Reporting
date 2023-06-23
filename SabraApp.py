@@ -347,10 +347,16 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
         new_worksheet.append(r)
 
 
-    bytes_to_write = workbook.save("affinitytest.xlsx")
-    fs = s3fs.S3FileSystem()
-    with fs.open('s3://'+bucket+"/"+key, 'wb') as f:
-        f.write(bytes_to_write)
+    workbook.save(writer)
+    
+    writer = pd.ExcelWriter('update2.xlsx')
+    workbook.save(writer,encoding='utf-8')
+
+    with open(writer,'rb') as f:
+        b64 = base64.b64encode(f.read())
+        href = f'<a href="data:file/xls;base64,{b64}" download="new_file.{extension}">Download {extension}</a>'
+
+    st.write(href, unsafe_allow_html=True)
     
     
     st.write("updated to S3")
