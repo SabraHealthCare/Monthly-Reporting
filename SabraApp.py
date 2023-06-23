@@ -22,7 +22,6 @@ from st_files_connection import FilesConnection
 import boto3
 from io import BytesIO
 from io import StringIO
-import s3fs
 #---------------------------define parameters--------------------------
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
@@ -60,10 +59,9 @@ Uploading_month=Uploading_date.month
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
-    
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
-    
+
     #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
@@ -330,6 +328,8 @@ def Upload_file_to_S3(file,bucket,key):
     try:
         file.save(template_path_filename)   
         s3_client = boto3.client('s3')
+
+
         
         s3.upload_fileobj(file,bucket,key)
         st.success('Successfully uploaded to S3')
@@ -348,27 +348,10 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
         new_worksheet.append(r)
 
 
-
-
-
-
-    output = BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    workbook.save(writer)
-    
-    wt.write(output)
-
-    
-    workbook.save(writer)
-    
-    writer = pd.ExcelWriter('update2.xlsx')
-    workbook.save(writer,encoding='utf-8')
-
-    with open(writer,'rb') as f:
-        b64 = base64.b64encode(f.read())
-        href = f'<a href="data:file/xls;base64,{b64}" download="new_file.{extension}">Download {extension}</a>'
-
-    st.write(href, unsafe_allow_html=True)
+    bytes_to_write = workbook.save().encode()
+    fs = s3fs.S3FileSystem(key=key)
+    with fs.open('s3://'+bucket+"/"+key, 'wb') as f:
+        f.write(bytes_to_write)
     
     
     st.write("updated to S3")
@@ -476,10 +459,10 @@ if operator != 'select operator':
 
          # def main  
         account_mapping=Read_Account_Mapping()
-        mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-        mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
+        _entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+        entity_mapping=pd.read_excel(_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
+        _format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+        format_table=pd.read_excel(_format['Body'].read(), sheet_name=sheet_name_format,header=0)
   
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
