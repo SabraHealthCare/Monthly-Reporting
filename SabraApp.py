@@ -21,7 +21,7 @@ import streamlit as st
 from st_files_connection import FilesConnection
 import boto3
 from io import BytesIO
-
+from io import StringIO
 #---------------------------define parameters--------------------------
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
