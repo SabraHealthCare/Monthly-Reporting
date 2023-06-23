@@ -22,35 +22,6 @@ import boto3
 
 
 
-@st.cache_resource
-def init_connection():
-    return pyodbc.connect(
-        "DRIVER={ODBC Driver 17 for SQL Server};SERVER="
-        + st.secrets["server"]
-        + ";DATABASE="
-        + st.secrets["database"]
-        + ";UID="
-        + st.secrets["username"]
-        + ";PWD="
-        + st.secrets["password"]
-    )
-
-conn = init_connection()
-
-# Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=600)
-def run_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        return cur.fetchall()
-
-rows = run_query("SELECT * from mbrentity;")
-
-# Print results.
-for row in rows:
-    st.write(f"{row[0]} has a :{row[1]}:")
-
 
 #---------------------------define parameters--------------------------
 s3 = boto3.client('s3')
@@ -61,7 +32,7 @@ operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
-
+BPCdata_path="BPC_pull.xlsx"
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
 sheet_name_account_mapping="Account_Mapping"
@@ -457,6 +428,10 @@ def Aggregat_PL(PL,account_mapping,entity):
     PL_with_details.index=[[entity]*len(PL_with_details.index),PL_with_details.index]
     return PL,PL_with_details
 
+def BPCdata_from_S3(TENANT_ID,start_date,end_date):
+    BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
+    BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
+
 #-------------------------------website widges---------------------------------
 if operator != 'select operator':
     st.subheader("Upload P&L:")
@@ -495,7 +470,8 @@ if operator != 'select operator':
                 if entity_i==len(entity_mapping['Entity'])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
-                    BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
+                    #BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
+                    BPC_pull=BPCdata_from_S3(TENANT_ID,start_date,end_date)
                     # if found new entities in BPC which is not in entity_mapping,
                     # ask for mapping and update entity_mapping, re-do sheet process for new entities.
                     entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
