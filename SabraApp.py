@@ -62,7 +62,7 @@ def Read_Account_Mapping():
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
 
-        #convert tenant_account to lower case
+    #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
     account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
@@ -375,7 +375,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,DataFrame):
         new_worksheet.append(r)
     st.write(workbook)
 
-def Sheet_Process(PL,sheet_name,account_mapping):
+def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
@@ -418,17 +418,12 @@ if operator != 'select operator':
         account_mapping=Read_Account_Mapping()
         mapping_file_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         entity_mapping=pd.read_excel(mapping_file_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-        st.write(entity_mapping)
         mapping_file_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_file_format['Body'].read(), sheet_name=sheet_name_format,header=0)
-        st.write(format_table)
   
-        
-    
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_tenant_financial=pd.DataFrame()
         TENANT_ID=format_table["Tenant_ID"][0]
-        
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
         #All accounts are in one sheet
@@ -438,7 +433,7 @@ if operator != 'select operator':
                 st.write("Start checking sheet：",sheet_name)
                 # sheet_name is not nan
                 if sheet_name==sheet_name and sheet_name in PL_sheet_list:
-                    PL,account_mapping=Sheet_Process(PL,sheet_name,account_mapping)
+                    PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
                     PL,PL_with_detail_PLaccounts=Aggregated_Metrix(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     
