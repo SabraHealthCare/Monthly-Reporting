@@ -349,7 +349,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
 
 
     excel_buffer = StringIO()
-    workbook.to_excel(excel_buffer)
+    workbook.save(excel_buffer)
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket,"affinity.xlsx").put(Body=excel_buffer.getvalue())
 
