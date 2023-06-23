@@ -267,9 +267,8 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     for month_index_i in range(-1,-4,-1): # only check three of the most possible rows
         
         #month_sort_index[-1] is the index number of month_count in which has max month count
-        #month_sort_index[i] is also the index/row number of finicial
+        #month_sort_index[i] is also the index/row number of PL
         
-        #print(month_count[month_sort_index[month_index_i]])
         if month_count[month_sort_index[month_index_i]]>1:
             #check validation of month
             #print(Month_continuity_check(month_table.iloc[month_sort_index[month_index_i],]))
@@ -292,7 +291,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                 
                 st.write("Missing year in date header in sheet '"+sheet_name+"'. Filled year as below: ")
-                st.write(list(filter(lambda x:str(x)!='0',financial_date_header)))
+                st.write(list(filter(lambda x:str(x)!='0',PL_date_header)))
                 return PL_date_header,month_sort_index[month_index_i]
                         
             # month is not continuous, check next one
@@ -316,11 +315,11 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
            
             count_num=0
             count_str=0
-            for row_month in range(month_sort_index[month_index_i],financial.shape[0]):
-                if financial.iloc[row_month,col_month]==None or pd.isna(financial.iloc[row_month,col_month]) or financial.iloc[row_month,col_month]=="":
+            for row_month in range(month_sort_index[month_index_i],PL.shape[0]):
+                if PL.iloc[row_month,col_month]==None or pd.isna(PL.iloc[row_month,col_month]) or PL.iloc[row_month,col_month]=="":
                     continue
 
-                elif type(financial.iloc[row_month,col_month])==float or type(financial.iloc[row_month,col_month])==int:
+                elif type(PL.iloc[row_month,col_month])==float or type(PL.iloc[row_month,col_month])==int:
                     count_num+=1
                 else:
                     count_str+=1
@@ -330,10 +329,10 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 continue
                 
             else:
-                financial_date_header=year_table.iloc[month_sort_index[month_index_i],].apply(lambda x:str(int(x)))+\
+                PL_date_header=year_table.iloc[month_sort_index[month_index_i],].apply(lambda x:str(int(x)))+\
                         month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                         
-                return financial_date_header,month_sort_index[month_index_i]
+                return PL_date_header,month_sort_index[month_index_i]
     st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
     return [0],0
 
@@ -405,6 +404,29 @@ def Sheet_Process(sheet_name,account_mapping):
         #  new accounts don't counted yet
         account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
         return PL,account_mapping    
+    
+def Aggregat_PL(PL,account_mapping,entity):
+    # convert index to 0,1,2,3....to avoid duplication, original index:'Tenant_account'
+    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_account"])),\
+                        ["Sabra_account","Tenant_account","Sabra_second_account"]]
+    PL=PL.reset_index(drop=False)
+    second_account_mapping=account_mapping[account_mapping["Sabra_second_account"]==account_mapping["Sabra_second_account"]][["Sabra_second_account","Tenant_account"]].\
+                            rename(columns={"Sabra_second_account": "Sabra_account"})
+    
+    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(mapping[["Sabra_account","Tenant_account"]],on='Tenant_account',how='right')])
+    
+    PL=PL.set_index('Sabra_account',drop=True)
+    
+    PL.index.name="Sabra_account"
+    PL_with_details=PL
+    # aggregate by sabra_account
+    PL=PL.drop('Tenant_account', axis=1)
+    PL=PL.groupby(by="Sabra_account").sum()
+    
+    PL.index=[[entity]*len(PL.index),list(PL.index)]
+    PL_with_details.index=[[entity]*len(PL_with_details.index),PL_with_details.index]
+    return PL,PL_with_details
+
 #-------------------------------website widges---------------------------------
 if operator != 'select operator':
     st.subheader("Upload P&L:")
@@ -422,7 +444,7 @@ if operator != 'select operator':
         format_table=pd.read_excel(mapping_file_format['Body'].read(), sheet_name=sheet_name_format,header=0)
   
         TENANT_ID=format_table["Tenant_ID"][0]
-        Total_tenant_financial=pd.DataFrame()
+        Total_tenant_PL=pd.DataFrame()
         TENANT_ID=format_table["Tenant_ID"][0]
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
