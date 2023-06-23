@@ -348,11 +348,11 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
         new_worksheet.append(r)
 
 
-    excel_buffer = StringIO()
-    workbook.save(excel_buffer)
-    s3_resource = boto3.resource('s3')
-    s3_resource.Object(bucket,"affinity.xlsx").put(Body=excel_buffer.getvalue())
-
+    bytes_to_write = workbook.save(None).encode()
+    fs = s3fs.S3FileSystem(key=key)
+    with fs.open('s3://'+bucket+"/"+key, 'wb') as f:
+        f.write(bytes_to_write)
+    
     
     st.write("updated to S3")
     #return Upload_file_to_S3(BytesIO(workbook),bucket,key)
