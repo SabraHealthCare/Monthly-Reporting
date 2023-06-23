@@ -348,8 +348,8 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
- 
- # update account_mapping list, insert new accounts into account_mapping
+        st.write(new_accounts[account_i],maplist)
+    # update account_mapping list, insert new accounts into account_mapping
     len_mapping=len(account_mapping.index)
     j=0
     for i in range(new_account_len):
