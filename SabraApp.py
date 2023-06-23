@@ -459,7 +459,7 @@ if operator != 'select operator':
                     
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
-            
+                st.write(Total_PL)
                 if entity_i==len(entity_mapping['Entity'])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
