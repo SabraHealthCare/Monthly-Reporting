@@ -454,7 +454,79 @@ def Aggregat_PL(PL,account_mapping,entity):
 def BPCdata_from_S3(TENANT_ID,start_date,end_date):
     BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
     BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
-    
+def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
+    account=0
+    st.write("Compare P&L with Sabra")
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
+    for entity in entity_mapping["Entity"]:
+        for matrix in Sabra_detail_accounts_list: 
+            for timeid in Total_PL.columns:
+                try:
+                    BPC_value=int(BPC_pull.loc[entity,matrix][timeid+'00'])
+                except:
+                    BPC_value=0
+                try:
+                    Operator_value=int(Total_PL.loc[entity,matrix][timeid])
+                except:
+                    Operator_value=0
+                
+                if BPC_value==0 and Operator_value==0:
+                    continue
+               
+                if abs(BPC_value-Operator_value)>3:
+                    property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_Name"].item()
+                    sheet_name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
+                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":property_name,"Sabra_Account":matrix,\
+                    "Sheet_name":sheet_name,"BPC":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
+                    diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
+    return diff_BPC_PL 
+
+def Diff_Plot(diff_BPC_PL,PL_with_detail_PLaccounts,total_PL):
+    num_dismatch=diff_BPC_PL.groupby("Sabra_Account").count()
+   
+    num_total_data=total_PL.shape[0].groupby("Sabra_Account").count()
+    percent_dismatch_accounts=num_dismatch/num_total_data
+    st.write(percent_dismatch_accounts+" of accounts were dismatched")
+    diff_plot_account.reset_index(drop=False).plot.bar(x="Sabra_Account", y='Entity', rot=0,figsize=(diff_plot_account.shape[0]+2,5))
+    diff_plot_entity=diff_BPC_PL.groupby(["Entity","Sabra_Account"]).count()/total_data*entity_mapping.shape[0]
+    diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',
+                    columns='Sabra_Account', aggfunc=np.sum)
+        diff_plot_entity_pivot.plot.bar(rot=0,figsize=(diff_plot_entity_pivot.shape[0],5))
+        
+        diff_plot_month=diff_BPC_PL.groupby("TIME").count()/total_data*entity_mapping.shape[0]
+        diff_plot_month["TIME"]=list(map(lambda x: x[0:4]+"/"+x[4:6],diff_plot_month.index))
+        diff_plot_month.plot.bar(x="TIME", y='Sabra_Account', rot=0,figsize=(diff_plot_month.shape[0],5))
+        
+        st.write(str(round(dismatch/total_data*100,1))+ "% data don't match" )      
+    missing_mapping_index=[]
+    for i in range(diff_BPC_PL.shape[0]):
+        #if Sabra account is not in Finicial, miss mapping 
+        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail_PLaccounts.loc[diff_BPC_PL.loc[i,"Entity"]].index:
+            missing_mapping_index.append(i)
+            continue
+
+        else:
+            st.write(list(diff_BPC_PL.columns))
+            dismatch_print.add_row(diff_BPC_Financial.iloc[i,:])
+            dismatch_print.align = "r"
+            print(dismatch_print)
+            
+            print(str(diff_BPC_Financial.loc[i:i,:]["Operator Finance"].item())+" is calculated by sum all the detail Tenant accounts as below:")
+            
+            detail_print=PrettyTable(["Tenant Account","Value"])
+            detail_table=financial_with_detail_PLaccounts[["Tenant_account",diff_BPC_Financial.loc[i,"TIME"]]].loc[(diff_BPC_Financial.loc[i,"Entity"],\
+            diff_BPC_Financial.loc[i,"Sabra_Account"]),:]
+            for detail_i in range(detail_table.shape[0]):
+                detail_print.add_row(detail_table.iloc[detail_i,:])
+            detail_print.align = "r"
+            print(detail_print)
+    print("-------------------------------Miss Mapping-----------------------------------")
+    missmapping_print=PrettyTable(list(diff_BPC_Financial.columns))
+    for missmapping_i in missing_mapping_index:
+        missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
+    print(missmapping_print)  
+
+
 #----------------------------------website widges------------------------------------
 if operator != 'select operator':
     st.subheader("Upload P&L:")
@@ -503,7 +575,14 @@ if operator != 'select operator':
                     # ask for mapping and update entity_mapping, re-do sheet process for new entities.
                     entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
        
-    
+        diff_BPC_PL=Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
+        if diff_BPC_PL.shape[0]==0:
+            st.write("100% matches")
+            #return 1
+        else:
+            Diff_Plot(diff_BPC_PL,PL_with_detail_PLaccounts)
+            # diff_BPC_PL save as report 
+        
         if st.button('Upload'):
             with st.spinner('Uploading...'):
                 Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
