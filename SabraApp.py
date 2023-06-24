@@ -320,6 +320,7 @@ def Upload_file_to_S3(file,bucket,key):
 def Update_Sheet_inS3(bucket,key,sheet_name,df):  
     mapping_file =s3.get_object(Bucket="sabramapping", Key=key)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
+    workbook.remove(workbook[sheet_name_account_mapping])
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
