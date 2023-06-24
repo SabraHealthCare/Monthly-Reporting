@@ -331,7 +331,6 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     
     s3.upload_fileobj(data,bucket,key)
     st.success('Successfully uploaded to S3')    
-
     
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
@@ -363,7 +362,43 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             # update account_mapping workbook       
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
+            
+def Map_New_Entity(BPC_pull,entity_mapping):
+    Entity_in_BPC=set(BPC_pull.index.get_level_values('ENTITY'))
+    Entity_in_format=list(entity_mapping.loc[entity_mapping["Sheet_Name"]==entity_mapping["Sheet_Name"],'Entity'])
+    Missing_Entity=list(filter(lambda x:x not in Entity_in_format,Entity_in_BPC))
+    if len(Missing_Entity)==0:
+        return entity_mapping
+    elif len(Missing_Entity)>0:
+        st.write("We couldn't found P&L of below properties, please type the corresponding sheet name of these properties in the right box")
+    
+    maplist=[]
+    for entity_i in range(len(Missing_Entity)):
+        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_Name"][0],["No need to map"]+finicial_sheet_list))
    
+    # update entity_mapping list: insert new entities into entity_mapping
+    if st.button('Submit property mapping'):
+        with st.spinner('Updating property mapping...'):
+        # update entity_mapping list, insert new entities into entity_mapping
+         
+            len_entity_mapping=entity_mapping.shape[0]
+            j=0
+            for i in range(len_mapping):
+                if maplist[i]!="No need to map":
+                    entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]=maplist[i]
+                    entity_mapping.loc[len_entity_mapping+j,"Entity"]=Missing_Entity[i]                    
+                    j+=1
+                elif maplist[i]=="No need to map":
+                    entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]="No need to map"
+                    entity_mapping.loc[len_entity_mapping+j,"Entity"]=Missing_Entity[i]
+                    j+=1
+            if j>0:             
+            # update account_mapping workbook       
+                Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+            return entity_mapping
+
+
+    
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
@@ -419,12 +454,8 @@ def Aggregat_PL(PL,account_mapping,entity):
 def BPCdata_from_S3(TENANT_ID,start_date,end_date):
     BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
     BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
-#-------------------------------website widges---------------------------------
-
-
-
-
-
+    
+#----------------------------------website widges------------------------------------
 if operator != 'select operator':
     st.subheader("Upload P&L:")
     uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
