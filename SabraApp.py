@@ -443,19 +443,18 @@ def Aggregat_PL(PL,account_mapping,entity):
     PL=PL.set_index('Sabra_account',drop=True)
     
     PL.index.name="Sabra_account"
-    PL_with_details=PL
+    PL_with_detail=PL
     # aggregate by sabra_account
     PL=PL.drop('Tenant_account', axis=1)
     PL=PL.groupby(by="Sabra_account").sum()
     
     PL.index=[[entity]*len(PL.index),list(PL.index)]
-    PL_with_details.index=[[entity]*len(PL_with_details.index),PL_with_details.index]
-    return PL,PL_with_details
+    PL_with_detail.index=[[entity]*len(PL_with_detail.index),PL_with_detail.index]
+    return PL,PL_with_detail
 def BPCdata_from_S3(TENANT_ID,start_date,end_date):
     BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
     BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
-def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
-    account=0
+def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     st.write("Compare P&L with Sabra")
     diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
     for entity in entity_mapping["Entity"]:
@@ -481,7 +480,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
-def Diff_Plot(diff_BPC_PL,PL_with_detail_PLaccounts,total_PL):
+def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     num_dismatch=diff_BPC_PL.groupby("Sabra_Account").count()
    
     num_total_data=total_PL.shape[0].groupby("Sabra_Account").count()
@@ -501,7 +500,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail_PLaccounts,total_PL):
     missing_mapping_index=[]
     for i in range(diff_BPC_PL.shape[0]):
         #if Sabra account is not in Finicial, miss mapping 
-        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail_PLaccounts.loc[diff_BPC_PL.loc[i,"Entity"]].index:
+        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail.loc[diff_BPC_PL.loc[i,"Entity"]].index:
             missing_mapping_index.append(i)
             continue
 
@@ -560,7 +559,7 @@ if operator != 'select operator':
                 # sheet_name is not nan
                 if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
-                    PL,PL_with_detail_PLaccounts=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
+                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
@@ -580,7 +579,7 @@ if operator != 'select operator':
             st.write("100% matches")
             #return 1
         else:
-            Diff_Plot(diff_BPC_PL,PL_with_detail_PLaccounts)
+            Diff_Plot(diff_BPC_PL,PL_with_detail)
             # diff_BPC_PL save as report 
         
         if st.button('Upload'):
