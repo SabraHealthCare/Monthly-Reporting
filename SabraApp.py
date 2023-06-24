@@ -52,20 +52,7 @@ dropdown_title_entity='Map sheet name to Property'
 Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
-Uploading_month=Uploading_date.month
-#__________________________test_______________________________
-from openpyxl import Workbook
-mapping_file =s3.get_object(Bucket="sabramapping", Key="Affinity_Mapping.xlsx")
-
-workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-with NamedTemporaryFile() as tmp:
-     workbook.save(tmp.name)
-     data = BytesIO(tmp.read())
-s3_client = boto3.client('s3')       
-s3.upload_fileobj(data,"sabramapping","test1.xlsx")
-st.success('Successfully uploaded to S3')    
-st.write("updated to S3")
-   
+Uploading_month=Uploading_date.month  
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
@@ -333,31 +320,19 @@ def Upload_file_to_S3(file,bucket,key):
         st.error('Fail to upload to S3')
         return False 
      
-def Update_Sheet_inS3(bucket,key,sheet_name,df):    
-    mapping_file =s3.get_object(Bucket=bucket, Key=key)
+def Update_Sheet_inS3(bucket,key,sheet_name,df):  
+    mapping_file =s3.get_object(Bucket="sabramapping", Key=key)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-    workbook.remove(workbook[sheet_name])
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
-    output = BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    workbook.save(writer)
+    with NamedTemporaryFile() as tmp:
+         workbook.save(tmp.name)
+         data = BytesIO(tmp.read())
     
-    wt.write(output)
-    
-    workbook.save(writer)
-    
-    writer = pd.ExcelWriter('update2.xlsx')
-    workbook.save(writer,encoding='utf-8')
-    with open(writer,'rb') as f:
-        b64 = base64.b64encode(f.read())
-        href = f'<a href="data:file/xls;base64,{b64}" download="new_file.{extension}">Download {extension}</a>'
-    st.write(href, unsafe_allow_html=True)
-    
-    
-    st.write("updated to S3")
-    #return Upload_file_to_S3(BytesIO(workbook),bucket,key)
+    s3.upload_fileobj(data,bucket,key)
+    st.success('Successfully uploaded to S3')    
+
     
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
