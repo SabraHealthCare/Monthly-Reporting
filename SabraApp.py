@@ -309,9 +309,6 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     return [0],0
 def Upload_file_to_S3(file,bucket,key):
     try:
-        file.save(template_path_filename)   
-        s3_client = boto3.client('s3')
-        
         s3.upload_fileobj(file,bucket,key)
         st.success('Successfully uploaded to S3')
         return True
@@ -326,6 +323,8 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     new_worksheet = workbook.create_sheet(sheet_name)
     for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
+        st.write(r)
+    st.write(new_worksheet)
     with NamedTemporaryFile() as tmp:
          workbook.save(tmp.name)
          data = BytesIO(tmp.read())
@@ -345,7 +344,7 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
-        st.write(new_accounts[account_i],maplist)
+        
     if st.button('Submit account mapping'):
         with st.spinner('Updating mapping...'):
         # update account_mapping list, insert new accounts into account_mapping
@@ -362,7 +361,7 @@ def Map_New_Account(PL,account_mapping,sheet_name):
                     j+=1
                    
             # update account_mapping workbook       
-            Update_Sheet_inS3("sabramapping",mapping_path,sheet_name_account_mapping,account_mapping)
+            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
    
 def Sheet_Process(sheet_name,account_mapping):
