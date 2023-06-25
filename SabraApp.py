@@ -487,18 +487,17 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     st.write(percent_dismatch_accounts+" of accounts were dismatched")
     diff_plot_account.reset_index(drop=False).plot.bar(x="Sabra_Account", y='Entity', rot=0,figsize=(diff_plot_account.shape[0]+2,5))
     diff_plot_entity=diff_BPC_PL.groupby(["Entity","Sabra_Account"]).count()/total_data*entity_mapping.shape[0]
-    diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',
-                    columns='Sabra_Account', aggfunc=np.sum)
-        diff_plot_entity_pivot.plot.bar(rot=0,figsize=(diff_plot_entity_pivot.shape[0],5))
+    diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',columns='Sabra_Account', aggfunc=np.sum)
+    diff_plot_entity_pivot.plot.bar(rot=0,figsize=(diff_plot_entity_pivot.shape[0],5))
         
-        diff_plot_month=diff_BPC_PL.groupby("TIME").count()/total_data*entity_mapping.shape[0]
-        diff_plot_month["TIME"]=list(map(lambda x: x[0:4]+"/"+x[4:6],diff_plot_month.index))
-        diff_plot_month.plot.bar(x="TIME", y='Sabra_Account', rot=0,figsize=(diff_plot_month.shape[0],5))
+    diff_plot_month=diff_BPC_PL.groupby("TIME").count()/total_data*entity_mapping.shape[0]
+    diff_plot_month["TIME"]=list(map(lambda x: x[0:4]+"/"+x[4:6],diff_plot_month.index))
+    diff_plot_month.plot.bar(x="TIME", y='Sabra_Account', rot=0,figsize=(diff_plot_month.shape[0],5))
         
-        st.write(str(round(dismatch/total_data*100,1))+ "% data don't match" )      
+    st.write(str(round(dismatch/total_data*100,1))+ "% data don't match" )      
     missing_mapping_index=[]
     for i in range(diff_BPC_PL.shape[0]):
-        #if Sabra account is not in Finicial, miss mapping 
+        #miss mapping:Sabra account is not in PL 
         if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail.loc[diff_BPC_PL.loc[i,"Entity"]].index:
             missing_mapping_index.append(i)
             continue
@@ -517,19 +516,17 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
             for detail_i in range(detail_table.shape[0]):
                 detail_print.add_row(detail_table.iloc[detail_i,:])
             detail_print.align = "r"
-            print(detail_print)
-    print("-------------------------------Miss Mapping-----------------------------------")
-    missmapping_print=PrettyTable(list(diff_BPC_Financial.columns))
+            st.write(detail_print)
+    st.write("-------------------------------Miss Mapping-----------------------------------")
+    #st.write(list(diff_BPC_PL.columns))
     for missmapping_i in missing_mapping_index:
         missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
-    print(missmapping_print)  
-
+    st.write(missmapping_print)  
 
 #----------------------------------website widges------------------------------------
-if operator != 'select operator':
+if operator!='select operator':
     st.subheader("Upload P&L:")
-    uploaded_file = st.file_uploader(" ", type={"xlsx", "xlsm","xls"}, accept_multiple_files=False)
-        
+    uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
