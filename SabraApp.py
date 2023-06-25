@@ -432,8 +432,7 @@ def Sheet_Process(sheet_name,account_mapping):
     
 def Aggregat_PL(PL,account_mapping,entity):
     # convert index to 0,1,2,3....to avoid duplication, original index:'Tenant_account'
-    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_account"])),\
-                        ["Sabra_account","Tenant_account","Sabra_second_account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_account"])),["Sabra_account","Tenant_account","Sabra_second_account"]]
     PL=PL.reset_index(drop=False)
     second_account_mapping=account_mapping[account_mapping["Sabra_second_account"]==account_mapping["Sabra_second_account"]][["Sabra_second_account","Tenant_account"]].\
                             rename(columns={"Sabra_second_account": "Sabra_account"})
@@ -548,6 +547,7 @@ if operator != 'select operator':
 
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
+        Total_PL_detail=pd.DataFrame()
         TENANT_ID=format_table["Tenant_ID"][0]
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
@@ -561,7 +561,7 @@ if operator != 'select operator':
                     PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
-                    
+                    Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
                 st.write(Total_PL)
@@ -579,7 +579,7 @@ if operator != 'select operator':
             st.write("100% matches")
             #return 1
         else:
-            Diff_Plot(diff_BPC_PL,PL_with_detail)
+            Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
             # diff_BPC_PL save as report 
         
         if st.button('Upload'):
