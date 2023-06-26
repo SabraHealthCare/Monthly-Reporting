@@ -574,8 +574,7 @@ if operator!='select operator':
                 if entity_i==len(entity_mapping['Entity'])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
-                    #BPC_pull=pull_metrix_from_Sql(TENANT_ID,start_date,end_date) 
-                    BPC_pull=BPCdata_from_S3(TENANT_ID,start_date,end_date)
+                
                     # if found new entities in BPC which is not in entity_mapping,
                     # ask for mapping and update entity_mapping, re-do sheet process for new entities.
                     entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
