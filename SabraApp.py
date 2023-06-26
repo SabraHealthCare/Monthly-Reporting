@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-import matplotlib.use('Agg')
+matplotlib.use('Agg')
 
 import statistics
 import os
