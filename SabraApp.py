@@ -25,11 +25,21 @@ from io import StringIO
 import s3fs
 from tempfile import NamedTemporaryFile
 #---------------------------define parameters--------------------------
+
+sheet_name_account_mapping="Account_Mapping"
+sheet_name_entity_mapping="Property_Mapping"
+sheet_name_BPC_pull="BPC_pull"
+sheet_name_format='Format'
+
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
+BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
+BPC_pull.set_index(["ENTITY","ACCOUNT"])
+
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
@@ -37,9 +47,7 @@ operator= st.selectbox(' ',(operator_list))
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     
-sheet_name_account_mapping="Account_Mapping"
-sheet_name_entity_mapping="Property_Mapping"
-sheet_name_format='Format'
+
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
 'T_GEN_ADMIN_OTHER','T_ANCILLARY_THERAPY', 'T_ANCILLARY_PHARMACY','T_ANCILLARY_OTHER', 'T_EXPENSES','T_MGMT_FEE', 'T_OTHER_OP_EXO','T_DEPR_AMORT', 'T_INT_INC_EXP','T_RENT_EXP', 'T_SL_RENT_ADJ_EXP','T_NURSING_LABOR', 'T_N_CONTRACT_LABOR',
@@ -63,7 +71,7 @@ def Read_Account_Mapping():
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
     account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
-        # remove nan in col Sabra_account
+    # remove nan in col Sabra_account
     account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_account"])),\
                                      ["Sabra_account","Tenant_account","Sabra_second_account"]]
     account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
@@ -451,9 +459,9 @@ def Aggregat_PL(PL,account_mapping,entity):
     PL.index=[[entity]*len(PL.index),list(PL.index)]
     PL_with_detail.index=[[entity]*len(PL_with_detail.index),PL_with_detail.index]
     return PL,PL_with_detail
-def BPCdata_from_S3(TENANT_ID,start_date,end_date):
-    BPC_data =s3.get_object(Bucket=bucket_mapping, Key=BPCdata_path)
-    BPC_pull = pd.read_csv(BPC_data['Body'].read(), header=0)
+
+    
+    
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     st.write("Compare P&L with Sabra")
     diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
