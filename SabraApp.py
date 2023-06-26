@@ -507,6 +507,10 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
     st.pyplot(fig)
 
+    fig=plt.figure()
+    sns.countplot(diff_BPC_PL["Property_Name"])
+    st.pyplot(fig)
+
     diff_plot_account.reset_index(drop=False).plot.bar(x="Sabra_Account", y='Entity', rot=0,figsize=(diff_plot_account.shape[0]+2,5))
     diff_plot_entity=diff_BPC_PL.groupby(["Entity","Sabra_Account"]).count()/total_data*entity_mapping.shape[0]
     diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',columns='Sabra_Account', aggfunc=np.sum)
