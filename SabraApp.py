@@ -492,11 +492,11 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     return diff_BPC_PL 
 
 def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
-    st.write(PL_with_detail)
+    #st.write(PL_with_detail)
     st.write(diff_BPC_PL.shape[0])
-    st.write(PL_with_detail.shape[0],PL_with_detail.shape[1])
+    st.write(total_PL.shape[0],total_PL.shape[1])
     num_dismatch=diff_BPC_PL.shape[0]
-    num_total_data=PL_with_detail.shape[0]*PL_with_detail.shape[1]
+    num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
 
