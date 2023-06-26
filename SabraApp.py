@@ -36,9 +36,6 @@ bucket_mapping="sabramapping"
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
-BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
-BPC_pull.set_index(["ENTITY","ACCOUNT"])
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -46,7 +43,10 @@ operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
-    
+    BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
+    BPC_pull.set_index(["ENTITY","ACCOUNT"])
+
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
