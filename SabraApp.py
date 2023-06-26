@@ -3,6 +3,9 @@ from pandas import ExcelWriter
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+import matplotlib.use('Agg')
+
 import statistics
 import os
 import xlwt
@@ -489,11 +492,18 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     return diff_BPC_PL 
 
 def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
-    num_dismatch=diff_BPC_PL.groupby("Sabra_Account").count()
-   
-    num_total_data=total_PL.shape[0].groupby("Sabra_Account").count()
+    num_dismatch=diff_BPC_PL。shape[0]
+    num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write(percent_dismatch_accounts+" of accounts were dismatched")
+
+    #diff_plot_entity=diff_BPC_PL.groupby(["Property_Name"]).count()
+    #diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Property_Name', aggfunc=np.sum)
+    #diff_plot_entity_pivot=diff_plot_entity_pivot.rename(columns={"TIME":"Dismatch counts"})
+    fig=plt.figure()
+    diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
+    st.pyplot(fig)
+
     diff_plot_account.reset_index(drop=False).plot.bar(x="Sabra_Account", y='Entity', rot=0,figsize=(diff_plot_account.shape[0]+2,5))
     diff_plot_entity=diff_BPC_PL.groupby(["Entity","Sabra_Account"]).count()/total_data*entity_mapping.shape[0]
     diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',columns='Sabra_Account', aggfunc=np.sum)
