@@ -33,9 +33,10 @@ operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
-BPCdata_path="BPC_pull.xlsx"
+
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
+    
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 sheet_name_format='Format'
