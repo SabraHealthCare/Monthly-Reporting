@@ -495,7 +495,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
-    st.write(percent_dismatch_accounts+" of accounts were dismatched")
+    st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
 
     #diff_plot_entity=diff_BPC_PL.groupby(["Property_Name"]).count()
     #diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Property_Name', aggfunc=np.sum)
