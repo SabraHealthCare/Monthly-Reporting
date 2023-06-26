@@ -494,7 +494,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
 def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     st.write(PL_with_detail)
     st.write(diff_BPC_PL.shape[0])
-    st.write(PL_with_detail.shape[0],PL_with_detail.shape[1]
+    st.write(PL_with_detail.shape[0],PL_with_detail.shape[1])
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=PL_with_detail.shape[0]*PL_with_detail.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
