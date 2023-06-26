@@ -500,9 +500,6 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
 
-    #diff_plot_entity=diff_BPC_PL.groupby(["Property_Name"]).count()
-    #diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Property_Name', aggfunc=np.sum)
-    #diff_plot_entity_pivot=diff_plot_entity_pivot.rename(columns={"TIME":"Dismatch counts"})
     fig=plt.figure()
     diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
     st.pyplot(fig)
@@ -511,44 +508,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     sns.countplot(diff_BPC_PL["Property_Name"])
     st.pyplot(fig)
 
-    diff_plot_account.reset_index(drop=False).plot.bar(x="Sabra_Account", y='Entity', rot=0,figsize=(diff_plot_account.shape[0]+2,5))
-    diff_plot_entity=diff_BPC_PL.groupby(["Entity","Sabra_Account"]).count()/total_data*entity_mapping.shape[0]
-    diff_plot_entity_pivot = pd.pivot_table(diff_plot_entity.reset_index(), values='TIME', index='Entity',columns='Sabra_Account', aggfunc=np.sum)
-    diff_plot_entity_pivot.plot.bar(rot=0,figsize=(diff_plot_entity_pivot.shape[0],5))
-        
-    diff_plot_month=diff_BPC_PL.groupby("TIME").count()/total_data*entity_mapping.shape[0]
-    diff_plot_month["TIME"]=list(map(lambda x: x[0:4]+"/"+x[4:6],diff_plot_month.index))
-    diff_plot_month.plot.bar(x="TIME", y='Sabra_Account', rot=0,figsize=(diff_plot_month.shape[0],5))
-        
-    st.write(str(round(dismatch/total_data*100,1))+ "% data don't match" )      
-    missing_mapping_index=[]
-    for i in range(diff_BPC_PL.shape[0]):
-        #miss mapping:Sabra account is not in PL 
-        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail.loc[diff_BPC_PL.loc[i,"Entity"]].index:
-            missing_mapping_index.append(i)
-            continue
-
-        else:
-            st.write(list(diff_BPC_PL.columns))
-            dismatch_print.add_row(diff_BPC_Financial.iloc[i,:])
-            dismatch_print.align = "r"
-            print(dismatch_print)
-            
-            print(str(diff_BPC_Financial.loc[i:i,:]["Operator Finance"].item())+" is calculated by sum all the detail Tenant accounts as below:")
-            
-            detail_print=PrettyTable(["Tenant Account","Value"])
-            detail_table=financial_with_detail_PLaccounts[["Tenant_account",diff_BPC_Financial.loc[i,"TIME"]]].loc[(diff_BPC_Financial.loc[i,"Entity"],\
-            diff_BPC_Financial.loc[i,"Sabra_Account"]),:]
-            for detail_i in range(detail_table.shape[0]):
-                detail_print.add_row(detail_table.iloc[detail_i,:])
-            detail_print.align = "r"
-            st.write(detail_print)
-    st.write("-------------------------------Miss Mapping-----------------------------------")
-    #st.write(list(diff_BPC_PL.columns))
-    for missmapping_i in missing_mapping_index:
-        missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
-    st.write(missmapping_print)  
-
+    
 #----------------------------------website widges------------------------------------
 if operator!='select operator':
     st.subheader("Upload P&L:")
