@@ -579,11 +579,13 @@ if operator!='select operator':
                 if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
+                    
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
+                    st.write("Total_PL".Total_PL.shape[0])
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
-                st.write(Total_PL)
+                #st.write(Total_PL)
                 if entity_i==len(entity_mapping['Entity'])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
