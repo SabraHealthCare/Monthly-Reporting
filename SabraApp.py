@@ -505,7 +505,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
     st.pyplot(fig)
         
-    Sfig=plt.figure()
+    fig=plt.figure()
     diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
     st.pyplot(fig)
         
