@@ -505,8 +505,42 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     st.pyplot(fig)
 
     fig=plt.figure()
-    sns.countplot(diff_BPC_PL["Property_Name"])
+    diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
     st.pyplot(fig)
+        
+    Sfig=plt.figure()
+    diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
+    st.pyplot(fig)
+        
+    
+    missing_mapping_index=[]
+    for i in range(diff_BPC_PL.shape[0]):
+        #miss mapping:Sabra account is not in PL 
+        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail.loc[diff_BPC_PL.loc[i,"Entity"]].index:
+            missing_mapping_index.append(i)
+            continue
+
+        else:
+            st.write(list(diff_BPC_PL.columns))
+            dismatch_print.add_row(diff_BPC_Financial.iloc[i,:])
+            dismatch_print.align = "r"
+            print(dismatch_print)
+            
+            print(str(diff_BPC_Financial.loc[i:i,:]["Operator Finance"].item())+" is calculated by sum all the detail Tenant accounts as below:")
+            
+            detail_print=PrettyTable(["Tenant Account","Value"])
+            detail_table=financial_with_detail_PLaccounts[["Tenant_account",diff_BPC_Financial.loc[i,"TIME"]]].loc[(diff_BPC_Financial.loc[i,"Entity"],\
+            diff_BPC_Financial.loc[i,"Sabra_Account"]),:]
+            for detail_i in range(detail_table.shape[0]):
+                detail_print.add_row(detail_table.iloc[detail_i,:])
+            detail_print.align = "r"
+            st.write(detail_print)
+    st.write("-------------------------------Miss Mapping-----------------------------------")
+    #st.write(list(diff_BPC_PL.columns))
+    for missmapping_i in missing_mapping_index:
+        missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
+    st.write(missmapping_print)  
+
 
     
 #----------------------------------website widges------------------------------------
