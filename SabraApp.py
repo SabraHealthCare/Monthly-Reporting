@@ -43,7 +43,7 @@ operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_
 
 st.title("Sabra HealthCare Reporting App")
 col1,col2=st.columns(2)
-    with col1:
+with col1:
     st.subheader("Operator name:")
     operator= st.selectbox(' ',(operator_list))
 
