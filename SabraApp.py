@@ -520,7 +520,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 
 
 def download_report(diff_BPC_PL):
-    download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
+    download_file=diff_BPC_PL.to_excel(index=False).encode('utf-8')
     st.download_button(
    "Press to Download",
    download_file,
@@ -531,12 +531,12 @@ def download_report(diff_BPC_PL):
 
 
     
-    csvfile=diff_BPC_PL.to_csv(index=True)
-    b64=base64.b64encode(csvfile.encode()).decode()
-    new_filename=operator+" P&L checking result.csv".format(timestr)
-    st.markdown("### ** Download Checking Result**")
-    href=f'<a href="data:file/csv:base64,{b64}" download="{new_filename}">Click here to download!!</a>'
-    st.markdown(href,unsafe_allow_html=True)
+    #csvfile=diff_BPC_PL.to_csv(index=True)
+    #b64=base64.b64encode(csvfile.encode()).decode()
+    #new_filename=operator+" P&L checking result.csv".format(timestr)
+    #st.markdown("### ** Download Checking Result**")
+    #href=f'<a href="data:file/csv:base64,{b64}" download="{new_filename}">Click here to download!!</a>'
+    #st.markdown(href,unsafe_allow_html=True)
 #----------------------------------website widges------------------------------------
 #def main():   
 menu=["Upload P&L","Manage Mapping"]
