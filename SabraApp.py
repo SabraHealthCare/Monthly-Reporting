@@ -345,6 +345,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     s3.upload_fileobj(data,bucket,key)
     st.success('Successfully uploaded to S3')    
     
+
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
@@ -610,7 +611,10 @@ elif choice=="Manage Mapping":
     with col1:
         with st.expander("Add New Account"):
             new_account=st.text_input("Enter new account here")
-            
+        if new_account:
+            with col2:    
+                sabra_account=st.selectbox(new_account,list(account_mapping["Sabra_account"].unique()))
+        
         if st.button("Submit"):
             with st.expander("New mapping"):
                 st.write(new_account)
