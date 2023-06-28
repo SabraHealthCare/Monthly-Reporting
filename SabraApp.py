@@ -541,14 +541,17 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 
     
 #----------------------------------website widges------------------------------------
-if operator!='select operator':
+#def main():   
+menu=["Upload P&L","Manage Mapping"]
+choice=st.sidebar.selectbox("Menu",menu)
+if choice=="Upload P&L" and operator!='select operator':
+
     st.subheader("Upload P&L:")
     uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
 
-         # def main  
         account_mapping=Read_Account_Mapping()
         _entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         entity_mapping=pd.read_excel(_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
@@ -601,7 +604,8 @@ if operator!='select operator':
             with st.spinner('Uploading...'):
                 Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
     
-    
+elif choice=="Manage Mapping":
+    st.subheader("Manage Mapping")
        
                             
     #if st.button('Run Checking'):
