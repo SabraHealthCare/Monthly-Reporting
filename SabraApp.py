@@ -515,34 +515,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     
     st.pyplot(fig)
         
-    
-    missing_mapping_index=[]
-    for i in range(diff_BPC_PL.shape[0]):
-        #miss mapping:Sabra account is not in PL 
-        if diff_BPC_PL.loc[i,"Sabra_Account"] not in PL_with_detail.loc[diff_BPC_PL.loc[i,"Entity"]].index:
-            missing_mapping_index.append(i)
-            continue
 
-        else:
-            st.write(list(diff_BPC_PL.columns))
-            dismatch_print.add_row(diff_BPC_Financial.iloc[i,:])
-            dismatch_print.align = "r"
-            print(dismatch_print)
-            
-            print(str(diff_BPC_Financial.loc[i:i,:]["Operator Finance"].item())+" is calculated by sum all the detail Tenant accounts as below:")
-            
-            detail_print=PrettyTable(["Tenant Account","Value"])
-            detail_table=financial_with_detail_PLaccounts[["Tenant_account",diff_BPC_Financial.loc[i,"TIME"]]].loc[(diff_BPC_Financial.loc[i,"Entity"],\
-            diff_BPC_Financial.loc[i,"Sabra_Account"]),:]
-            for detail_i in range(detail_table.shape[0]):
-                detail_print.add_row(detail_table.iloc[detail_i,:])
-            detail_print.align = "r"
-            st.write(detail_print)
-    st.write("-------------------------------Miss Mapping-----------------------------------")
-    #st.write(list(diff_BPC_PL.columns))
-    for missmapping_i in missing_mapping_index:
-        missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
-    st.write(missmapping_print)  
 
 def download_report(diff_BPC_PL):
     csvfile=diff_BPC_PL.to_csv(index=True)
@@ -580,14 +553,12 @@ if choice=="Upload P&L" and operator!='select operator':
         # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
-                st.write("Start checking sheet：",sheet_name)
+                
                 # sheet_name is not nan
                 if sheet_name==sheet_name and sheet_name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
-                    
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
-                    st.write("Total_PL",Total_PL.shape[0])
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
