@@ -548,7 +548,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 menu=["Upload P&L","Manage Mapping"]
 choice=st.sidebar.selectbox("Menu",menu)
 if choice=="Upload P&L" and operator!='select operator':
-    with col1:
+    with col2:
         st.subheader("Upload P&L:")
         uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
