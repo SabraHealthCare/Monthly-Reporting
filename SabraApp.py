@@ -606,11 +606,13 @@ if choice=="Upload P&L" and operator!='select operator':
     
 elif choice=="Manage Mapping":
     st.subheader("Manage Mapping")
-    new_account=st.text_area("Enter new account here")
-    num_of_most_common=st.sidebar.number_input("Most common Tokens",5,15)
-    if st.button("Submit"):
-        with st.expander("New mapping"):
-            st.write(new_account)
+    col1,col2=st.columns(2)
+    with col1:
+        new_account=st.text_area("Enter new account here")
+        num_of_most_common=st.sidebar.number_input("Most common Tokens",5,5)
+        if st.button("Submit"):
+            with st.expander("New mapping"):
+                st.write(new_account)
        
                             
     #if st.button('Run Checking'):
