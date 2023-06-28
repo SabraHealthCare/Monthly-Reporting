@@ -615,17 +615,13 @@ elif choice=="Manage Mapping":
     with col1:
         tenant_account1=st.text_input("Enter new account")
         tenant_account2=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_account"].unique()))
+        tenant_account1=st.text_input("Enter sheetname of new property")
+        tenant_account2=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
+    
     
     with col2:    
         Sabra_account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
-
-
-    with col1:
-        tenant_account1=st.text_input("Enter sheetname of new property")
-        tenant_account2=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
-    
-    with col2:    
         Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
         Sabra_account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
     
