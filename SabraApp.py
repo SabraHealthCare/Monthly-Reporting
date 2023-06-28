@@ -543,8 +543,13 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
         missmapping_print.add_row(diff_BPC_Financial.iloc[missmapping_i,])
     st.write(missmapping_print)  
 
-
-    
+def download_report(diff_BPC_PL):
+    csvfile=diff_BPC_PL.to_csv(index=True)
+    b4=base64.b64encode(csvfile.encode()).decode()
+    new_filename=Operator+" P&L checking result.csv".format(timestr)
+    st.markdown("### ** Download Checking Result**")
+    href=f'<a href="data:file/csv:base64,{b64}" download="{new_filename}">Click here to download!!</a>'
+    st.markdown(href,unsafe_allow_html=True)
 #----------------------------------website widges------------------------------------
 #def main():   
 menu=["Upload P&L","Manage Mapping"]
@@ -599,12 +604,18 @@ if choice=="Upload P&L" and operator!='select operator':
             st.write("100% matches")
             #return 1
         else:
-            Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
-            # diff_BPC_PL save as report 
-        
-        if st.button('Upload'):
-            with st.spinner('Uploading...'):
-                Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+            col1,col2=st.columns(2)
+            with col1:
+                with st.expander("Summary of checking"):
+                    Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
+                with st.expander("Download checking result"):
+                    download_report(diff_BPC_PL)
+           with col2:
+               with st.expander("Inconsistence detail"):
+                    st.write("none")
+        #if st.button('Upload'):
+            #with st.spinner('Uploading...'):
+               # Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
     
 elif choice=="Manage Mapping":
     mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
