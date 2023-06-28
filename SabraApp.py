@@ -520,7 +520,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 
 
 def download_report(diff_BPC_PL):
-    download_file=diff_BPC_PL.to_excel(index=False).encode('utf-8')
+    download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
     st.download_button(
    "Press to Download",
    download_file,
