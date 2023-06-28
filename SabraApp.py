@@ -414,6 +414,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(sheet_name,account_mapping):
+    with st.spinner('Checking sheet:"+sheet_name+"...'):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
