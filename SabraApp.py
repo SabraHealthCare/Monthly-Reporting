@@ -607,11 +607,11 @@ if choice=="Upload P&L" and operator!='select operator':
                 Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
     
 elif choice=="Manage Mapping":
-    st.subheader("Manage Mapping")
+    st.title("Manage Mapping")
+    st.subheader("Add New Account")
     col1,col2=st.columns(2)
     with col1:
-        with st.expander("Add New Account"):
-            new_account=st.text_input("Enter new account here")
+        new_account=st.text_input("Enter new account here")
         if new_account:
             with col2:    
                 sabra_account=st.selectbox(new_account,list(account_mapping["Sabra_account"].unique()))
