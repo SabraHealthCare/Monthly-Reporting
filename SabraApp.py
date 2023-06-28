@@ -501,14 +501,17 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 
     fig=plt.figure()
     diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
+    plt.xticks(rotation=45)
     st.pyplot(fig)
 
     fig=plt.figure()
     diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+    plt.xticks(rotation=45)
     st.pyplot(fig)
         
     fig=plt.figure()
     diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
+    
     st.pyplot(fig)
         
     
@@ -610,10 +613,13 @@ elif choice=="Manage Mapping":
     st.subheader("Manage Mapping")
     col1,col2=st.columns(2)
     with col1:
-        new_account=st.text_input("Enter new account here")
+        new_account=st.text_input("Enter new account")
+        current_account=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_account"].unique()))
     
     with col2:    
-        sabra_account=st.selectbox("Select Sabra Account",list(account_mapping["Sabra_account"].unique()))
+        sabra_account_new=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
+        sabra_account_current=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
+    
         
     if st.button("Submit"):
         with st.expander("New mapping"):
