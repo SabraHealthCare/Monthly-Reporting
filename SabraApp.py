@@ -613,12 +613,12 @@ elif choice=="Manage Mapping":
     st.subheader("Manage Mapping")
     col1,col2=st.columns(2)
     with col1:
-        new_account=st.text_input("Enter new account")
-        current_account=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_account"].unique()))
+        tenant_account1=st.text_input("Enter new account")
+        tenant_account2=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_account"].unique()))
     
     with col2:    
-        sabra_account_new=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
-        sabra_account_current=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
+        Sabra_account1=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
+        Sabra_account2=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
     
         
     if st.button("Submit"):
