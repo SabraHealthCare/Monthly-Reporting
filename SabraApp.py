@@ -414,7 +414,8 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(sheet_name,account_mapping):
-    with st.spinner('Checking sheet:"+sheet_name+"...'):
+    spinner_str='Checking sheet:"+sheet_name+"...'
+    with st.spinner(spinner_str):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
@@ -469,7 +470,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    st.write("Compare P&L with Sabra")
+    
     diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
@@ -520,7 +521,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 def download_report(diff_BPC_PL):
     csvfile=diff_BPC_PL.to_csv(index=True)
     b4=base64.b64encode(csvfile.encode()).decode()
-    new_filename=Operator+" P&L checking result.csv".format(timestr)
+    new_filename=operator+" P&L checking result.csv".format(timestr)
     st.markdown("### ** Download Checking Result**")
     href=f'<a href="data:file/csv:base64,{b64}" download="{new_filename}">Click here to download!!</a>'
     st.markdown(href,unsafe_allow_html=True)
@@ -562,7 +563,7 @@ if choice=="Upload P&L" and operator!='select operator':
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
-                #st.write(Total_PL)
+               
                 if entity_i==len(entity_mapping['Entity'])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
@@ -576,15 +577,13 @@ if choice=="Upload P&L" and operator!='select operator':
             st.write("100% matches")
             #return 1
         else:
-            col1,col2=st.columns(2)
-            with col1:
-                with st.expander("Summary of checking"):
+            with st.expander("Summary of checking"):
                     Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
-                with st.expander("Download checking result"):
-                    download_report(diff_BPC_PL)
-            with col2:
-               with st.expander("Inconsistence detail"):
+            with st.expander("Details of dismatch"):
                     st.write("none")
+            with st.expander("Download checking result"):
+                    download_report(diff_BPC_PL)
+               
         #if st.button('Upload'):
             #with st.spinner('Uploading...'):
                # Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
