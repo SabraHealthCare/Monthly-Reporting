@@ -42,10 +42,8 @@ operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
 
 st.title("Sabra HealthCare Reporting App")
-col1,col2=st.columns(2)
-with col1:
-    st.subheader("Operator name:")
-    operator= st.selectbox(' ',(operator_list))
+st.subheader("Operator name:")
+operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
@@ -548,9 +546,8 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 menu=["Upload P&L","Manage Mapping"]
 choice=st.sidebar.selectbox("Menu",menu)
 if choice=="Upload P&L" and operator!='select operator':
-    with col2:
-        st.subheader("Upload P&L:")
-        uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
+    st.subheader("Upload P&L:")
+    uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
@@ -611,8 +608,9 @@ elif choice=="Manage Mapping":
     st.subheader("Manage Mapping")
     col1,col2=st.columns(2)
     with col1:
-        new_account=st.text_area("Enter new account here")
-        num_of_most_common=st.sidebar.number_input("Most common Tokens",5,5)
+        with st.expander("Add New Account")
+            new_account=st.text_input("Enter new account here")
+            
         if st.button("Submit"):
             with st.expander("New mapping"):
                 st.write(new_account)
