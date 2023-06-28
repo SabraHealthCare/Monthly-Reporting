@@ -569,7 +569,7 @@ if choice=="Upload P&L" and operator!='select operator':
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
         #All accounts are in one sheet
-        # how about if entity is sold? it is in entity but not in finicial anymore
+        # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 st.write("Start checking sheet：",sheet_name)
@@ -609,7 +609,7 @@ elif choice=="Manage Mapping":
     new_account=st.text_area("Enter new account here")
     num_of_most_common=st.sidebar.number_input("Most common Tokens",5,15)
     if st.button("Submit"):
-        with st.beta_expander("New mapping")
+        with st.beta_expander("New mapping"):
             st.write(new_account)
        
                             
