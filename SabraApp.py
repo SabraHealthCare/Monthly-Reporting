@@ -36,13 +36,16 @@ sheet_name_format='Format'
 
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
+
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
 
 st.title("Sabra HealthCare Reporting App")
-st.subheader("Operator name:")
-operator= st.selectbox(' ',(operator_list))
+col1,col2=st.columns(2)
+    with col1:
+    st.subheader("Operator name:")
+    operator= st.selectbox(' ',(operator_list))
 
 if operator != 'select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
