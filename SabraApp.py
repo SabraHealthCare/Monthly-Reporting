@@ -45,12 +45,11 @@ st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
 
-if operator != 'select operator':
+if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
-
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -66,6 +65,7 @@ Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month  
+
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
@@ -550,18 +550,15 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 menu=["Upload P&L","Manage Mapping"]
 choice=st.sidebar.selectbox("Menu",menu)
 account_mapping=Read_Account_Mapping()
+mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
 if choice=="Upload P&L" and operator!='select operator':
     st.subheader("Upload P&L:")
     uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
-
-        
-        _entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        entity_mapping=pd.read_excel(_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-        _format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(_format['Body'].read(), sheet_name=sheet_name_format,header=0)
+            
         mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
@@ -610,6 +607,8 @@ if choice=="Upload P&L" and operator!='select operator':
                 Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
     
 elif choice=="Manage Mapping":
+    mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
     st.subheader("Manage Mapping")
     col1,col2=st.columns(2)
     with col1:
