@@ -610,7 +610,7 @@ if choice=="Upload P&L" and operator!='select operator':
                     Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
                 with st.expander("Download checking result"):
                     download_report(diff_BPC_PL)
-           with col2:
+            with col2:
                with st.expander("Inconsistence detail"):
                     st.write("none")
         #if st.button('Upload'):
