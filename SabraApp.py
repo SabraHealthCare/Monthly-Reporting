@@ -608,7 +608,7 @@ elif choice=="Manage Mapping":
     st.subheader("Manage Mapping")
     col1,col2=st.columns(2)
     with col1:
-        with st.expander("Add New Account")
+        with st.expander("Add New Account"):
             new_account=st.text_input("Enter new account here")
             
         if st.button("Submit"):
