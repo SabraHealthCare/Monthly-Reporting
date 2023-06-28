@@ -520,6 +520,17 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 
 
 def download_report(diff_BPC_PL):
+    download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
+    st.download_button(
+   "Press to Download",
+   csv,
+   "file.csv",
+   "text/csv",
+   key='download-csv'
+)
+
+
+    
     csvfile=diff_BPC_PL.to_csv(index=True)
     b64=base64.b64encode(csvfile.encode()).decode()
     new_filename=operator+" P&L checking result.csv".format(timestr)
