@@ -618,7 +618,7 @@ elif choice=="Manage Mapping":
     
     with col2:    
         Sabra_account1=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
-        Sabra_account2=st.selectbox("Select Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
+        Sabra_account2=st.selectbox("Select Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
     
         
     if st.button("Submit"):
