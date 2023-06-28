@@ -27,6 +27,8 @@ from io import BytesIO
 from io import StringIO
 import base64
 from tempfile import NamedTemporaryFile
+import time
+timestr = time.strftime("%Y%m%d-%H%M%S")
 #---------------------------define parameters--------------------------
 
 sheet_name_account_mapping="Account_Mapping"
@@ -414,8 +416,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(sheet_name,account_mapping):
-    spinner_str='Checking sheet:"+sheet_name+"...'
-    with st.spinner(spinner_str):
+
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
