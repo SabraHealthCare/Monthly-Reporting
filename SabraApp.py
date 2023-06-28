@@ -619,7 +619,8 @@ elif choice=="Manage Mapping":
         tenant_account2=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
     
     
-    with col2:    
+    with col2:   
+        entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
         Sabra_account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
