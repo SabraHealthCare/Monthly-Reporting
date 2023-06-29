@@ -425,7 +425,7 @@ def Sheet_Process(sheet_name,account_mapping):
         st.write(PL.columns)
         
         st.write(len(date_header[0]))
-        st.write(date_header[0]==0)
+        st.write(date_header[0]==0,date_header[0])
         PL.columns=date_header[0]
     
         #tenant_account is index of PL, only keep rows with accounts and columns with valid month
