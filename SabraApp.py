@@ -52,6 +52,9 @@ if operator!='select operator':
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
+    account_mapping=Read_Account_Mapping()
+    entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
 
 Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
  'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -590,12 +593,9 @@ def Manage_Mapping_Main():
 #----------------------------------website widges------------------------------------
   
 menu=["Upload P&L","Manage Mapping","Instructions"]
+
 choice=st.sidebar.selectbox("Menu",menu)
-account_mapping=Read_Account_Mapping()
-entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
 if choice=="Upload P&L" and operator!='select operator':
-    
     st.subheader("Upload P&L:")
     uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
     if uploaded_file:
@@ -604,7 +604,7 @@ if choice=="Upload P&L" and operator!='select operator':
         
         Upload_Main()
 
-elif choice=="Manage Mapping":
+elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Mapping")
     Manage_Mapping_Main()
 
