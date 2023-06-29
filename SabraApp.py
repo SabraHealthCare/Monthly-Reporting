@@ -413,7 +413,6 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(sheet_name,account_mapping):
-
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
         if tenantAccount_col_no==None:
@@ -468,7 +467,6 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    
     diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
@@ -494,7 +492,8 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     return diff_BPC_PL 
 
 def Diff_Plot(diff_BPC_PL,PL_with_detail,Total_PL):
-    months=list(Total_PL.column)
+    st.write(Total_PL.columns)
+    months=list(Total_PL.columns)
     latest_month=map(lambda x:max(x),months)[0]
     st.write("Reporting months:")
     s = ''
