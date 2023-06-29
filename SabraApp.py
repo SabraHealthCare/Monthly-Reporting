@@ -1,16 +1,9 @@
 import pandas as pd
-#from pandas import ExcelWriter
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')
-
-#import statistics
 import os
-#import xlwt
-#import xlsxwriter
-#import matplotlib.ticker as mtick
 import pyodbc
 import numpy as np
 from calendar import monthrange
@@ -21,7 +14,6 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 import xlrd
 import warnings
 import streamlit as st
-#from st_files_connection import FilesConnection
 import boto3
 from io import BytesIO
 from io import StringIO
@@ -31,7 +23,6 @@ import time
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
 #---------------------------define parameters--------------------------
-
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
 def get_column_no(dataset,col_header):
@@ -529,7 +520,7 @@ def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
 
-def Upload_Main():      
+def Upload_Main(entity_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
 
