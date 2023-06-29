@@ -578,7 +578,7 @@ def Upload_Main(entity_mapping,account_mapping):
                     download_report(diff_BPC_PL,"Checking Result")
                 with col2:
                     latest_month=max(list(Total_PL.columns))
-                    download_report(Total_PL[latest_month],operator+" "+latest_month+" Template Reporting")  
+                    download_report(Total_PL[latest_month],operator+" "+str(latest_month)+" Template Reporting")  
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
