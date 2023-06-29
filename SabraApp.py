@@ -600,7 +600,7 @@ if choice=="Upload P&L" and operator!='select operator':
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
         
-        Upload_Main()
+        Upload_Main(entity_mapping)
 
 elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Mapping")
