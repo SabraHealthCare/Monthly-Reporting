@@ -224,7 +224,7 @@ def Add_year_to_header(month_list):
     return month_list  
 # find the Month/year row and return row number
 def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
-    st.write(PL)
+ 
     PL_row_size=PL.shape[0]
     PL_col_size=PL.shape[1]
     search_row_size=min(20,PL_row_size)
@@ -236,7 +236,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
             if type(PL.iloc[row_i,col_i])==float:
                 continue
             month_table.iloc[row_i,col_i],year_table.iloc[row_i,col_i]=Get_Month_Year(PL.iloc[row_i,col_i])
-            st.write(month_table)
+            
     year_count=[]
     month_count=[]
     max_len=0
