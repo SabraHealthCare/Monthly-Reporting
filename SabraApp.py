@@ -505,12 +505,12 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     with col1:
         fig=plt.figure()
         diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
-        plt.xticks(rotation=45)
+        #plt.xticks(rotation=45)
         st.pyplot(fig)
     with col2:
         fig=plt.figure()
         diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
-        plt.xticks(rotation=45)
+        #plt.xticks(rotation=45)
         st.pyplot(fig)
     with col3:
         fig=plt.figure()
@@ -524,8 +524,7 @@ def download_report(diff_BPC_PL,button_display):
    download_file,
    operator+" "+button_display+".csv",
    "text/csv",
-   key='download-csv'
-)
+   key='download-csv')
    
 #----------------------------------website widges------------------------------------
 #def main():   
@@ -588,11 +587,9 @@ if choice=="Upload P&L" and operator!='select operator':
                 with col1:
                     download_report(diff_BPC_PL,"Checking Result")
                 with col2:
-                    download_report(diff_BPC_PL,"Mapping list")
+                    download_report(entity_mapping,"Mapping list")
                
-        #if st.button('Upload'):
-            #with st.spinner('Uploading...'):
-               # Upload_file_S3(uploaded_file,"sabramapping",uploaded_file.name)
+     
     
 elif choice=="Manage Mapping":
     mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
