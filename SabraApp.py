@@ -514,32 +514,21 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
         
     fig=plt.figure()
     diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
-    
     st.pyplot(fig)
         
-
-
-def download_report(diff_BPC_PL):
+def download_report(diff_BPC_PL,button_display):
     download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
     st.download_button(
-   "Press to Download",
+   "Press to download "+button_display,
    download_file,
-   "file.csv",
+   operator+" "+button_display+".csv",
    "text/csv",
    key='download-csv'
 )
-
-
-    
-    #csvfile=diff_BPC_PL.to_csv(index=True)
-    #b64=base64.b64encode(csvfile.encode()).decode()
-    #new_filename=operator+" P&L checking result.csv".format(timestr)
-    #st.markdown("### ** Download Checking Result**")
-    #href=f'<a href="data:file/csv:base64,{b64}" download="{new_filename}">Click here to download!!</a>'
-    #st.markdown(href,unsafe_allow_html=True)
+   
 #----------------------------------website widges------------------------------------
 #def main():   
-menu=["Upload P&L","Manage Mapping"]
+menu=["Upload P&L","Manage Mapping","Instructions"]
 choice=st.sidebar.selectbox("Menu",menu)
 account_mapping=Read_Account_Mapping()
 mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
@@ -590,11 +579,15 @@ if choice=="Upload P&L" and operator!='select operator':
             #return 1
         else:
             with st.expander("Summary of checking"):
-                    Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
+                Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
             with st.expander("Details of dismatch"):
-                    st.write("none")
+                st.write("none")
             with st.expander("Download checking result"):
-                    download_report(diff_BPC_PL)
+                col1,col2=st.columns(2)
+                with col1:
+                    download_report(diff_BPC_PL,"Checking Result")
+                with col2:
+                    download_report(diff_BPC_PL,"Mapping list")
                
         #if st.button('Upload'):
             #with st.spinner('Uploading...'):
