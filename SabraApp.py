@@ -69,7 +69,7 @@ if operator!='select operator':
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
-    account_mapping=Read_Account_Mapping()
+    account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
 
