@@ -74,8 +74,7 @@ if operator!='select operator':
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-    st.write("test")
-
+    
     Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
      'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
     'T_GEN_ADMIN_OTHER','T_ANCILLARY_THERAPY', 'T_ANCILLARY_PHARMACY','T_ANCILLARY_OTHER', 'T_EXPENSES','T_MGMT_FEE', 'T_OTHER_OP_EXO','T_DEPR_AMORT', 'T_INT_INC_EXP','T_RENT_EXP', 'T_SL_RENT_ADJ_EXP','T_NURSING_LABOR', 'T_N_CONTRACT_LABOR',
@@ -519,7 +518,7 @@ def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
 
-def Upload_Main(entity_mapping,account_mapping):      
+def Upload_Main():      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
 
@@ -599,7 +598,7 @@ if choice=="Upload P&L" and operator!='select operator':
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
         
-        Upload_Main(entity_mapping,account_mapping)
+        Upload_Main()
 
 elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Mapping")
