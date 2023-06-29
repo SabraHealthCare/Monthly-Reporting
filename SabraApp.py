@@ -491,24 +491,25 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
-def Diff_Plot(diff_BPC_PL,PL_with_detail,Total_PL):
+def View_Summary(Total_PL,latest_month):
     
     months=list(Total_PL.columns)
-    latest_month=max(months)
-    st.write("Reporting months:")
-    s = ''
+    m_str = ''
     for month in months:
-        s += "- " + month 
-        st.write(s)
+        m_str += "- " + month 
+    st.write("Reporting months:"+m_str)   
     st.write("The latest reporting month is:"+latest_month)
     st.write(Total_PL[latest_month])
-    
+
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     
-    st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
+    st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
     
+    
+
+def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
     col1,col2,col3=st.columns(3)
     with col1:
         fig=plt.figure()
@@ -524,7 +525,7 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,Total_PL):
         fig=plt.figure()
         diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
         st.pyplot(fig)
-        
+    download_report(PL_with_detail,"Detail of dismatch")  
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
@@ -550,6 +551,7 @@ def Upload_Main(entity_mapping,account_mapping):
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
+                    
                 elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
                
@@ -560,22 +562,23 @@ def Upload_Main(entity_mapping,account_mapping):
                     # if found new entities in BPC which is not in entity_mapping,
                     # ask for mapping and update entity_mapping, re-do sheet process for new entities.
                     entity_mapping=Map_New_Entity(BPC_pull,entity_mapping)
-       
+        latest_month=max(list(Total_PL.columns))
         diff_BPC_PL=Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
         if diff_BPC_PL.shape[0]==0:
             st.write("100% matches")
             
         else:
-            with st.expander("Summary of checking"):
-                Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
-            with st.expander("Details of dismatch"):
-                st.write("none")
-            with st.expander("Download checking result"):
+            with st.expander("Summary of Checking"):
+                View_Summary(diff_BPC_PL,Total_PL)
+            with st.expander("Detail of dismatch"):
+                Diff_plot(diff_BPC_PL,PL_with_detail)
+            with st.expander("Download Checking Results"):
                 col1,col2=st.columns(2)
                 with col1:
                     download_report(diff_BPC_PL,"Checking Result")
                 with col2:
-                    download_report(entity_mapping,"Mapping list")  
+                    latest_month=max(list(Total_PL.columns))
+                    download_report(Total_PL[]," list")  
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
