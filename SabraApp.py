@@ -29,7 +29,24 @@ import base64
 from tempfile import NamedTemporaryFile
 import time
 timestr = time.strftime("%Y%m%d-%H%M%S")
+
 #---------------------------define parameters--------------------------
+def Read_Account_Mapping(bucket_mapping,mapping_path):
+    # read account mapping
+    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    #convert tenant_account to lower case
+    account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
+    account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
+    account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
+    # remove nan in col Sabra_account
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_account"])),\
+                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
+                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
+    account_mapping=account_mapping.drop_duplicates()
+    account_mapping=account_mapping.reset_index(drop=True)
+    return account_mapping
 
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
@@ -71,22 +88,7 @@ Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month  
 #------------------------------------functions------------------------------------
-def Read_Account_Mapping():
-    # read account mapping
-    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
-    #convert tenant_account to lower case
-    account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
-    account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
-    account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
-    # remove nan in col Sabra_account
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_account"])),\
-                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
-                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
-    account_mapping=account_mapping.drop_duplicates()
-    account_mapping=account_mapping.reset_index(drop=True)
-    return account_mapping
+
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
 def get_column_no(dataset,col_header):
