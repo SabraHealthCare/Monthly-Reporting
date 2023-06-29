@@ -224,17 +224,19 @@ def Add_year_to_header(month_list):
     return month_list  
 # find the Month/year row and return row number
 def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
-    PLrow=PL.shape[0]
-    PLcol=PL.shape[1]
-    row_size=min(20,PLrow)
-    month_table=pd.DataFrame(0,index=range(row_size), columns=range(PLcol))
-    year_table=pd.DataFrame(0,index=range(row_size), columns=range(PLcol))
+    st.write(PL)
+    PL_row_size=PL.shape[0]
+    PL_col_size=PL.shape[1]
+    search_row_size=min(20,PL_row_size)
+    month_table=pd.DataFrame(0,index=range(search_row_size), columns=range(PL_col_size))
+    year_table=pd.DataFrame(0,index=range(search_row_size), columns=range(PL_col_size))
     
-    for row_i in range(min(20,PLrow)):
-        for col_i in range(PLcol):
-            if type(PL.iloc[row_i,col_i])==int or type(PL.iloc[row_i,col_i])==float:
+    for row_i in range(search_row_size):
+        for col_i in range(PL_col_size):
+            if type(PL.iloc[row_i,col_i])==float:
                 continue
             month_table.iloc[row_i,col_i],year_table.iloc[row_i,col_i]=Get_Month_Year(PL.iloc[row_i,col_i])
+            st.write(month_table)
     year_count=[]
     month_count=[]
     max_len=0
@@ -415,19 +417,16 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name =sheet_name)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
+        st.write("tenantAccount_col_no",tenantAccount_col_no)
         if tenantAccount_col_no==None:
-            st.write("didn't find tenant account col")
+            st.write("Fail to identify tenant account in sheet '"+sheet_name+"'")
             return False,account_mapping
         date_header=Identify_Month_Row(PL,tenantAccount_col_no,sheet_name)
         if len(date_header[0])==1 and date_header[0]==[0]:
             st.write("didn't find date row")
             return False,account_mapping
-        st.write(PL.columns)
         
-        st.write(len(date_header[0]))
-        st.write(date_header[0]==[0],date_header[0])
         PL.columns=date_header[0]
-    
         #tenant_account is index of PL, only keep rows with accounts and columns with valid month
        
         PL=PL.set_index(PL.iloc[:,tenantAccount_col_no].values)
