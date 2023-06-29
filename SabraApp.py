@@ -493,11 +493,22 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
-def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
+def Diff_Plot(diff_BPC_PL,PL_with_detail,Total_PL):
+    months=list(Total_PL.column)
+    latest_month=map(lambda x:max(x),months)[0]
+    st.write("Reporting months:")
+    s = ''
+    for month in months:
+        s += "- " + month 
+    st.write("The latest reporting month is:"+latest_month)
+    st.write(Total_PL[latest_month])
+    
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
+    
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
+    
     col1,col2,col3=st.columns(3)
     with col1:
         fig=plt.figure()
