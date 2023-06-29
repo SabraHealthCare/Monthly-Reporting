@@ -491,15 +491,15 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
-def View_Summary(Total_PL,latest_month):
+def View_Summary(Total_PL):
     
     months=list(Total_PL.columns)
     m_str = ''
     for month in months:
         m_str += "- " + month 
     st.write("Reporting months:"+m_str)   
-    st.write("The latest reporting month is:"+str(latest_month))
-    st.write(Total_PL[latest_month])
+    st.write("The latest reporting month is:"+str(max(months)))
+    st.write(Total_PL[str(max(months))])
 
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=total_PL.shape[0]*total_PL.shape[1]
