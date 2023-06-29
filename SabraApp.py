@@ -501,20 +501,21 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
     num_total_data=total_PL.shape[0]*total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts * 100))
-
-    fig=plt.figure()
-    diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
-    plt.xticks(rotation=45)
-    st.pyplot(fig)
-
-    fig=plt.figure()
-    diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
-    plt.xticks(rotation=45)
-    st.pyplot(fig)
-        
-    fig=plt.figure()
-    diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
-    st.pyplot(fig)
+    col1,col2,col3=st.columns(3)
+    with col1:
+        fig=plt.figure()
+        diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
+        plt.xticks(rotation=45)
+        st.pyplot(fig)
+    with col2:
+        fig=plt.figure()
+        diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+        plt.xticks(rotation=45)
+        st.pyplot(fig)
+    with col3:
+        fig=plt.figure()
+        diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
+        st.pyplot(fig)
         
 def download_report(diff_BPC_PL,button_display):
     download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
