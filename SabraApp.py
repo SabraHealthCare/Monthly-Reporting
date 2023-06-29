@@ -517,14 +517,9 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
         diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
         st.pyplot(fig)
         
-def download_report(diff_BPC_PL,button_display):
-    download_file=diff_BPC_PL.to_csv(index=False).encode('utf-8')
-    st.download_button(
-   "Press to download "+button_display,
-   download_file,
-   operator+" "+button_display+".csv",
-   "text/csv",
-   key='download-csv')
+def download_report(df,button_display):
+    download_file=df.to_csv(index=False).encode('utf-8')
+    st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
    
 #----------------------------------website widges------------------------------------
 #def main():   
