@@ -31,6 +31,16 @@ import time
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
 #---------------------------define parameters--------------------------
+
+def get_row_no(dataset,row_header):
+    return list(dataset.index).index(row_header)
+def get_column_no(dataset,col_header):
+    return list(dataset.columns).index(col_header)
+def strip_lower_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
+def strip_upper_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
+
 def Read_Account_Mapping(bucket_mapping,mapping_path):
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
@@ -48,6 +58,10 @@ def Read_Account_Mapping(bucket_mapping,mapping_path):
     account_mapping=account_mapping.reset_index(drop=True)
     return account_mapping
 
+
+
+
+#_________________________________________________________________________________________
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
 sheet_name_BPC_pull="BPC_pull"
@@ -88,15 +102,6 @@ Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month  
 #------------------------------------functions------------------------------------
-
-def get_row_no(dataset,row_header):
-    return list(dataset.index).index(row_header)
-def get_column_no(dataset,col_header):
-    return list(dataset.columns).index(col_header)
-def strip_lower_col(series_or_list):
-    return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
-def strip_upper_col(series_or_list):
-    return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
@@ -592,6 +597,7 @@ def Manage_Mapping_Main():
     if st.button("Submit"):
         with st.expander("New mapping"):
             st.write(new_account)
+
 #----------------------------------website widges------------------------------------
   
 menu=["Upload P&L","Manage Mapping","Instructions"]
