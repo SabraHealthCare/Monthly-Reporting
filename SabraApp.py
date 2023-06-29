@@ -67,7 +67,6 @@ Uploading_date=date.today()
 Uploading_year=Uploading_date.year
 Uploading_Lastyear=Uploading_year-1
 Uploading_month=Uploading_date.month  
-
 #------------------------------------functions------------------------------------
 def Read_Account_Mapping():
     # read account mapping
@@ -520,23 +519,8 @@ def Diff_Plot(diff_BPC_PL,PL_with_detail,total_PL):
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
-   
-#----------------------------------website widges------------------------------------
-#def main():   
-menu=["Upload P&L","Manage Mapping","Instructions"]
-choice=st.sidebar.selectbox("Menu",menu)
-account_mapping=Read_Account_Mapping()
-mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-if choice=="Upload P&L" and operator!='select operator':
-    st.subheader("Upload P&L:")
-    uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
-    if uploaded_file:
-        if uploaded_file.name[-5:]=='.xlsx':
-            PL_sheet_list=load_workbook(uploaded_file).sheetnames
-            
-        mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
+
+def Upload_Main():      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
 
@@ -571,7 +555,7 @@ if choice=="Upload P&L" and operator!='select operator':
         diff_BPC_PL=Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
         if diff_BPC_PL.shape[0]==0:
             st.write("100% matches")
-            #return 1
+            
         else:
             with st.expander("Summary of checking"):
                 Diff_Plot(diff_BPC_PL,Total_PL_detail,Total_PL)
@@ -582,14 +566,8 @@ if choice=="Upload P&L" and operator!='select operator':
                 with col1:
                     download_report(diff_BPC_PL,"Checking Result")
                 with col2:
-                    download_report(entity_mapping,"Mapping list")
-               
-     
-    
-elif choice=="Manage Mapping":
-    mapping_entity =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    entity_mapping=pd.read_excel(mapping_entity['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
-    st.subheader("Manage Mapping")
+                    download_report(entity_mapping,"Mapping list")  
+def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
         tenant_account1=st.text_input("Enter new account")
@@ -609,7 +587,26 @@ elif choice=="Manage Mapping":
     if st.button("Submit"):
         with st.expander("New mapping"):
             st.write(new_account)
+#----------------------------------website widges------------------------------------
+  
+menu=["Upload P&L","Manage Mapping","Instructions"]
+choice=st.sidebar.selectbox("Menu",menu)
+account_mapping=Read_Account_Mapping()
+entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
+if choice=="Upload P&L" and operator!='select operator':
+    
+    st.subheader("Upload P&L:")
+    uploaded_file=st.file_uploader(" ",type={"xlsx", "xlsm","xls"},accept_multiple_files=False)
+    if uploaded_file:
+        if uploaded_file.name[-5:]=='.xlsx':
+            PL_sheet_list=load_workbook(uploaded_file).sheetnames
+        
+        Upload_Main()
+
+elif choice=="Manage Mapping":
+    st.subheader("Manage Mapping")
+    Manage_Mapping_Main()
+
        
        
-                            
-    #if st.button('Run Checking'):
