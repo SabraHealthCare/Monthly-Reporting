@@ -240,7 +240,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
     year_count=[]
     month_count=[]
     max_len=0
-    for row_i in range(row_size):
+    for row_i in range(search_row_size):
         valid_month=list(filter(lambda x:x!=0,month_table.iloc[row_i,]))
         valid_year=list(filter(lambda x:x!=0,year_table.iloc[row_i,]))
         month_count.append(len(valid_month))
