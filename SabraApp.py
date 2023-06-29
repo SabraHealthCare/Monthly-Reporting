@@ -518,7 +518,7 @@ def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
 
-def Upload_Main():      
+def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
 
@@ -598,7 +598,7 @@ if choice=="Upload P&L" and operator!='select operator':
         if uploaded_file.name[-5:]=='.xlsx':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
         
-        Upload_Main()
+        Upload_Main(entity_mapping,account_mapping)
 
 elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Mapping")
