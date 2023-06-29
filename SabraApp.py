@@ -277,8 +277,12 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                 
-                st.write("Missing year in date header in sheet '"+sheet_name+"'. Filled year as below: ")
-                st.write(list(filter(lambda x:str(x)!='0',PL_date_header)))
+                st.write("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
+                
+                d_str = ''
+                for d in filter(lambda x:str(x)!='0',PL_date_header):
+                    d_str += "- " + d 
+                st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
             # month is not continuous, check next one
@@ -417,7 +421,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
-        st.write("tenantAccount_col_no",tenantAccount_col_no)
+    
         if tenantAccount_col_no==None:
             st.write("Fail to identify tenant account in sheet '"+sheet_name+"'")
             return False,account_mapping
