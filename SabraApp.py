@@ -423,7 +423,9 @@ def Sheet_Process(sheet_name,account_mapping):
             st.write("didn't find date row")
             return False,account_mapping
         st.write(PL.columns)
-        st.write(date_header[0])
+        
+        st.write(len(date_header[0]))
+        st.write(date_header[0]==0)
         PL.columns=date_header[0]
     
         #tenant_account is index of PL, only keep rows with accounts and columns with valid month
