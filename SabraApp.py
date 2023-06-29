@@ -498,7 +498,7 @@ def View_Summary(Total_PL,latest_month):
     for month in months:
         m_str += "- " + month 
     st.write("Reporting months:"+m_str)   
-    st.write("The latest reporting month is:"+latest_month)
+    st.write("The latest reporting month is:"+str(latest_month))
     st.write(Total_PL[latest_month])
 
     num_dismatch=diff_BPC_PL.shape[0]
