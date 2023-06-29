@@ -585,10 +585,10 @@ def Manage_Mapping_Main():
     if st.button("Submit"):
         with st.expander("New mapping"):
              st.write(new_account)
-    with st.expander("View Property Mapping"):
+    with st.expander("View Sabra-"+operator+" Property Mapping"):
         st.write(entity_mapping)
         download_report(entity_mapping,operator+" Property Mapping")
-    with st.expander("View Account Mapping"):      
+    with st.expander("View Sabra-"+operator+" Accounts Mapping"):      
         st.write(account_mapping)
         download_report(account_mapping,operator+" Account Mapping")
 #----------------------------------website widges------------------------------------
