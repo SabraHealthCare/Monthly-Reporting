@@ -492,13 +492,14 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     return diff_BPC_PL 
 
 def Diff_Plot(diff_BPC_PL,PL_with_detail,Total_PL):
-    st.write(Total_PL.columns)
+    
     months=list(Total_PL.columns)
-    latest_month=map(lambda x:max(x),months)[0]
+    latest_month=max(months)
     st.write("Reporting months:")
     s = ''
     for month in months:
         s += "- " + month 
+        st.write(s)
     st.write("The latest reporting month is:"+latest_month)
     st.write(Total_PL[latest_month])
     
