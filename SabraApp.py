@@ -278,10 +278,11 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                 
                 st.write("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
-                
+                st.write(PL.iloc[PL_date_header,])
+               
                 d_str = ''
                 for d in filter(lambda x:str(x)!='0',PL_date_header):
-                    d_str += "- " + d 
+                    d_str += " " + d 
                 st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
@@ -503,7 +504,7 @@ def View_Summary(diff_BPC_PL,Total_PL):
     months=list(Total_PL.columns)
     m_str = ''
     for month in months:
-        m_str += "- " + month 
+        m_str += " " + month 
     st.write("Reporting months:"+m_str)   
     st.write("The latest reporting month is:"+str(max(months)))
     st.write(Total_PL[str(max(months))])
