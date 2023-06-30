@@ -546,7 +546,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
     download_report(PL_with_detail,"Detail of dismatch")  
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
-    st.download_button(label="Press to download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
+    st.download_button(label="Download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
 
 def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
