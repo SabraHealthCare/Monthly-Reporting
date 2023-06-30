@@ -281,7 +281,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 original=PL.iloc[month_sort_index[month_index_i],]
                
                 d_str = ''
-                for i in len(PL_date_header):
+                for i in range(len(PL_date_header)):
                     d_str +=original[i]+"——"+ PL_date_header[i]+", " 
                 st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
