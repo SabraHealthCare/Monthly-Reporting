@@ -458,7 +458,7 @@ def Sheet_Process(sheet_name,account_mapping):
        
         #  new accounts don't counted yet
         account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
-        st.write(PL)
+        
         return PL,account_mapping    
     
 def Aggregat_PL(PL,account_mapping,entity):
