@@ -448,7 +448,7 @@ def Sheet_Process(sheet_name,account_mapping):
        
         # remove columns what are all zero/blank 
         PL=PL.fillna(0)
-        st.write((PL!= 0).any(axis=0))
+        st.write(PL!= 0)
         PL=PL.loc[:, (PL!= 0).any(axis=0)]
         
         #PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
