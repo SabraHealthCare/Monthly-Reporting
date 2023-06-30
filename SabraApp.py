@@ -585,7 +585,7 @@ def Upload_Main(entity_mapping,account_mapping):
             
         else:
             with st.expander("Summary of Checking"):
-                View_Summary(diff_BPC_PL,Total_PL)
+                View_Summary(Total_PL)
             with st.expander("Detail of dismatch"):
                 Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
             with st.expander("Download Checking Results"):
