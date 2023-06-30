@@ -607,7 +607,6 @@ def Manage_Mapping_Main():
     
     
     with col2:   
-        
         Sabra_account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
