@@ -509,7 +509,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
-def View_Summary(Total_PL):
+def View_Summary(Total_PL,latest_month):
     
     months=list(Total_PL.columns)
     m_str = ''
@@ -585,7 +585,7 @@ def Upload_Main(entity_mapping,account_mapping):
             
         else:
             with st.expander("Summary of Checking"):
-                View_Summary(Total_PL)
+                View_Summary(Total_PL,latest_month)
             with st.expander("Detail of dismatch"):
                 Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
             with st.expander("Download Checking Results"):
@@ -593,7 +593,6 @@ def Upload_Main(entity_mapping,account_mapping):
                 with col1:
                     download_report(diff_BPC_PL,"Checking Result")
                 with col2:
-                    latest_month=max(list(Total_PL.columns))
                     download_report(Total_PL[latest_month],operator+" "+str(latest_month)+" Reporting")  
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
