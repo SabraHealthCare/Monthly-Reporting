@@ -285,7 +285,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                     if PL_date_header[i]==0 or PL_date_header[i]=="0":
                         continue
                     else:
-                        d_str +=str(original[i])+"——"+ str(PL_date_header[i])+", \n"
+                        d_str +=str(original[i])+"——"+ str(PL_date_header[i])+"  "
                 st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
@@ -452,6 +452,7 @@ def Sheet_Process(sheet_name,account_mapping):
         PL=PL.loc[list(filter(lambda x:x!='nan',PL.index))]
         #  new accounts don't counted yet
         account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
+        st.write(PL)
         return PL,account_mapping    
     
 def Aggregat_PL(PL,account_mapping,entity):
