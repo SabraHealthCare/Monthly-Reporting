@@ -448,7 +448,8 @@ def Sheet_Process(sheet_name,account_mapping):
        
         # remove columns what are all zero/blank 
         PL=PL.fillna(0)
-        PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
+        PL.loc[:, (PL!= 0).any(axis=0)]
+        #PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
         
         #remove rows with nan tenant account
         PL=PL.loc[list(filter(lambda x:x!='nan',PL.index))]
