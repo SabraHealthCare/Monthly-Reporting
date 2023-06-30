@@ -445,7 +445,9 @@ def Sheet_Process(sheet_name,account_mapping):
         
         #if there are duplicated accounts in finicial, only keep the last one
         PL=PL[~PL.index.duplicated(keep='last')]
-       
+        #remove rows with nan tenant account
+        PL=PL.loc[list(filter(lambda x:x!='nan',PL.index))]
+    
         # remove columns what are all zero/blank 
         PL=PL.fillna(0)
         st.write(PL!= 0)
@@ -453,8 +455,7 @@ def Sheet_Process(sheet_name,account_mapping):
         
         #PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
         
-        #remove rows with nan tenant account
-        PL=PL.loc[list(filter(lambda x:x!='nan',PL.index))]
+       
         #  new accounts don't counted yet
         account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
         st.write(PL)
