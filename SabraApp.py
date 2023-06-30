@@ -518,7 +518,7 @@ def View_Summary(Total_PL,latest_month):
     st.write("Reporting months:"+m_str)   
     st.write("The latest reporting month is:"+str(max(months)))
     st.write(Total_PL[str(max(months))])
-    download_report(Total_PL[str(max(months))],operator+" "+str(latest_month)+" Reporting")  
+    download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
 
 def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
     num_dismatch=diff_BPC_PL.shape[0]
@@ -552,7 +552,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
             fig=plt.figure()
             diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
             st.pyplot(fig)
-    download_report(PL_with_detail.reset_index(Drop=False),"Detail of dismatch")  
+    download_report(PL_with_detail.reset_index(drop=False),"Detail of dismatch")  
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
