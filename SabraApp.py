@@ -485,7 +485,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","BPC","Operator Finance","Diff"])
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","Sabra","P&L","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
@@ -505,7 +505,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_Name"].item()
                     sheet_name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
                     diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":property_name,"Sabra_Account":matrix,\
-                    "Sheet_name":sheet_name,"BPC":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
+                    "Sheet_name":sheet_name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
@@ -525,23 +525,34 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
     num_total_data=Total_PL.shape[0]*Total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
-    
-    col1,col2,col3=st.columns(3)
-    with col1:
-        fig=plt.figure()
-        diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
-        #plt.xticks(rotation=45)
-        st.pyplot(fig)
-    with col2:
-        fig=plt.figure()
-        diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
-        #plt.xticks(rotation=45)
-        st.pyplot(fig)
-    with col3:
-        fig=plt.figure()
-        diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
-        st.pyplot(fig)
-    download_report(PL_with_detail,"Detail of dismatch")  
+    if len(diff_BPC_PL['Property_Name'].unique())==1:
+        col1,col2=st.columns(2)
+        with col1:
+            fig=plt.figure()
+            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+            #plt.xticks(rotation=45)
+            st.pyplot(fig)
+        with col2:
+            fig=plt.figure()
+            diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
+            st.pyplot(fig)
+    else:  
+        col1,col2,col3=st.columns(3)
+        with col1:
+            fig=plt.figure()
+            diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
+            #plt.xticks(rotation=45)
+            st.pyplot(fig)
+        with col2:
+            fig=plt.figure()
+            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+            #plt.xticks(rotation=45)
+            st.pyplot(fig)
+        with col3:
+            fig=plt.figure()
+            diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
+            st.pyplot(fig)
+    download_report(PL_with_detail.reset_index(Drop=False),"Detail of dismatch")  
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
