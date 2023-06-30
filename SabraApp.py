@@ -282,9 +282,10 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                
                 d_str = ''
                 for i in range(len(PL_date_header)):
-                    if PL_date_header[i]==0:
+                    if PL_date_header[i]==0 or PL_date_header[i]=="0":
                         continue
-                    d_str +=str(original[i])+"——"+ str(PL_date_header[i])+", \n"
+                    else:
+                        d_str +=str(original[i])+"——"+ str(PL_date_header[i])+", \n"
                 st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
