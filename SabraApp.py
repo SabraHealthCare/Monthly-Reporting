@@ -510,15 +510,17 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
     return diff_BPC_PL 
 
 def View_Summary(Total_PL,latest_month):
-    
     months=list(Total_PL.columns)
     m_str = ''
     for month in months:
         m_str += " " + month 
     st.write("Reporting months:"+m_str)   
     st.write("The latest reporting month is:"+str(max(months)))
-    st.dataframe(Total_PL[str(max(months))])
-    download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
+    col1,col2=st.columns(2)
+    with col1:
+        st.dataframe(Total_PL[str(max(months))])
+    with col2:
+        download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
 
 def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
     num_dismatch=diff_BPC_PL.shape[0]
