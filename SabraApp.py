@@ -379,8 +379,8 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             return account_mapping
             
 def Map_New_Entity(BPC_pull,entity_mapping):
-    Entity_in_BPC=set(BPC_pull.index.get_level_values('ENTITY'))
-    Entity_in_format=list(entity_mapping.loc[entity_mapping["Sheet_Name"]==entity_mapping["Sheet_Name"],'Entity'])
+    Entity_in_BPC=set(BPC_pull.index.get_level_values("ENTITY"))
+    Entity_in_format=list(entity_mapping.loc[entity_mapping["Sheet_Name"]==entity_mapping["Sheet_Name"],"ENTITY"])
     Missing_Entity=list(filter(lambda x:x not in Entity_in_format,Entity_in_BPC))
     if len(Missing_Entity)==0:
         return entity_mapping
@@ -555,7 +555,7 @@ def Upload_Main(entity_mapping,account_mapping):
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
         #All accounts are in one sheet
         # how about if entity is sold? it is in entity but not in financial anymore
-            for entity_i in range(len(entity_mapping['Entity'])):
+            for entity_i in range(len(entity_mapping["ENTITY"])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                
 
@@ -567,10 +567,10 @@ def Upload_Main(entity_mapping,account_mapping):
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                     
-                elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
+                elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping["ENTITY"])-1:
                     continue
                
-                if entity_i==len(entity_mapping['Entity'])-1:
+                if entity_i==len(entity_mapping["ENTITY"])-1:
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
                 
