@@ -73,7 +73,7 @@ if operator!='select operator':
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_Name=Sheet_Name_entity_mapping,header=0)
+    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=Sheet_Name_entity_mapping,header=0)
     
     Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
      'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -503,7 +503,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                
                 if abs(BPC_value-Operator_value)>3:
                     Property_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,"Property_Name"].item()
-                    Sheet_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'Sheet_Name'].item()
+                    sheet_name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'Sheet_Name'].item()
                     diff_record=pd.DataFrame({"TIME":timeid,"ENTITY":entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
                     "Sheet_Name":Sheet_Name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
@@ -571,10 +571,10 @@ def Upload_Main(entity_mapping,account_mapping):
         #All accounts are in one sheet
         # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
-                Sheet_Name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
+                sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 
                 # Sheet_Name is not nan
-                if Sheet_Name==Sheet_Name and Sheet_Name in PL_sheet_list:
+                if sheet_name==Sheet_Name and Sheet_Name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(Sheet_Name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
