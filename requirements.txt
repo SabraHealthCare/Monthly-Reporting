@@ -15,6 +15,7 @@ pyodbc
 gsheetsdb
 s3fs
 boto3
+streamlit_modal
 
 
 # Direct pypi install coming soon
