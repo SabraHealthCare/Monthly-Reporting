@@ -35,31 +35,31 @@ def strip_upper_col(series_or_list):
 def Read_Account_Mapping(bucket_mapping,mapping_path):
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), Sheet_Name=Sheet_Name_account_mapping,header=0)
     #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
-    account_mapping["Sabra_account"]=strip_upper_col(account_mapping["Sabra_account"])
-    # remove nan in col Sabra_account
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_account"])),\
-                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
+    account_mapping["Sabra_Account"]=strip_upper_col(account_mapping["Sabra_Account"])
+    # remove nan in col Sabra_Account
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_Account"])),\
+                                     ["Sabra_Account","Tenant_account","Sabra_second_account"]]
     account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
-                                     ["Sabra_account","Tenant_account","Sabra_second_account"]]
+                                     ["Sabra_Account","Tenant_account","Sabra_second_account"]]
     account_mapping=account_mapping.drop_duplicates()
     account_mapping=account_mapping.reset_index(drop=True)
     return account_mapping
 #-----------------------------------------------------------------------------------------
-sheet_name_account_mapping="Account_Mapping"
-sheet_name_entity_mapping="Property_Mapping"
-sheet_name_BPC_pull="BPC_pull"
-sheet_name_format='Format'
+Sheet_Name_account_mapping="Account_Mapping"
+Sheet_Name_entity_mapping="Property_Mapping"
+Sheet_Name_BPC_pull="BPC_pull"
+Sheet_Name_format='Format'
 
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
 
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
+operator_list = pd.read_excel(operatorlist['Body'].read(), Sheet_Name='Operator_list')
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -69,11 +69,11 @@ operator= st.selectbox(' ',(operator_list))
 if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=sheet_name_BPC_pull,header=0)
+    BPC_pull=pd.read_excel(BPCpull['Body'].read(),Sheet_Name=Sheet_Name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=sheet_name_entity_mapping,header=0)
+    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),Sheet_Name=Sheet_Name_entity_mapping,header=0)
     
     Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
      'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -93,8 +93,8 @@ if operator!='select operator':
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
-sheet_name="Delaney_Creek_IS"
-def Identify_Tenant_Account_Col(PL,account_mapping,sheet_name):
+Sheet_Name="Delaney_Creek_IS"
+def Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name):
     for tenantAccount_col_no in range(0,PL.shape[1]):
         #trim and lower case column
         account_column=strip_lower_col(PL.iloc[:,tenantAccount_col_no])
@@ -109,7 +109,7 @@ def Identify_Tenant_Account_Col(PL,account_mapping,sheet_name):
             continue
     
     # didn't find accounts col
-    print("Can't find account column in sheet—— '"+sheet_name+"'")
+    print("Can't find account column in sheet—— '"+Sheet_Name+"'")
 def Get_Year(single_string):
     if single_string!=single_string or single_string==None or type(single_string)==float:
         return 0,""
@@ -223,7 +223,7 @@ def Add_year_to_header(month_list):
             j+=1
     return month_list  
 # find the Month/year row and return row number
-def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
+def Identify_Month_Row(PL,tenantAccount_col_no,Sheet_Name):
  
     PL_row_size=PL.shape[0]
     PL_col_size=PL.shape[1]
@@ -247,7 +247,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
         year_count.append(len(valid_year))
     # didn't find any month in all the rows
     if all(map(lambda x:x==0,month_count)):
-        print("Can't identify month/year columns in sheet——'"+sheet_name+"'")   
+        print("Can't identify month/year columns in sheet——'"+Sheet_Name+"'")   
         return [0],0
     month_sort_index = np.argsort(np.array(month_count))
     year_sort_index = np.argsort(np.array(year_count))
@@ -277,7 +277,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                 
-                st.write("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
+                st.write("Fail to identify year in the date header in sheet '"+Sheet_Name+"'. Filled year as below: ")
                 original=PL.iloc[month_sort_index[month_index_i],]
                
                 d_str = ''
@@ -296,7 +296,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
         # only one month in header:month and year must exist for one month header
         elif month_count[month_sort_index[month_index_i]]==1:
             # month and year must match 
-            st.write("There is only one month in sheet——'"+sheet_name+"'")
+            st.write("There is only one month in sheet——'"+Sheet_Name+"'")
             col_month=0
             #find the col number of month
             while(month_table.iloc[month_sort_index[month_index_i],col_month]==0):
@@ -305,7 +305,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 #if month_table.iloc[month_sort_index[index_i],col_month]!=1:
                 #if column of month is smaller than column of account, or there is no year in month, continue 
             if col_month<tenantAccount_col_no or year_table.iloc[month_sort_index[month_index_i],col_month]==0:
-                st.write("There is no year in date row in sheet——'"+sheet_name+"'")
+                st.write("There is no year in date row in sheet——'"+Sheet_Name+"'")
                 continue
            
             count_num=0
@@ -327,7 +327,7 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                         month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
                         
                 return PL_date_header,month_sort_index[month_index_i]
-    st.write("Can't identify date row in P&L for sheet: '"+sheet_name+"'")
+    st.write("Can't identify date row in P&L for sheet: '"+Sheet_Name+"'")
     return [0],0
 def Upload_file_to_S3(file,bucket,key):
     try:
@@ -339,11 +339,11 @@ def Upload_file_to_S3(file,bucket,key):
         st.error('Fail to upload to S3')
         return False 
      
-def Update_Sheet_inS3(bucket,key,sheet_name,df):  
+def Update_Sheet_inS3(bucket,key,Sheet_Name,df):  
     mapping_file =s3.get_object(Bucket="sabramapping", Key=key)
     workbook = load_workbook(BytesIO(mapping_file['Body'].read()))
-    workbook.remove(workbook[sheet_name_account_mapping])
-    new_worksheet = workbook.create_sheet(sheet_name)
+    workbook.remove(workbook[Sheet_Name_account_mapping])
+    new_worksheet = workbook.create_sheet(Sheet_Name)
     for r in dataframe_to_rows(df, index=False, header=True):
         new_worksheet.append(r)
     
@@ -355,14 +355,14 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     st.success('Successfully uploaded to S3')    
     
 
-def Map_New_Account(PL,account_mapping,sheet_name):
+def Map_New_Account(PL,account_mapping,Sheet_Name):
     new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
    
     if len(new_accounts)==0:
         return account_mapping
     maplist=[]
-    drop_down_list=["No need to map"]+list(account_mapping["Sabra_account"].unique())
+    drop_down_list=["No need to map"]+list(account_mapping["Sabra_Account"].unique())
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
         maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
@@ -374,16 +374,16 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             j=0
             for i in range(new_account_len):
                 if maplist[i]!="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_account"]=maplist[i]
+                    account_mapping.loc[len_mapping+j,"Sabra_Account"]=maplist[i]
                     account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
                     j+=1
                 elif maplist[i]=="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_account"]="No need to map"
+                    account_mapping.loc[len_mapping+j,"Sabra_Account"]="No need to map"
                     account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
                     j+=1
                    
             # update account_mapping workbook       
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+            Update_Sheet_inS3(bucket_mapping,mapping_path,Sheet_Name_account_mapping,account_mapping)
             return account_mapping
             
 def Map_New_Entity(BPC_pull,entity_mapping):
@@ -397,7 +397,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
     
     maplist=[]
     for entity_i in range(len(Missing_Entity)):
-        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_name"][0],["No need to map"]+finicial_sheet_list))
+        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_Name"][0],["No need to map"]+finicial_sheet_list))
    
     # update entity_mapping list: insert new entities into entity_mapping
     if st.button('Submit property mapping'):
@@ -417,19 +417,19 @@ def Map_New_Entity(BPC_pull,entity_mapping):
                     j+=1
             if j>0:             
             # update account_mapping workbook       
-                Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+                Update_Sheet_inS3(bucket_mapping,mapping_path,Sheet_Name_entity_mapping,entity_mapping)
             return entity_mapping
 
 
     
-def Sheet_Process(sheet_name,account_mapping):
-        PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
-        tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
+def Sheet_Process(Sheet_Name,account_mapping):
+        PL = pd.read_excel(uploaded_file,Sheet_Name=Sheet_Name,header=None)
+        tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name)
     
         if tenantAccount_col_no==None:
-            st.write("Fail to identify tenant account in sheet '"+sheet_name+"'")
+            st.write("Fail to identify tenant account in sheet '"+Sheet_Name+"'")
             return False,account_mapping
-        date_header=Identify_Month_Row(PL,tenantAccount_col_no,sheet_name)
+        date_header=Identify_Month_Row(PL,tenantAccount_col_no,Sheet_Name)
         if len(date_header[0])==1 and date_header[0]==[0]:
             st.write("didn't find date row")
             return False,account_mapping
@@ -457,26 +457,26 @@ def Sheet_Process(sheet_name,account_mapping):
         
        
         #  new accounts don't counted yet
-        account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
+        account_mapping=Map_New_Account(PL,account_mapping,Sheet_Name)
         
         return PL,account_mapping    
     
 def Aggregat_PL(PL,account_mapping,entity):
     # convert index to 0,1,2,3....to avoid duplication, original index:'Tenant_account'
-    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_account"])),["Sabra_account","Tenant_account","Sabra_second_account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_Account"])),["Sabra_Account","Tenant_account","Sabra_second_account"]]
     PL=PL.reset_index(drop=False)
     second_account_mapping=account_mapping[account_mapping["Sabra_second_account"]==account_mapping["Sabra_second_account"]][["Sabra_second_account","Tenant_account"]].\
-                            rename(columns={"Sabra_second_account": "Sabra_account"})
+                            rename(columns={"Sabra_second_account": "Sabra_Account"})
     
-    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_account","Tenant_account"]],on='Tenant_account',how='right')])
+    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_Account","Tenant_account"]],on='Tenant_account',how='right')])
     
-    PL=PL.set_index('Sabra_account',drop=True)
+    PL=PL.set_index('Sabra_Account',drop=True)
     
-    PL.index.name="Sabra_account"
+    PL.index.name="Sabra_Account"
     PL_with_detail=PL
-    # aggregate by sabra_account
+    # aggregate by Sabra_Account
     PL=PL.drop('Tenant_account', axis=1)
-    PL=PL.groupby(by="Sabra_account").sum()
+    PL=PL.groupby(by="Sabra_Account").sum()
     
     PL.index=[[entity]*len(PL.index),list(PL.index)]
     PL_with_detail.index=[[entity]*len(PL_with_detail.index),PL_with_detail.index]
@@ -485,7 +485,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_name","Sabra_account","Sheet_name","Sabra","P&L","Diff"])
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
@@ -502,10 +502,10 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     continue
                
                 if abs(BPC_value-Operator_value)>3:
-                    property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_name"].item()
-                    sheet_name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
-                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_name":property_name,"Sabra_account":matrix,\
-                    "Sheet_name":sheet_name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
+                    Property_Name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_Name"].item()
+                    Sheet_Name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
+                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
+                    "Sheet_Name":Sheet_Name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
 
@@ -525,11 +525,11 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
     download_report(diff_BPC_PL,"Checking Result")
-    if len(diff_BPC_PL['Property_name'].unique())==1:
+    if len(diff_BPC_PL['Property_Name'].unique())==1:
         col1,col2=st.columns(2)
         with col1:
             fig=plt.figure()
-            diff_BPC_PL["Sabra_account"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col2:
@@ -540,12 +540,12 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
         col1,col2,col3=st.columns(3)
         with col1:
             fig=plt.figure()
-            diff_BPC_PL["Property_name"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col2:
             fig=plt.figure()
-            diff_BPC_PL["Sabra_account"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col3:
@@ -560,7 +560,7 @@ def download_report(df,button_display):
 
 def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=sheet_name_format,header=0)
+        format_table=pd.read_excel(mapping_format['Body'].read(), Sheet_Name=Sheet_Name_format,header=0)
 
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
@@ -571,16 +571,16 @@ def Upload_Main(entity_mapping,account_mapping):
         #All accounts are in one sheet
         # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
-                sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
+                Sheet_Name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 
-                # sheet_name is not nan
-                if sheet_name==sheet_name and sheet_name in PL_sheet_list:
-                    PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
+                # Sheet_Name is not nan
+                if Sheet_Name==Sheet_Name and Sheet_Name in PL_sheet_list:
+                    PL,account_mapping=Sheet_Process(Sheet_Name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"Entity"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                     
-                elif (sheet_name!=sheet_name or sheet_name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
+                elif (Sheet_Name!=Sheet_Name or Sheet_Name not in PL_sheet_list) and entity_i!=len(entity_mapping['Entity'])-1:
                     continue
                
                 if entity_i==len(entity_mapping['Entity'])-1:
@@ -604,11 +604,11 @@ def Upload_Main(entity_mapping,account_mapping):
                 col1,col2=st.columns(2)
                 with col1:
                     select_month=st.selectbox("Select Year/Month",[""]+diff_BPC_PL['TIME'].unique().tolist())
-                    select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_name'].unique().tolist())
+                    select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_Name'].unique().tolist())
                 with col2:
-                    select_Sabra_account=st.selectbox("Select Sabra_account",[""]+diff_BPC_PL['Sabra_account'].unique().tolist())
-                selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_account"]==select_Sabra_account)]
-                selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),["Tenant_account",select_month]]
+                    select_Sabra_Account=st.selectbox("Select Sabra_Account",[""]+diff_BPC_PL['Sabra_Account'].unique().tolist())
+                selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"]
+                selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_account",select_month]]
                 st.dataframe(selected_diff)
                 st.dataframe(selected_data)
 def Manage_Mapping_Main():
@@ -621,10 +621,10 @@ def Manage_Mapping_Main():
     
     
     with col2:   
-        Sabra_account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
-        Sabra_account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
-        Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_name"].unique()))
-        Sabra_account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_name"].unique()))
+        Sabra_Account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
+        Sabra_Account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_Account"].unique()))
+        Sabra_Account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
+        Sabra_Account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
     
         
     if st.button("Submit"):
