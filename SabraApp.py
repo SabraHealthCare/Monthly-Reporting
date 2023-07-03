@@ -596,9 +596,9 @@ def Upload_Main(entity_mapping,account_mapping):
             st.write("100% matches")
             
         else:
-            with st.expander("Summary of Checking"):
+            with st.expander("Summary of P&L"):
                 View_Summary(Total_PL,latest_month)
-            with st.expander("Detail of dismatch"):
+            with st.expander("Checking results"):
                 Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
             with st.expander("Retrieval"):
                 col1,col2=st.columns(2)
