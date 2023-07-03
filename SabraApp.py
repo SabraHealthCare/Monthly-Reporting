@@ -603,10 +603,10 @@ def Upload_Main(entity_mapping,account_mapping):
             with st.expander("Retrieval"):
                 col1,col2=st.columns(2)
                 with col1:
-                    select_month=st.selectbox(""+"Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
-                    select_entity=st.selectbox(""+"Select Property",diff_BPC_PL['Property_name'].unique().tolist())
+                    select_month=st.selectbox("Select Year/Month",[""]+diff_BPC_PL['TIME'].unique().tolist())
+                    select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_name'].unique().tolist())
                 with col2:
-                    select_Sabra_account=st.selectbox(""+"Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
+                    select_Sabra_account=st.selectbox("Select Sabra_account",[""]+diff_BPC_PL['Sabra_account'].unique().tolist())
                 selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_account"]==select_Sabra_account)]
                 selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),["Tenant_account",select_month]]
                 st.dataframe(selected_diff)
