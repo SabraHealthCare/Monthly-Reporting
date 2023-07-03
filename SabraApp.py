@@ -643,6 +643,3 @@ elif choice=="Manage Mapping" and operator!='select operator':
 
 
 
-
-
-
