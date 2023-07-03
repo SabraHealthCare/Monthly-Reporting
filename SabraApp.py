@@ -431,7 +431,7 @@ def Sheet_Process(sheet_name,account_mapping):
         #remove row above date row and remove column without date col name
         PL=PL.iloc[date_header[1]+1:,PL.columns!='0']
         PL.index=map(lambda x:str(x).lower().strip(),PL.index)
-        PL.index.name='Tenant_account'
+        PL.index.name="Tenant_Account"
         
         #if there are duplicated accounts in finicial, only keep the last one
         PL=PL[~PL.index.duplicated(keep='last')]
@@ -452,20 +452,20 @@ def Sheet_Process(sheet_name,account_mapping):
         return PL,account_mapping    
     
 def Aggregat_PL(PL,account_mapping,entity):
-    # convert index to 0,1,2,3....to avoid duplication, original index:'Tenant_account'
+    # convert index to 0,1,2,3....to avoid duplication, original index:"Tenant_Account"
     account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_Account"])),["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
     PL=PL.reset_index(drop=False)
     second_account_mapping=account_mapping[account_mapping["Sabra_Second_Account"]==account_mapping["Sabra_Second_Account"]][["Sabra_Second_Account","Tenant_Account"]].\
                             rename(columns={"Sabra_Second_Account": "Sabra_Account"})
     
-    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_Account","Tenant_Account"]],on='Tenant_account',how='right')])
+    PL=pd.concat([PL.merge(second_account_mapping,on="Tenant_Account",how='right'),PL.merge(account_mapping[["Sabra_Account","Tenant_Account"]],on="Tenant_Account",how='right')])
     
     PL=PL.set_index('Sabra_Account',drop=True)
     
     PL.index.name="Sabra_Account"
     PL_with_detail=PL
     # aggregate by Sabra_Account
-    PL=PL.drop('Tenant_account', axis=1)
+    PL=PL.drop("Tenant_Account", axis=1)
     PL=PL.groupby(by="Sabra_Account").sum()
     
     PL.index=[[entity]*len(PL.index),list(PL.index)]
@@ -571,6 +571,7 @@ def Upload_Main(entity_mapping,account_mapping):
                     continue
                
                 if entity_i==len(entity_mapping["ENTITY"])-1:
+                    
                     start_date=min(Total_PL.columns)+"00"
                     end_date=max(Total_PL.columns)+"00"
                 
