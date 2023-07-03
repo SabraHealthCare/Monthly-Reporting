@@ -556,7 +556,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
     select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
     select_Sabra_account=st.selectbox("Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
     
-    selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),select_month]
+    selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),["Tenant_account",select_month]]
     st.dataframe(selected_data)
     download_report(PL_with_detail.reset_index(drop=False),"Detail of dismatch")  
 def download_report(df,button_display):
