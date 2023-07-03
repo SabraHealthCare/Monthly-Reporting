@@ -35,7 +35,7 @@ def strip_upper_col(series_or_list):
 def Read_Account_Mapping(bucket_mapping,mapping_path):
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    account_mapping = pd.read_excel(mapping_file['Body'].read(), Sheet_name=Sheet_Name_account_mapping,header=0)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=Sheet_Name_account_mapping,header=0)
     #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
@@ -59,7 +59,7 @@ bucket_mapping="sabramapping"
 
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(operatorlist['Body'].read(), Sheet_name='Operator_list')
+operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -69,11 +69,11 @@ operator= st.selectbox(' ',(operator_list))
 if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    BPC_pull=pd.read_excel(BPCpull['Body'].read(),Sheet_Name=Sheet_Name_BPC_pull,header=0)
+    BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_Name=Sheet_Name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),Sheet_Name=Sheet_Name_entity_mapping,header=0)
+    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_Name=Sheet_Name_entity_mapping,header=0)
     
     Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
      'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
@@ -423,7 +423,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(Sheet_Name,account_mapping):
-        PL = pd.read_excel(uploaded_file,Sheet_name=Sheet_Name,header=None)
+        PL = pd.read_excel(uploaded_file,sheet_name=Sheet_Name,header=None)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name)
     
         if tenantAccount_col_no==None:
@@ -560,7 +560,7 @@ def download_report(df,button_display):
 
 def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(mapping_format['Body'].read(), Sheet_name=Sheet_Name_format,header=0)
+        format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=Sheet_Name_format,header=0)
 
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
