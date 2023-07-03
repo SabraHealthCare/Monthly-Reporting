@@ -37,14 +37,14 @@ def Read_Account_Mapping(bucket_mapping,mapping_path):
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=Sheet_Name_account_mapping,header=0)
     #convert tenant_account to lower case
-    account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
-    account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
+    account_mapping["Tenant_Account"]=strip_lower_col(account_mapping["Tenant_Account"])
+    account_mapping["Sabra_Second_Account"]=strip_upper_col(account_mapping["Sabra_Second_Account"])
     account_mapping["Sabra_Account"]=strip_upper_col(account_mapping["Sabra_Account"])
     # remove nan in col Sabra_Account
     account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_Account"])),\
-                                     ["Sabra_Account","Tenant_account","Sabra_second_account"]]
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_account"])),\
-                                     ["Sabra_Account","Tenant_account","Sabra_second_account"]]
+                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_Account"])),\
+                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
     account_mapping=account_mapping.drop_duplicates()
     account_mapping=account_mapping.reset_index(drop=True)
     return account_mapping
@@ -100,7 +100,7 @@ def Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name):
         account_column=strip_lower_col(PL.iloc[:,tenantAccount_col_no])
         
         #find out how many tenant accounts match with account_mapping list
-        match=[x in  list(account_column) for x in account_mapping["Tenant_account"]]
+        match=[x in  list(account_column) for x in account_mapping["Tenant_Account"]]
         #If 50% of accounts match with account_mapping list, identify this col as tenant account.
         if len(match)>0 and sum(x for x in match)/len(match)>0.1:
             return tenantAccount_col_no  
@@ -356,7 +356,7 @@ def Update_Sheet_inS3(bucket,key,Sheet_Name,df):
     
 
 def Map_New_Account(PL,account_mapping,Sheet_Name):
-    new_accounts=[x if x not in list(account_mapping["Tenant_account"]) and not x!=x else "" for x in PL.index]
+    new_accounts=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
    
     if len(new_accounts)==0:
@@ -375,11 +375,11 @@ def Map_New_Account(PL,account_mapping,Sheet_Name):
             for i in range(new_account_len):
                 if maplist[i]!="No need to map":
                     account_mapping.loc[len_mapping+j,"Sabra_Account"]=maplist[i]
-                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+                    account_mapping.loc[len_mapping+j,"Tenant_Account"]=new_accounts[i]
                     j+=1
                 elif maplist[i]=="No need to map":
                     account_mapping.loc[len_mapping+j,"Sabra_Account"]="No need to map"
-                    account_mapping.loc[len_mapping+j,"Tenant_account"]=new_accounts[i]
+                    account_mapping.loc[len_mapping+j,"Tenant_Account"]=new_accounts[i]
                     j+=1
                    
             # update account_mapping workbook       
@@ -463,12 +463,12 @@ def Sheet_Process(Sheet_Name,account_mapping):
     
 def Aggregat_PL(PL,account_mapping,entity):
     # convert index to 0,1,2,3....to avoid duplication, original index:'Tenant_account'
-    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_Account"])),["Sabra_Account","Tenant_account","Sabra_second_account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x!='NO NEED TO MAP',account_mapping["Sabra_Account"])),["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
     PL=PL.reset_index(drop=False)
-    second_account_mapping=account_mapping[account_mapping["Sabra_second_account"]==account_mapping["Sabra_second_account"]][["Sabra_second_account","Tenant_account"]].\
-                            rename(columns={"Sabra_second_account": "Sabra_Account"})
+    second_account_mapping=account_mapping[account_mapping["Sabra_Second_Account"]==account_mapping["Sabra_Second_Account"]][["Sabra_Second_Account","Tenant_Account"]].\
+                            rename(columns={"Sabra_Second_Account": "Sabra_Account"})
     
-    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_Account","Tenant_account"]],on='Tenant_account',how='right')])
+    PL=pd.concat([PL.merge(second_account_mapping,on='Tenant_account',how='right'),PL.merge(account_mapping[["Sabra_Account","Tenant_Account"]],on='Tenant_account',how='right')])
     
     PL=PL.set_index('Sabra_Account',drop=True)
     
@@ -608,14 +608,14 @@ def Upload_Main(entity_mapping,account_mapping):
                 with col2:
                     select_Sabra_Account=st.selectbox("Select Sabra_Account",[""]+diff_BPC_PL['Sabra_Account'].unique().tolist())
                 selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"]
-                selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_account",select_month]]
+                selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_Account",select_month]]
                 st.dataframe(selected_diff)
                 st.dataframe(selected_data)
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
         tenant_account1=st.text_input("Enter new account")
-        tenant_account2=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_account"].unique()))
+        tenant_account2=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_Account"].unique()))
         tenant_account1=st.text_input("Enter sheetname of new property")
         tenant_account2=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
     
