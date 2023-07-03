@@ -492,7 +492,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
 
                 if abs(BPC_value-Operator_value)>3:
                     Property_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,"Property_Name"].item()
-                    sheet_name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'sheet_name'].item()
+                    sheet_name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,"Sheet_Name"].item()
                     diff_record=pd.DataFrame({"TIME":timeid,"ENTITY":entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
                     "Sheet_Name":sheet_name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
