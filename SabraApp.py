@@ -274,18 +274,17 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
 
 
 
-                modal = Modal(key="Demo Key",title="Add Year")
-                with modal.container():
-                    st.markdown("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
                 
-                    original=PL.iloc[month_sort_index[month_index_i],]
-                    d_str = ''
-                    for i in range(len(PL_date_header)):
+                st.markdown("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
+                
+                original=PL.iloc[month_sort_index[month_index_i],]
+                d_str = ''
+                for i in range(len(PL_date_header)):
                         if PL_date_header[i]==0 or PL_date_header[i]=="0":
                             continue
                         else:
                             d_str +=str(original[i])+"——"+ str(PL_date_header[i])+"  "
-                    st.write(d_str)
+                st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
             # month is not continuous, check next one
