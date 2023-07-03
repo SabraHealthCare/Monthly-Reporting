@@ -485,7 +485,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_Account","Sheet_name","Sabra","P&L","Diff"])
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_account","Sheet_name","Sabra","P&L","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
@@ -504,7 +504,7 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                 if abs(BPC_value-Operator_value)>3:
                     property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_Name"].item()
                     sheet_name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
-                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":property_name,"Sabra_Account":matrix,\
+                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":property_name,"Sabra_account":matrix,\
                     "Sheet_name":sheet_name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
@@ -529,7 +529,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
         col1,col2=st.columns(2)
         with col1:
             fig=plt.figure()
-            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Sabra_account"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col2:
@@ -545,7 +545,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
             st.pyplot(fig)
         with col2:
             fig=plt.figure()
-            diff_BPC_PL["Sabra_Account"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Sabra_account"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col3:
@@ -554,8 +554,8 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
             st.pyplot(fig)
     st.write(PL_with_detail)
     select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
-    select_Sabra_account=st.selectbox("Select Sabra_Account",diff_BPC_PL['Sabra_Account'].unique().tolist())
-    selected_data=PL_with_detail[PL_with_detail["Sabra_Account"]==select_Sabra_account][select_month]
+    select_Sabra_account=st.selectbox("Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
+    selected_data=PL_with_detail[PL_with_detail["Sabra_account"]==select_Sabra_account][select_month]
     st.dataframe(selected_data)
     download_report(PL_with_detail.reset_index(drop=False),"Detail of dismatch")  
 def download_report(df,button_display):
