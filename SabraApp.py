@@ -595,7 +595,7 @@ def Upload_Main(entity_mapping,account_mapping):
                     select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_Name'].unique().tolist())
                 with col2:
                     select_Sabra_Account=st.selectbox("Select Sabra_Account",[""]+diff_BPC_PL['Sabra_Account'].unique().tolist())
-                selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"]
+                selected_diff=diff_BPC_PL["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"].loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]
                 selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_Account",select_month]]
                 st.dataframe(selected_diff)
                 st.dataframe(selected_data)
