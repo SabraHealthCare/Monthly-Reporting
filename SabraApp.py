@@ -21,7 +21,6 @@ import base64
 from tempfile import NamedTemporaryFile
 import time
 timestr = time.strftime("%Y%m%d-%H%M%S")
-
 #---------------------------define parameters--------------------------
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
@@ -31,7 +30,6 @@ def strip_lower_col(series_or_list):
     return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
 def strip_upper_col(series_or_list):
     return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
-
 def Read_Account_Mapping(bucket_mapping,mapping_path):
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
@@ -53,28 +51,24 @@ Sheet_Name_account_mapping="Account_Mapping"
 Sheet_Name_entity_mapping="Property_Mapping"
 Sheet_Name_BPC_pull="BPC_pull"
 Sheet_Name_format='Format'
-
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
-
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
 operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
-
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
-
-
 if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=Sheet_Name_BPC_pull,header=0)
-    BPC_pull=BPC_pull.set_index([ENTITY,"ACCOUNT"])
+    BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_Name=Sheet_Name_entity_mapping,header=0)
     entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=Sheet_Name_entity_mapping,header=0)
-    
+
     Sabra_detail_accounts_list=['PD_MCR_MGD_CARE','PD_MEDICARE','PD_COMM_INS', 'PD_PRIVATE', 'PD_MEDICAID', 'PD_VETERANS', 'PD_MCA_MGD_CARE', 'PD_OTHER','REV_MCR_MGD_CARE', 'REV_MEDICARE','REV_COMM_INS', 'REV_PRIVATE',
      'REV_MEDICAID', 'REV_VETERANS','REV_MCA_MGD_CARE', 'REV_MEDICARE_B','REV_OTHER', 'T_NURSING','T_DIETARY_RAW', 'T_DIETARY_OTHER','T_HOUSKEEPING', 'T_MAINTENANCE','T_MARKETING', 'T_BAD_DEBT','T_LEGAL', 'T_RE_TAX','T_INSURANCE', 
     'T_GEN_ADMIN_OTHER','T_ANCILLARY_THERAPY', 'T_ANCILLARY_PHARMACY','T_ANCILLARY_OTHER', 'T_EXPENSES','T_MGMT_FEE', 'T_OTHER_OP_EXO','T_DEPR_AMORT', 'T_INT_INC_EXP','T_RENT_EXP', 'T_SL_RENT_ADJ_EXP','T_NURSING_LABOR', 'T_N_CONTRACT_LABOR',
@@ -93,7 +87,6 @@ if operator!='select operator':
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
-
 def Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name):
     for tenantAccount_col_no in range(0,PL.shape[1]):
         #trim and lower case column
@@ -354,7 +347,6 @@ def Update_Sheet_inS3(bucket,key,Sheet_Name,df):
     s3.upload_fileobj(data,bucket,key)
     st.success('Successfully uploaded to S3')    
     
-
 def Map_New_Account(PL,account_mapping,Sheet_Name):
     new_accounts=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
@@ -409,18 +401,16 @@ def Map_New_Entity(BPC_pull,entity_mapping):
             for i in range(len_mapping):
                 if maplist[i]!="No need to map":
                     entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]=maplist[i]
-                    entity_mapping.loc[len_entity_mapping+j,ENTITY]=Missing_Entity[i]                    
+                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]                    
                     j+=1
                 elif maplist[i]=="No need to map":
                     entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]="No need to map"
-                    entity_mapping.loc[len_entity_mapping+j,ENTITY]=Missing_Entity[i]
+                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]
                     j+=1
             if j>0:             
             # update account_mapping workbook       
                 Update_Sheet_inS3(bucket_mapping,mapping_path,Sheet_Name_entity_mapping,entity_mapping)
             return entity_mapping
-
-
     
 def Sheet_Process(Sheet_Name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=Sheet_Name,header=None)
@@ -481,12 +471,11 @@ def Aggregat_PL(PL,account_mapping,entity):
     PL.index=[[entity]*len(PL.index),list(PL.index)]
     PL_with_detail.index=[[entity]*len(PL_with_detail.index),PL_with_detail.index]
     return PL,PL_with_detail
-
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME",ENTITY,"Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"])
-    for entity in entity_mapping[ENTITY]:
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","ENTITY","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"])
+    for entity in entity_mapping["ENTITY"]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
                 try:
@@ -500,15 +489,15 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                 
                 if BPC_value==0 and Operator_value==0:
                     continue
-               
+
                 if abs(BPC_value-Operator_value)>3:
-                    Property_Name=entity_mapping.loc[entity_mapping[ENTITY]==entity,"Property_Name"].item()
-                    sheet_name=entity_mapping.loc[entity_mapping[ENTITY]==entity,'Sheet_Name'].item()
-                    diff_record=pd.DataFrame({"TIME":timeid,ENTITY:entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
+                    Property_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,"Property_Name"].item()
+                    Sheet_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'Sheet_Name'].item()
+                    sheet_name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'Sheet_Name'].item()
+                    diff_record=pd.DataFrame({"TIME":timeid,"ENTITY":entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
                     "Sheet_Name":Sheet_Name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
-
 def View_Summary(Total_PL,latest_month):
     months=list(Total_PL.columns)
     m_str = ''
@@ -518,7 +507,6 @@ def View_Summary(Total_PL,latest_month):
     st.write("The latest reporting month is:"+str(max(months)))
     st.dataframe(Total_PL[str(max(months))])
     download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
-
 def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=Total_PL.shape[0]*Total_PL.shape[1]
@@ -557,11 +545,9 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
-
 def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
         format_table=pd.read_excel(mapping_format['Body'].read(), sheet_name=Sheet_Name_format,header=0)
-
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
         Total_PL_detail=pd.DataFrame()
@@ -571,12 +557,14 @@ def Upload_Main(entity_mapping,account_mapping):
         #All accounts are in one sheet
         # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
+                Sheet_Name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
-                
+
                 # Sheet_Name is not nan
+                if Sheet_Name==Sheet_Name and Sheet_Name in PL_sheet_list:
                 if sheet_name==Sheet_Name and Sheet_Name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(Sheet_Name,account_mapping)
-                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,ENTITY])
+                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                     
@@ -639,7 +627,6 @@ def Manage_Mapping_Main():
 #----------------------------------website widges------------------------------------
   
 menu=["Upload P&L","Manage Mapping","Instructions"]
-
 choice=st.sidebar.selectbox("Menu",menu)
 if choice=="Upload P&L" and operator!='select operator':
     st.subheader("Upload P&L:")
@@ -649,14 +636,9 @@ if choice=="Upload P&L" and operator!='select operator':
             PL_sheet_list=load_workbook(uploaded_file).sheetnames
         
         Upload_Main(entity_mapping,account_mapping)
-
 elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Mapping")
     Manage_Mapping_Main()
-
-       
-       
-
 
 
 
