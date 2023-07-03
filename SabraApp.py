@@ -397,7 +397,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
     
     maplist=[]
     for entity_i in range(len(Missing_Entity)):
-        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_Name"][0],["No need to map"]+finicial_sheet_list))
+        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_name"][0],["No need to map"]+finicial_sheet_list))
    
     # update entity_mapping list: insert new entities into entity_mapping
     if st.button('Submit property mapping'):
@@ -485,7 +485,7 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_Name","Sabra_account","Sheet_name","Sabra","P&L","Diff"])
+    diff_BPC_PL=pd.DataFrame(columns=["TIME","Entity","Property_name","Sabra_account","Sheet_name","Sabra","P&L","Diff"])
     for entity in entity_mapping["Entity"]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
@@ -502,9 +502,9 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     continue
                
                 if abs(BPC_value-Operator_value)>3:
-                    property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_Name"].item()
+                    property_name=entity_mapping.loc[entity_mapping["Entity"]==entity,"Property_name"].item()
                     sheet_name=entity_mapping.loc[entity_mapping["Entity"]==entity,'Sheet_Name'].item()
-                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_Name":property_name,"Sabra_account":matrix,\
+                    diff_record=pd.DataFrame({"TIME":timeid,"Entity":entity,"Property_name":property_name,"Sabra_account":matrix,\
                     "Sheet_name":sheet_name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
@@ -525,7 +525,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
     download_report(diff_BPC_PL,"Checking Result")
-    if len(diff_BPC_PL['Property_Name'].unique())==1:
+    if len(diff_BPC_PL['Property_name'].unique())==1:
         col1,col2=st.columns(2)
         with col1:
             fig=plt.figure()
@@ -540,7 +540,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
         col1,col2,col3=st.columns(3)
         with col1:
             fig=plt.figure()
-            diff_BPC_PL["Property_Name"].value_counts().plot(kind="bar")
+            diff_BPC_PL["Property_name"].value_counts().plot(kind="bar")
             #plt.xticks(rotation=45)
             st.pyplot(fig)
         with col2:
@@ -603,9 +603,10 @@ def Upload_Main(entity_mapping,account_mapping):
             with st.expander("Retrieval"):
                 col1,col2=st.columns(2)
                 with col1:
-                    select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
+                    select_month=st.selectbox(""+"Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
+                    select_entity=st.selectbox(""+"Select Property",diff_BPC_PL['Property_name'].unique().tolist())
                 with col2:
-                    select_Sabra_account=st.selectbox("Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
+                    select_Sabra_account=st.selectbox(""+"Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
                 selected_diff=diff_BPC_PL.loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_account"]==select_Sabra_account)]
                 selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),["Tenant_account",select_month]]
                 st.dataframe(selected_diff)
@@ -622,8 +623,8 @@ def Manage_Mapping_Main():
     with col2:   
         Sabra_account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_account"].unique()))
         Sabra_account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_account"].unique()))
-        Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
-        Sabra_account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
+        Sabra_account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_name"].unique()))
+        Sabra_account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_name"].unique()))
     
         
     if st.button("Submit"):
