@@ -271,12 +271,8 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 year_table.iloc[year_sort_index[year_index_i],]=Add_year_to_header(list(month_table.iloc[month_sort_index[month_index_i],]))
                 PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
-
-
-
                 
                 st.markdown("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
-                
                 original=PL.iloc[month_sort_index[month_index_i],]
                 d_str = ''
                 for i in range(len(PL_date_header)):
