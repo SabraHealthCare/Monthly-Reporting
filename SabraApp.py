@@ -35,7 +35,7 @@ def strip_upper_col(series_or_list):
 def Read_Account_Mapping(bucket_mapping,mapping_path):
     # read account mapping
     mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    account_mapping = pd.read_excel(mapping_file['Body'].read(), Sheet_Name=Sheet_Name_account_mapping,header=0)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), Sheet_name=Sheet_Name_account_mapping,header=0)
     #convert tenant_account to lower case
     account_mapping["Tenant_account"]=strip_lower_col(account_mapping["Tenant_account"])
     account_mapping["Sabra_second_account"]=strip_upper_col(account_mapping["Sabra_second_account"])
@@ -59,7 +59,7 @@ bucket_mapping="sabramapping"
 
 # drop down list of operator
 operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(operatorlist['Body'].read(), Sheet_Name='Operator_list')
+operator_list = pd.read_excel(operatorlist['Body'].read(), Sheet_name='Operator_list')
 
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
@@ -93,7 +93,7 @@ if operator!='select operator':
 #search tenant account column in P&L
 # transfer all the account name(revenue, expense, occ) into lower case
 # return col number of tenant account
-Sheet_Name="Delaney_Creek_IS"
+
 def Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name):
     for tenantAccount_col_no in range(0,PL.shape[1]):
         #trim and lower case column
@@ -423,7 +423,7 @@ def Map_New_Entity(BPC_pull,entity_mapping):
 
     
 def Sheet_Process(Sheet_Name,account_mapping):
-        PL = pd.read_excel(uploaded_file,Sheet_Name=Sheet_Name,header=None)
+        PL = pd.read_excel(uploaded_file,Sheet_name=Sheet_Name,header=None)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,Sheet_Name)
     
         if tenantAccount_col_no==None:
@@ -560,7 +560,7 @@ def download_report(df,button_display):
 
 def Upload_Main(entity_mapping,account_mapping):      
         mapping_format =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-        format_table=pd.read_excel(mapping_format['Body'].read(), Sheet_Name=Sheet_Name_format,header=0)
+        format_table=pd.read_excel(mapping_format['Body'].read(), Sheet_name=Sheet_Name_format,header=0)
 
         TENANT_ID=format_table["Tenant_ID"][0]
         Total_PL=pd.DataFrame()
