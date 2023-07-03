@@ -69,7 +69,7 @@ operator= st.selectbox(' ',(operator_list))
 if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_Name=Sheet_Name_BPC_pull,header=0)
+    BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=Sheet_Name_BPC_pull,header=0)
     BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
