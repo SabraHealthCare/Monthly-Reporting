@@ -70,7 +70,7 @@ if operator!='select operator':
     mapping_path="Mapping/"+operator+"/"+operator+"_Mapping.xlsx"
     BPCpull =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     BPC_pull=pd.read_excel(BPCpull['Body'].read(),sheet_name=Sheet_Name_BPC_pull,header=0)
-    BPC_pull=BPC_pull.set_index(["ENTITY","ACCOUNT"])
+    BPC_pull=BPC_pull.set_index([ENTITY,"ACCOUNT"])
     account_mapping=Read_Account_Mapping(bucket_mapping,mapping_path)
     entity_mapping_obj =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
     entity_mapping=pd.read_excel(entity_mapping_obj['Body'].read(),sheet_name=Sheet_Name_entity_mapping,header=0)
@@ -409,11 +409,11 @@ def Map_New_Entity(BPC_pull,entity_mapping):
             for i in range(len_mapping):
                 if maplist[i]!="No need to map":
                     entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]=maplist[i]
-                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]                    
+                    entity_mapping.loc[len_entity_mapping+j,ENTITY]=Missing_Entity[i]                    
                     j+=1
                 elif maplist[i]=="No need to map":
                     entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]="No need to map"
-                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]
+                    entity_mapping.loc[len_entity_mapping+j,ENTITY]=Missing_Entity[i]
                     j+=1
             if j>0:             
             # update account_mapping workbook       
@@ -485,8 +485,8 @@ def Aggregat_PL(PL,account_mapping,entity):
     
     
 def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
-    diff_BPC_PL=pd.DataFrame(columns=["TIME","ENTITY","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"])
-    for entity in entity_mapping["ENTITY"]:
+    diff_BPC_PL=pd.DataFrame(columns=["TIME",ENTITY,"Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"])
+    for entity in entity_mapping[ENTITY]:
         for matrix in Sabra_detail_accounts_list: 
             for timeid in Total_PL.columns:
                 try:
@@ -502,9 +502,9 @@ def Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping):
                     continue
                
                 if abs(BPC_value-Operator_value)>3:
-                    Property_Name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,"Property_Name"].item()
-                    sheet_name=entity_mapping.loc[entity_mapping["ENTITY"]==entity,'Sheet_Name'].item()
-                    diff_record=pd.DataFrame({"TIME":timeid,"ENTITY":entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
+                    Property_Name=entity_mapping.loc[entity_mapping[ENTITY]==entity,"Property_Name"].item()
+                    sheet_name=entity_mapping.loc[entity_mapping[ENTITY]==entity,'Sheet_Name'].item()
+                    diff_record=pd.DataFrame({"TIME":timeid,ENTITY:entity,"Property_Name":Property_Name,"Sabra_Account":matrix,\
                     "Sheet_Name":Sheet_Name,"Sabra":BPC_value,"P&L":Operator_value,"Diff":BPC_value-Operator_value},index=[0])
                     diff_BPC_PL=pd.concat([diff_BPC_PL,diff_record],ignore_index=True)
     return diff_BPC_PL 
@@ -576,7 +576,7 @@ def Upload_Main(entity_mapping,account_mapping):
                 # Sheet_Name is not nan
                 if sheet_name==Sheet_Name and Sheet_Name in PL_sheet_list:
                     PL,account_mapping=Sheet_Process(Sheet_Name,account_mapping)
-                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
+                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,ENTITY])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
                     Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
                     
