@@ -552,6 +552,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
             fig=plt.figure()
             diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
             st.pyplot(fig)
+    st.write(diff_BPC_PL)
     select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
     select_Sabra_account=st.selectbox("Select Sabra_Account",diff_BPC_PL['Sabra_Account'].unique().tolist())
     selected_data=PL_with_detail[PL_with_detail["Sabra_Account"]==select_Sabra_account][select_month]
