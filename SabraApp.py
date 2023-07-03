@@ -558,11 +558,11 @@ def Upload_Main(entity_mapping,account_mapping):
         # how about if entity is sold? it is in entity but not in financial anymore
             for entity_i in range(len(entity_mapping['Entity'])):
                 Sheet_Name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
-                sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
+               
 
                 # Sheet_Name is not nan
                 if Sheet_Name==Sheet_Name and Sheet_Name in PL_sheet_list:
-                if sheet_name==Sheet_Name and Sheet_Name in PL_sheet_list:
+                
                     PL,account_mapping=Sheet_Process(Sheet_Name,account_mapping)
                     PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
                     Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
