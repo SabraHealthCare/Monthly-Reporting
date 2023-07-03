@@ -20,6 +20,8 @@ from io import StringIO
 import base64
 from tempfile import NamedTemporaryFile
 import time
+from streamlit_modal import Modal
+
 timestr = time.strftime("%Y%m%d-%H%M%S")
 #---------------------------define parameters--------------------------
 def get_row_no(dataset,row_header):
@@ -269,17 +271,21 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
                 year_table.iloc[year_sort_index[year_index_i],]=Add_year_to_header(list(month_table.iloc[month_sort_index[month_index_i],]))
                 PL_date_header=year_table.iloc[year_sort_index[year_index_i],].apply(lambda x:str(int(x)))+\
                 month_table.iloc[month_sort_index[month_index_i],].apply(lambda x:"" if x==0 else "0"+str(int(x)) if x<10 else str(int(x)))
+
+
+
+                modal = Modal(key="Demo Key",title="Add Year")
+                with modal.container():
+                    st.markdown("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
                 
-                st.write("Fail to identify year in the date header in sheet '"+sheet_name+"'. Filled year as below: ")
-                original=PL.iloc[month_sort_index[month_index_i],]
-               
-                d_str = ''
-                for i in range(len(PL_date_header)):
-                    if PL_date_header[i]==0 or PL_date_header[i]=="0":
-                        continue
-                    else:
-                        d_str +=str(original[i])+"——"+ str(PL_date_header[i])+"  "
-                st.write(d_str)
+                    original=PL.iloc[month_sort_index[month_index_i],]
+                    d_str = ''
+                    for i in range(len(PL_date_header)):
+                        if PL_date_header[i]==0 or PL_date_header[i]=="0":
+                            continue
+                        else:
+                            d_str +=str(original[i])+"——"+ str(PL_date_header[i])+"  "
+                    st.write(d_str)
                 return PL_date_header,month_sort_index[month_index_i]
                         
             # month is not continuous, check next one
