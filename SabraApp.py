@@ -516,17 +516,15 @@ def View_Summary(Total_PL,latest_month):
         m_str += " " + month 
     st.write("Reporting months:"+m_str)   
     st.write("The latest reporting month is:"+str(max(months)))
-    col1,col2=st.columns(2)
-    with col1:
-        st.dataframe(Total_PL[str(max(months))])
-    with col2:
-        download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
+    st.dataframe(Total_PL[str(max(months))])
+    download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
 
 def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
     num_dismatch=diff_BPC_PL.shape[0]
     num_total_data=Total_PL.shape[0]*Total_PL.shape[1]
     percent_dismatch_accounts=num_dismatch/num_total_data
     st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
+    download_report(diff_BPC_PL,"Checking Result")
     if len(diff_BPC_PL['Property_Name'].unique())==1:
         col1,col2=st.columns(2)
         with col1:
@@ -555,12 +553,7 @@ def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):
             diff_BPC_PL["TIME"].value_counts().plot(kind="bar")
             st.pyplot(fig)
     
-    select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
-    select_Sabra_account=st.selectbox("Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
     
-    selected_data=PL_with_detail.loc[(slice(None),select_Sabra_account),["Tenant_account",select_month]]
-    st.dataframe(selected_data)
-    download_report(PL_with_detail.reset_index(drop=False),"Detail of dismatch")  
 def download_report(df,button_display):
     download_file=df.to_csv(index=False).encode('utf-8')
     st.download_button(label="Download "+button_display,data=download_file,file_name=operator+" "+button_display+".csv",mime="text/csv")
@@ -607,12 +600,13 @@ def Upload_Main(entity_mapping,account_mapping):
                 View_Summary(Total_PL,latest_month)
             with st.expander("Detail of dismatch"):
                 Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
-            with st.expander("Download Checking Results"):
+            with st.expander("Retrieval"):
                 col1,col2=st.columns(2)
                 with col1:
-                    download_report(diff_BPC_PL,"Checking Result")
+                    select_month=st.selectbox("Select Year/Month",diff_BPC_PL['TIME'].unique().tolist())
                 with col2:
-                    download_report(Total_PL[latest_month],operator+"_{}_"+"Reporting".format(latest_month))  
+                    select_Sabra_account=st.selectbox("Select Sabra_account",diff_BPC_PL['Sabra_account'].unique().tolist())
+                st.dataframe(selected_data)
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
