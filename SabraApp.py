@@ -363,6 +363,7 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     if st.button('Submit account mapping'):
         with st.spinner('Updating mapping...'):
         # update account_mapping list, insert new accounts into account_mapping
+            
             len_mapping=len(account_mapping.index)
             j=0
             for i in range(new_account_len):
@@ -508,10 +509,10 @@ def View_Summary(Total_PL,latest_month):
     st.dataframe(Total_PL[str(max(months))])
     download_report(Total_PL[str(max(months))].reset_index(drop=False),operator+" "+str(latest_month)+" Reporting")  
 def Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL):   
-    num_dismatch=diff_BPC_PL.shape[0]
+    num_discrepancy=diff_BPC_PL.shape[0]
     num_total_data=Total_PL.shape[0]*Total_PL.shape[1]
-    percent_dismatch_accounts=num_dismatch/num_total_data
-    st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_dismatch_accounts*100))
+    percent_discrepancy_accounts=num_discrepancy/num_total_data
+    st.write("{0:.0f}% P&L data were dispatched with Sabra data".format(percent_discrepancy_accounts*100))
     download_report(diff_BPC_PL,"Checking Result")
     if len(diff_BPC_PL['Property_Name'].unique())==1:
         col1,col2=st.columns(2)
@@ -587,7 +588,7 @@ def Upload_Main(entity_mapping,account_mapping):
         else:
             with st.expander("Summary of P&L"):
                 View_Summary(Total_PL,latest_month)
-            with st.expander("Checking results"):
+            with st.expander("Checking Discrepancy"):
                 Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
             with st.expander("Retrieval"):
                 col1,col2=st.columns(2)
@@ -603,20 +604,25 @@ def Upload_Main(entity_mapping,account_mapping):
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
-        tenant_account1=st.text_input("Enter new account")
-        tenant_account2=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_Account"].unique()))
-        tenant_account1=st.text_input("Enter sheetname of new property")
-        tenant_account2=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
+        new_tenant_account=st.text_input("Enter new account")
+        #edit_tenant_account=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_Account"].unique()))
+        new_sheetname=st.text_input("Enter sheetname of new property")
+        #edit_sheetname=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
     
     
     with col2:   
-        Sabra_Account1=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
-        Sabra_Account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_Account"].unique()))
-        Sabra_Account1=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
-        Sabra_Account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
+        Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
+        #Sabra_Account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_Account"].unique()))
+        Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
+        #Sabra_Account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
     
         
     if st.button("Submit"):
+        if new_tenant_account and Sabra_account:
+            Update_Account_Mapping(new_tenant_account,Sabra_account,mapping_path):
+        if new_sheetname and Sabra_property_name:
+            Update_Property_Mapping(new_sheetname,Sabra_property_name,mapping_path):
+        if new_tenant_account
         with st.expander("New mapping"):
              st.write(new_account)
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
