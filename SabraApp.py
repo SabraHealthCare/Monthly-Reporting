@@ -23,6 +23,7 @@ import time
 from streamlit_modal import Modal
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
+
 #---------------------------define parameters--------------------------
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
@@ -48,6 +49,46 @@ def Read_Account_Mapping(bucket_mapping,mapping_path):
     account_mapping=account_mapping.drop_duplicates()
     account_mapping=account_mapping.reset_index(drop=True)
     return account_mapping
+
+
+
+
+from streamlit_tree_select import tree_select
+
+
+
+# Create nodes to display
+nodes = [
+    {"label": "Folder A", "value": "folder_a"},
+    {
+        "label": "Folder B",
+        "value": "folder_b",
+        "children": [
+            {"label": "Sub-folder A", "value": "sub_a"},
+            {"label": "Sub-folder B", "value": "sub_b"},
+            {"label": "Sub-folder C", "value": "sub_c"},
+        ],
+    },
+    {
+        "label": "Folder C",
+        "value": "folder_c",
+        "children": [
+            {"label": "Sub-folder D", "value": "sub_d"},
+            {
+                "label": "Sub-folder E",
+                "value": "sub_e",
+                "children": [
+                    {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
+                    {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
+                ],
+            },
+            {"label": "Sub-folder F", "value": "sub_f"},
+        ],
+    },
+]
+
+return_select = tree_select(nodes)
+test= st.selectbox(' ',return_select)
 #-----------------------------------------------------------------------------------------
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
@@ -584,21 +625,19 @@ def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
         new_tenant_account=st.text_input("Enter new account")
-        #edit_tenant_account=st.selectbox("Edit existed account",['']+list(account_mapping["Tenant_Account"].unique()))
-        new_sheetname=st.text_input("Enter sheetname of new property")
-        #edit_sheetname=st.selectbox("Edit sheetname of existed property",['']+list(entity_mapping["Sheet_Name"].unique()))
     
-    
-    with col2:   
+    with col2:  
         Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
-        #Sabra_Account2=st.selectbox("Map Sabra account ",['']+list(account_mapping["Sabra_Account"].unique()))
+        Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
+    with col1:
+        new_sheetname=st.text_input("Enter sheetname of new property")
+    with col2: 
         Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
-        #Sabra_Account2=st.selectbox("Map property name ",['']+list(entity_mapping["Property_Name"].unique()))
-    
+        
         
     if st.button("Submit"):
         if new_tenant_account and Sabra_account:
-            account_mapping.loc[account_mapping["Sabra_Account"]==Sabra_account,"Tenant_Account"]=new_tenant_account        
+            account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             st.success("{} was mapped to Sabra account——{}".format(new_tenant_account,Sabra_account))
         elif new_tenant_account and not Sabra_account:
