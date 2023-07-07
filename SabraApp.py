@@ -642,10 +642,10 @@ def Manage_Mapping_Main():
             },
     ]
             nodes1 = [
-            {"label": "Folder A", "value": "folder_a"},
+            {"label": "Folder D", "value": "folder_D"},
             {
-                "label": "Folder B",
-                "value": "folder_b",
+                "label": "Folder E",
+                "value": "folder_F",
                 "children": [
                     {"label": "Sub-folder A", "value": "sub_a"},
                     {"label": "Sub-folder B", "value": "sub_b"},
