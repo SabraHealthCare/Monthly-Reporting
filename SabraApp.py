@@ -606,14 +606,13 @@ def Manage_Mapping_Main():
         elif new_sheetname and not Sabra_property_name:
             st.warrning("Please enter sheet name")
     
-    col1,col2=st.columns(2)        
-    with col1:
-        new_tenant_account=st.text_input("Enter new account")
     
-    with col2:  
-        col11,col22=st.columns(2)    
-        with col1:
-            nodes = [
+    new_tenant_account=st.text_input("Enter new account")
+    
+   
+    col1,col2=st.columns(2)    
+    with col1:
+        nodes = [
             {"label": "Folder A", "value": "folder_a"},
             {
                 "label": "Folder B",
@@ -641,7 +640,7 @@ def Manage_Mapping_Main():
                 ],
             },
     ]
-            nodes1 = [
+        nodes1 = [
             {"label": "Folder D", "value": "folder_D"},
             {
                 "label": "Folder E",
@@ -670,21 +669,20 @@ def Manage_Mapping_Main():
             },
     ]
         #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
-            with st.expander("Map Sabra main account"):
-                Sabra_account= streamlit_tree_select.tree_select(nodes)
+        with st.expander("Map Sabra main account"):
+            Sabra_account= streamlit_tree_select.tree_select(nodes)
                 #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
                 # Create nodes to display
 
 
-        with col2:
-            col11,col22=st.columns(2)   
-                with st.expander("Map Sabra Second account"):
-                    Sabra_Second_Account= streamlit_tree_select.tree_select(nodes1)
+    with col2:
+        with st.expander("Map Sabra Second account"):
+                Sabra_Second_Account= streamlit_tree_select.tree_select(nodes1)
                     #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
                     # Create nodes to display
             
             
-        if st.button("Map account"):
+    if st.button("Map account"):
             if new_tenant_account and Sabra_account:
                 account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
                 Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
