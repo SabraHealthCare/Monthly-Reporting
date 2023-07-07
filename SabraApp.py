@@ -599,14 +599,12 @@ def Manage_Mapping_Main():
     if st.button("Submit"):
         if new_tenant_account and Sabra_account:
             Update_Account_Mapping(new_tenant_account,Sabra_account,mapping_path)
+            st.write("{} was mapped to Sabra account——{}".format(new_tenant_account，Sabra_account))
         if new_sheetname and Sabra_property_name:
-            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname            
-            # update account_mapping workbook       
+            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+            st.write("Sheet '{}' was mapped to property {}".format(new_sheetname，Sabra_property_name))
             
-        if new_tenant_account:
-        with st.expander("New mapping"):
-             st.write(new_account)
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
         st.write(entity_mapping)
         download_report(entity_mapping,operator+" Property Mapping")
