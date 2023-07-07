@@ -16,7 +16,7 @@ gsheetsdb
 s3fs
 boto3
 streamlit_modal
-
+streamlit_tree_select
 
 # Direct pypi install coming soon
 git+https://github.com/streamlit/files-connection
