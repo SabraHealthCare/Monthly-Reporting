@@ -598,9 +598,10 @@ def Manage_Mapping_Main():
         
     if st.button("Submit"):
         if new_tenant_account and Sabra_account:
-            Update_Account_Mapping(new_tenant_account,Sabra_account,mapping_path):
+            Update_Account_Mapping(new_tenant_account,Sabra_account,mapping_path)
         if new_sheetname and Sabra_property_name:
-            Update_Property_Mapping(new_sheetname,Sabra_property_name,mapping_path):
+            Update_Property_Mapping(entity_mapping,Sabra_property_name,new_sheetname)
+            
         if new_tenant_account
         with st.expander("New mapping"):
              st.write(new_account)
