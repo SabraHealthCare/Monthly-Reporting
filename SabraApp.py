@@ -594,34 +594,34 @@ def Manage_Mapping_Main():
         new_tenant_account=st.text_input("Enter new account")
     
     with col2:  
-    nodes = [
-    {"label": "Folder A", "value": "folder_a"},
-    {
-        "label": "Folder B",
-        "value": "folder_b",
-        "children": [
-            {"label": "Sub-folder A", "value": "sub_a"},
-            {"label": "Sub-folder B", "value": "sub_b"},
-            {"label": "Sub-folder C", "value": "sub_c"},
-        ],
-    },
-    {
-        "label": "Folder C",
-        "value": "folder_c",
-        "children": [
-            {"label": "Sub-folder D", "value": "sub_d"},
-            {
-                "label": "Sub-folder E",
-                "value": "sub_e",
-                "children": [
-                    {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
-                    {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
-                ],
-            },
-            {"label": "Sub-folder F", "value": "sub_f"},
-        ],
-    },
-]
+        nodes = [
+        {"label": "Folder A", "value": "folder_a"},
+        {
+            "label": "Folder B",
+            "value": "folder_b",
+            "children": [
+                {"label": "Sub-folder A", "value": "sub_a"},
+                {"label": "Sub-folder B", "value": "sub_b"},
+                {"label": "Sub-folder C", "value": "sub_c"},
+            ],
+        },
+        {
+            "label": "Folder C",
+            "value": "folder_c",
+            "children": [
+                {"label": "Sub-folder D", "value": "sub_d"},
+                {
+                    "label": "Sub-folder E",
+                    "value": "sub_e",
+                    "children": [
+                        {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
+                        {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
+                    ],
+                },
+                {"label": "Sub-folder F", "value": "sub_f"},
+            ],
+        },
+    ]
 
         #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
         with st.expander("Map Sabra account"):
