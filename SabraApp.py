@@ -380,33 +380,12 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
             
-def Map_New_Entity(BPC_pull,entity_mapping,start_date):
-    
-    
-    maplist=[]
-    for entity_i in range(len(Missing_Entity)):
-        maplist.append(st.selectbox(BPC_pull.loc[Missing_Entity[entity_i]]["Property_Name"][0],[""]+finicial_sheet_list))
-   
-    # update entity_mapping list: insert new entities into entity_mapping
-    if st.button('Submit property mapping'):
-        with st.spinner('Updating property mapping...'):
-        # update entity_mapping list, insert new entities into entity_mapping
-         
-            len_entity_mapping=entity_mapping.shape[0]
-            j=0
-            for i in range(len_mapping):
-                if maplist[i]!="No need to map":
-                    entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]=maplist[i]
-                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]                    
-                    j+=1
-                elif maplist[i]=="No need to map":
-                    entity_mapping.loc[len_entity_mapping+j,"Sheet_Name"]="No need to map"
-                    entity_mapping.loc[len_entity_mapping+j,"ENTITY"]=Missing_Entity[i]
-                    j+=1
-            if j>0:             
-            # update account_mapping workbook       
-                Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-            return entity_mapping
+def Update_Property_Mapping(entity_mapping,Property_Name,sheet_name):
+    # update sheet name in entity_mapping
+    entity_mapping.loc[entity_mapping["Property_Name"]==Property_Name,"Sheet_Name"]=sheet_name            
+    # update account_mapping workbook       
+    Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+    return entity_mapping
     
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
@@ -550,67 +529,57 @@ def Upload_Main(entity_mapping,account_mapping):
         
         if format_table["Accounts_in_multiple_sheets"][0]=="N" and format_table["Entity_in_multiple_sheets"][0]=="Y":
         #All accounts are in one sheet
-        # how about if entity is sold? it is in entity but not in financial anymore
+       
             for entity_i in range(len(entity_mapping["ENTITY"])):
                 sheet_name=str(entity_mapping.loc[entity_i,"Sheet_Name"])
+               # if there is no sheet name for sold property in P&L, continue to process next property 
+                if sheet_name not in PL_sheet_list and entity_mapping.loc[entity_i,"DATE_SOLD_PAYOFF"]==entity_mapping.loc[entity_i,"DATE_SOLD_PAYOFF"]:
+                    continue
                
-
-                # sheet_name is not nan
-                if sheet_name==sheet_name and sheet_name in PL_sheet_list:
-                
-                    PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
-                    PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
-                    Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
-                    Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
-                 #if corresponding entity is sold, continue to process next entity
-                elif entity_mapping.loc[entity_i,"DATE_SOLD_PAYOFF"]==entity_mapping.loc[entity_i,"DATE_SOLD_PAYOFF"]:
-                        continue
-                # sheet_name is blank
-                elif sheet_name!=sheet_name and entity_i!=len(entity_mapping["ENTITY"])-1:
+                # sheet_name is blank and not sold 
+                elif sheet_name not in PL_sheet_list or sheet_name!=sheet_name:
                     # pop out window to ask operator to update mapping
-                    st.write("There is no mapping for property {}, please select sheet_name for it.".format(entity_mapping.loc[entity_i,"Property_Name"]))
-                    st.selectbox()
-                    Update_Property_Mapping(entity_mapping,property_name,sheet_name)
-                elif sheet_name not in PL_sheet_list and entity_i!=len(entity_mapping["ENTITY"])-1:
-                    
-                if entity_i==len(entity_mapping["ENTITY"])-1:
-                    start_date=min(Total_PL.columns)+"00"
-                    end_date=max(Total_PL.columns)+"00"
-                
-                    # if found new entities in format which has no mapping sheet
-                    # ask for mapping and update entity_mapping, re-do sheet process for new entities.
-                    
-                    Entity_in_BPC=set(BPC_pull.index.get_level_values("ENTITY"))
-                    Entity_in_format=list(entity_mapping.loc[entity_mapping["Sheet_Name"]==entity_mapping["Sheet_Name"],"ENTITY"])
-    Missing_Entity=list(filter(lambda x:x not in Entity_in_BPC,Entity_in_format))
-    if len(Missing_Entity)==0:
-        return entity_mapping
-    elif len(Missing_Entity)>0:
-        st.write("We couldn't found P&L of below properties, please type the corresponding sheet name of these properties in the right box")
+                    st.write("We couldn't found P&L of property {}, please select sheet name for it in below box. This sheet is supposed to exist in your P&L. If not, add it and re-upload P&L".format(entity_mapping.loc[entity_i,"Property_Name"]))
+                    col1,col2=st.columns(2)
+                    with col1:
+                        sheet_name=st.selectbox(entity_mapping.loc[entity_i,"Property_Name"],[""]+PL_sheet_list)
+                    with col2:
+                        if st.button("Submit"):
+                            with st.spinner('Updating property mapping...'):
+                                # update sheet name in entity_mapping
+                                entity_mapping.loc[entity_i,"Sheet_Name"]=sheet_name            
+                                # update account_mapping workbook       
+                                Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
 
-        
-                    entity_mapping=Map_New_Entity(BPC_pull,entity_mapping,start_date)
-        latest_month=max(list(Total_PL.columns))
-        diff_BPC_PL=Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
-        if diff_BPC_PL.shape[0]==0:
-            st.write("100% matches")
+                    
+                PL,account_mapping=Sheet_Process(sheet_name,account_mapping)
+                PL,PL_with_detail=Aggregat_PL(PL,account_mapping,entity_mapping.loc[entity_i,"ENTITY"])
+                Total_PL=pd.concat([Total_PL,PL], ignore_index=False, sort=False)
+                Total_PL_detail=pd.concat([Total_PL_detail,PL_with_detail], ignore_index=False, sort=False)
+               
             
-        else:
-            with st.expander("Summary of P&L"):
-                View_Summary(Total_PL,latest_month)
-            with st.expander("Checking Discrepancy"):
-                Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
-            with st.expander("Retrieval"):
-                col1,col2=st.columns(2)
-                with col1:
-                    select_month=st.selectbox("Select Year/Month",[""]+diff_BPC_PL['TIME'].unique().tolist())
-                    select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_Name'].unique().tolist())
-                with col2:
-                    select_Sabra_Account=st.selectbox("Select Sabra_Account",[""]+diff_BPC_PL['Sabra_Account'].unique().tolist())
-                selected_diff=diff_BPC_PL[["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"]].loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]
-                selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_Account",select_month]]
-                st.dataframe(selected_diff)
-                st.dataframe(selected_data)
+                latest_month=max(list(Total_PL.columns))
+                diff_BPC_PL=Compare_PL_BPC(BPC_pull,Total_PL,entity_mapping,account_mapping)
+                if diff_BPC_PL.shape[0]==0:
+                    st.write("100% matches")
+            
+                else:
+                    with st.expander("Summary of P&L"):
+                        View_Summary(Total_PL,latest_month)
+                    with st.expander("Discrepancy of Previous Data"):
+                        Diff_plot(diff_BPC_PL,PL_with_detail,Total_PL)
+                    with st.expander("Retrieval"):
+                        col1,col2=st.columns(2)
+                        with col1:
+                            select_month=st.selectbox("Select Year/Month",[""]+diff_BPC_PL['TIME'].unique().tolist())
+                            select_entity=st.selectbox("Select Property",[""]+diff_BPC_PL['Property_Name'].unique().tolist())
+                        with col2:
+                            select_Sabra_Account=st.selectbox("Select Sabra_Account",[""]+diff_BPC_PL['Sabra_Account'].unique().tolist())
+                        selected_diff=diff_BPC_PL[["TIME","Property_Name","Sabra_Account","Sheet_Name","Sabra","P&L","Diff"]].loc[(diff_BPC_PL["TIME"]==select_month)&(diff_BPC_PL["Sabra_Account"]==select_Sabra_Account)]
+                        selected_data=PL_with_detail.loc[(slice(None),select_Sabra_Account),["Tenant_Account",select_month]]
+                        st.dataframe(selected_diff)
+                        st.dataframe(selected_data)
+                        
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
     with col1:
