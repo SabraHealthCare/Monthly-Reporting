@@ -53,7 +53,7 @@ def Read_Account_Mapping(bucket_mapping,mapping_path):
 
 
 
-from streamlit_tree_select import tree_select
+import  streamlit_tree_select
 
 
 
