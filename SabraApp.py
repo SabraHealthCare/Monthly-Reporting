@@ -641,7 +641,34 @@ def Manage_Mapping_Main():
                 ],
             },
     ]
-
+            nodes1 = [
+            {"label": "Folder A", "value": "folder_a"},
+            {
+                "label": "Folder B",
+                "value": "folder_b",
+                "children": [
+                    {"label": "Sub-folder A", "value": "sub_a"},
+                    {"label": "Sub-folder B", "value": "sub_b"},
+                    {"label": "Sub-folder C", "value": "sub_c"},
+                ],
+            },
+            {
+                "label": "Folder C",
+                "value": "folder_c",
+                "children": [
+                    {"label": "Sub-folder D", "value": "sub_d"},
+                    {
+                        "label": "Sub-folder E",
+                        "value": "sub_e",
+                        "children": [
+                            {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
+                            {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
+                        ],
+                    },
+                    {"label": "Sub-folder F", "value": "sub_f"},
+                ],
+            },
+    ]
         #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
             with st.expander("Map Sabra main account"):
                 Sabra_account= streamlit_tree_select.tree_select(nodes)
@@ -651,7 +678,7 @@ def Manage_Mapping_Main():
 
         with col2:
             with st.expander("Map Sabra Second account"):
-                Sabra_Second_Account= streamlit_tree_select.tree_select(nodes)
+                Sabra_Second_Account= streamlit_tree_select.tree_select(nodes1)
                 #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
                 # Create nodes to display
         
@@ -666,7 +693,6 @@ def Manage_Mapping_Main():
         elif Sabra_account and not new_tenant_account:
             st.warrning("Please inter new tenant account")
             
-        
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
         st.write(entity_mapping)
         download_report(entity_mapping,operator+" Property Mapping")
