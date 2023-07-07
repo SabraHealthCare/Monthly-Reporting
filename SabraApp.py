@@ -644,14 +644,14 @@ def Manage_Mapping_Main():
 
         #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
             with st.expander("Map Sabra main account"):
-                test= streamlit_tree_select.tree_select(nodes)
+                Sabra_account= streamlit_tree_select.tree_select(nodes)
                 #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
                 # Create nodes to display
 
 
         with col2:
             with st.expander("Map Sabra Second account"):
-                test= streamlit_tree_select.tree_select(nodes)
+                Sabra_Second_Account= streamlit_tree_select.tree_select(nodes)
                 #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
                 # Create nodes to display
         
