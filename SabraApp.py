@@ -603,7 +603,7 @@ def Manage_Mapping_Main():
         if new_sheetname and Sabra_property_name:
             entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-            st.write("Sheet '{}' was mapped to property {}".format(new_sheetname，Sabra_property_name))
+            st.write("Sheet '{}' was mapped to property {}".format(new_sheetname,Sabra_property_name))
             
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
         st.write(entity_mapping)
