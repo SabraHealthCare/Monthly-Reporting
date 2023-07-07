@@ -677,21 +677,22 @@ def Manage_Mapping_Main():
 
 
         with col2:
-            with st.expander("Map Sabra Second account"):
-                Sabra_Second_Account= streamlit_tree_select.tree_select(nodes1)
-                #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
-                # Create nodes to display
-        
-        
-    if st.button("Map account"):
-        if new_tenant_account and Sabra_account:
-            account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-            st.success("{} was mapped to Sabra account——{}".format(new_tenant_account,Sabra_account))
-        elif new_tenant_account and not Sabra_account:
-            st.warrning("Please select Sabra_account")
-        elif Sabra_account and not new_tenant_account:
-            st.warrning("Please inter new tenant account")
+            col11,col22=st.columns(2)   
+                with st.expander("Map Sabra Second account"):
+                    Sabra_Second_Account= streamlit_tree_select.tree_select(nodes1)
+                    #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
+                    # Create nodes to display
+            
+            
+        if st.button("Map account"):
+            if new_tenant_account and Sabra_account:
+                account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
+                Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+                st.success("{} was mapped to Sabra account——{}".format(new_tenant_account,Sabra_account))
+            elif new_tenant_account and not Sabra_account:
+                st.warrning("Please select Sabra_account")
+            elif Sabra_account and not new_tenant_account:
+                st.warrning("Please inter new tenant account")
             
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
         st.write(entity_mapping)
