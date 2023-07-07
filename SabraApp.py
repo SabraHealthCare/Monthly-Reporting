@@ -23,36 +23,6 @@ import time
 from streamlit_modal import Modal
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
-
-#---------------------------define parameters--------------------------
-def get_row_no(dataset,row_header):
-    return list(dataset.index).index(row_header)
-def get_column_no(dataset,col_header):
-    return list(dataset.columns).index(col_header)
-def strip_lower_col(series_or_list):
-    return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
-def strip_upper_col(series_or_list):
-    return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
-def Read_Account_Mapping(bucket_mapping,mapping_path):
-    # read account mapping
-    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
-    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
-    #convert tenant_account to lower case
-    account_mapping["Tenant_Account"]=strip_lower_col(account_mapping["Tenant_Account"])
-    account_mapping["Sabra_Second_Account"]=strip_upper_col(account_mapping["Sabra_Second_Account"])
-    account_mapping["Sabra_Account"]=strip_upper_col(account_mapping["Sabra_Account"])
-    # remove nan in col Sabra_Account
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_Account"])),\
-                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
-    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_Account"])),\
-                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
-    account_mapping=account_mapping.drop_duplicates()
-    account_mapping=account_mapping.reset_index(drop=True)
-    return account_mapping
-
-
-
-
 import  streamlit_tree_select
 
 
@@ -89,6 +59,36 @@ nodes = [
 
 
 test= st.selectbox(' ',streamlit_tree_select.tree_select(nodes))
+#---------------------------define parameters--------------------------
+def get_row_no(dataset,row_header):
+    return list(dataset.index).index(row_header)
+def get_column_no(dataset,col_header):
+    return list(dataset.columns).index(col_header)
+def strip_lower_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().lower() if x==x else x,series_or_list)))
+def strip_upper_col(series_or_list):
+    return(list(map(lambda x: str(x).strip().upper() if x==x else x,series_or_list)))
+def Read_Account_Mapping(bucket_mapping,mapping_path):
+    # read account mapping
+    mapping_file =s3.get_object(Bucket=bucket_mapping, Key=mapping_path)
+    account_mapping = pd.read_excel(mapping_file['Body'].read(), sheet_name=sheet_name_account_mapping,header=0)
+    #convert tenant_account to lower case
+    account_mapping["Tenant_Account"]=strip_lower_col(account_mapping["Tenant_Account"])
+    account_mapping["Sabra_Second_Account"]=strip_upper_col(account_mapping["Sabra_Second_Account"])
+    account_mapping["Sabra_Account"]=strip_upper_col(account_mapping["Sabra_Account"])
+    # remove nan in col Sabra_Account
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Sabra_Account"])),\
+                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
+    account_mapping=account_mapping.loc[list(map(lambda x:x==x,account_mapping["Tenant_Account"])),\
+                                     ["Sabra_Account","Tenant_Account","Sabra_Second_Account"]]
+    account_mapping=account_mapping.drop_duplicates()
+    account_mapping=account_mapping.reset_index(drop=True)
+    return account_mapping
+
+
+
+
+
 #-----------------------------------------------------------------------------------------
 sheet_name_account_mapping="Account_Mapping"
 sheet_name_entity_mapping="Property_Mapping"
