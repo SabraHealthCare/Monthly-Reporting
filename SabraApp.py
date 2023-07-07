@@ -87,7 +87,7 @@ nodes = [
     },
 ]
 
-return_select = tree_select(nodes)
+return_select = streamlit_tree_select.tree_select(nodes)
 test= st.selectbox(' ',return_select)
 #-----------------------------------------------------------------------------------------
 sheet_name_account_mapping="Account_Mapping"
