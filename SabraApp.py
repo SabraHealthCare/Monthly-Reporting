@@ -590,53 +590,73 @@ def Upload_Main(entity_mapping,account_mapping):
                         
 def Manage_Mapping_Main():
     col1,col2=st.columns(2)
-    with col1:
-        new_tenant_account=st.text_input("Enter new account")
-    
-    with col2:  
-        nodes = [
-        {"label": "Folder A", "value": "folder_a"},
-        {
-            "label": "Folder B",
-            "value": "folder_b",
-            "children": [
-                {"label": "Sub-folder A", "value": "sub_a"},
-                {"label": "Sub-folder B", "value": "sub_b"},
-                {"label": "Sub-folder C", "value": "sub_c"},
-            ],
-        },
-        {
-            "label": "Folder C",
-            "value": "folder_c",
-            "children": [
-                {"label": "Sub-folder D", "value": "sub_d"},
-                {
-                    "label": "Sub-folder E",
-                    "value": "sub_e",
-                    "children": [
-                        {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
-                        {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
-                    ],
-                },
-                {"label": "Sub-folder F", "value": "sub_f"},
-            ],
-        },
-    ]
-
-        #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
-        with st.expander("Map Sabra account"):
-            test= streamlit_tree_select.tree_select(nodes)
-            #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
-        # Create nodes to display
-
 
     with col1:
         new_sheetname=st.text_input("Enter sheetname of new property")
     with col2: 
         Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
+
+    if st.button("Property mapping"):
+        if new_sheetname and Sabra_property_name:
+            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
+            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+            st.write("Sheet '{}' was mapped to property {}".format(new_sheetname,Sabra_property_name))
+        elif new_sheetname and not Sabra_property_name:
+            st.warrning("Please select property")
+        elif new_sheetname and not Sabra_property_name:
+            st.warrning("Please enter sheet name")
+    
+    col1,col2=st.columns(2)        
+    with col1:
+        new_tenant_account=st.text_input("Enter new account")
+    
+    with col2:  
+        col11,col22=st.columns(2)    
+        with col1:
+            nodes = [
+            {"label": "Folder A", "value": "folder_a"},
+            {
+                "label": "Folder B",
+                "value": "folder_b",
+                "children": [
+                    {"label": "Sub-folder A", "value": "sub_a"},
+                    {"label": "Sub-folder B", "value": "sub_b"},
+                    {"label": "Sub-folder C", "value": "sub_c"},
+                ],
+            },
+            {
+                "label": "Folder C",
+                "value": "folder_c",
+                "children": [
+                    {"label": "Sub-folder D", "value": "sub_d"},
+                    {
+                        "label": "Sub-folder E",
+                        "value": "sub_e",
+                        "children": [
+                            {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
+                            {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
+                        ],
+                    },
+                    {"label": "Sub-folder F", "value": "sub_f"},
+                ],
+            },
+    ]
+
+        #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
+            with st.expander("Map Sabra main account"):
+                test= streamlit_tree_select.tree_select(nodes)
+                #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
+                # Create nodes to display
+
+
+        with col2:
+            with st.expander("Map Sabra Second account"):
+                test= streamlit_tree_select.tree_select(nodes)
+                #Sabra_Second_Account=st.selectbox("Map Sabra second account",['']+list(account_mapping["Sabra_Account"].unique()))
+                # Create nodes to display
         
         
-    if st.button("Submit"):
+    if st.button("Map account"):
         if new_tenant_account and Sabra_account:
             account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
@@ -646,15 +666,7 @@ def Manage_Mapping_Main():
         elif Sabra_account and not new_tenant_account:
             st.warrning("Please inter new tenant account")
             
-        if new_sheetname and Sabra_property_name:
-            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-            st.write("Sheet '{}' was mapped to property {}".format(new_sheetname,Sabra_property_name))
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please select property")
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please enter sheet name")
-            
+        
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
         st.write(entity_mapping)
         download_report(entity_mapping,operator+" Property Mapping")
