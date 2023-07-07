@@ -27,38 +27,7 @@ import  streamlit_tree_select
 
 
 
-# Create nodes to display
-nodes = [
-    {"label": "Folder A", "value": "folder_a"},
-    {
-        "label": "Folder B",
-        "value": "folder_b",
-        "children": [
-            {"label": "Sub-folder A", "value": "sub_a"},
-            {"label": "Sub-folder B", "value": "sub_b"},
-            {"label": "Sub-folder C", "value": "sub_c"},
-        ],
-    },
-    {
-        "label": "Folder C",
-        "value": "folder_c",
-        "children": [
-            {"label": "Sub-folder D", "value": "sub_d"},
-            {
-                "label": "Sub-folder E",
-                "value": "sub_e",
-                "children": [
-                    {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
-                    {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
-                ],
-            },
-            {"label": "Sub-folder F", "value": "sub_f"},
-        ],
-    },
-]
 
-
-test= st.selectbox(' ',streamlit_tree_select.tree_select(nodes))
 #---------------------------define parameters--------------------------
 def get_row_no(dataset,row_header):
     return list(dataset.index).index(row_header)
