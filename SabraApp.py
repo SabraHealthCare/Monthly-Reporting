@@ -56,8 +56,8 @@ nodes = [
     },
 ]
 
-
-#test= st.selectbox(' ',streamlit_tree_select.tree_select(nodes))
+with st.expander("test"):
+    test= streamlit_tree_select.tree_select(nodes)
 
 #---------------------------define parameters--------------------------
 def get_row_no(dataset,row_header):
