@@ -64,8 +64,8 @@ sheet_name_format='Format'
 s3 = boto3.client('s3')
 bucket_mapping="sabramapping"
 # drop down list of operator
-operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Operator_list.xlsx")
-operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_list')
+operatorlist = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
+operator_list = pd.read_excel(operatorlist['Body'].read(), sheet_name='Operator_List')
 st.title("Sabra HealthCare Reporting App")
 st.subheader("Operator name:")
 operator= st.selectbox(' ',(operator_list))
@@ -589,8 +589,18 @@ def Upload_Main(entity_mapping,account_mapping):
                         st.dataframe(selected_data)
                         
 def Manage_Mapping_Main():
-    col1,col2=st.columns(2)
-
+    children_hire=[]
+    parent_hire=[]
+    BPCName = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
+    BPC_Name = pd.read_excel(BPC_Name['Body'].read(), sheet_name='BPC_Name')
+    for category in BPC_Name[BPC_Name["Type"]=="Main"]["Category"].unique():
+        for account in BPC_Name[BPC_Name["Category"]==category]["Sabra_Account"]:
+            dic={"label":account,"value":BPC_Name[BPC_Name["Sabra_Account"]==account]["BPC_Name"].item()}
+            children_hire.append(dic)
+    
+    dic={"label":category,"value":0,"children":children_hire}
+    parent_hire.append(dic)
+    
     with col1:
         new_sheetname=st.text_input("Enter sheetname of new property")
     with col2: 
@@ -606,68 +616,15 @@ def Manage_Mapping_Main():
         elif new_sheetname and not Sabra_property_name:
             st.warrning("Please enter sheet name")
     
-    
-    new_tenant_account=st.text_input("Enter new account")
+    col1,col2=st.columns(2)    
+     with col1:
+        new_tenant_account=st.text_input("Enter new account")
     
    
     col1,col2=st.columns(2)    
     with col1:
-        nodes = [
-            {"label": "Folder A", "value": "folder_a"},
-            {
-                "label": "Folder B",
-                "value": "folder_b",
-                "children": [
-                    {"label": "Sub-folder A", "value": "sub_a"},
-                    {"label": "Sub-folder B", "value": "sub_b"},
-                    {"label": "Sub-folder C", "value": "sub_c"},
-                ],
-            },
-            {
-                "label": "Folder C",
-                "value": "folder_c",
-                "children": [
-                    {"label": "Sub-folder D", "value": "sub_d"},
-                    {
-                        "label": "Sub-folder E",
-                        "value": "sub_e",
-                        "children": [
-                            {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
-                            {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
-                        ],
-                    },
-                    {"label": "Sub-folder F", "value": "sub_f"},
-                ],
-            },
-    ]
-        nodes1 = [
-            {"label": "Folder D", "value": "folder_D"},
-            {
-                "label": "Folder E",
-                "value": "folder_F",
-                "children": [
-                    {"label": "Sub-folder A", "value": "sub_a"},
-                    {"label": "Sub-folder B", "value": "sub_b"},
-                    {"label": "Sub-folder C", "value": "sub_c"},
-                ],
-            },
-            {
-                "label": "Folder C",
-                "value": "folder_c",
-                "children": [
-                    {"label": "Sub-folder D", "value": "sub_d"},
-                    {
-                        "label": "Sub-folder E",
-                        "value": "sub_e",
-                        "children": [
-                            {"label": "Sub-sub-folder A", "value": "sub_sub_a"},
-                            {"label": "Sub-sub-folder B", "value": "sub_sub_b"},
-                        ],
-                    },
-                    {"label": "Sub-folder F", "value": "sub_f"},
-                ],
-            },
-    ]
+        
+        
         #Sabra_account=st.selectbox("Map Sabra account",['']+list(account_mapping["Sabra_Account"].unique()))
         with st.expander("Map Sabra main account"):
             Sabra_account= streamlit_tree_select.tree_select(nodes)
