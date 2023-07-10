@@ -383,18 +383,19 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     parent_hierarchy_second=[{'label': "No need to map","value":0}]
     BPCAccount = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
     BPC_Account= pd.read_excel(BPCAccount['Body'].read(), sheet_name='BPC_Account')
+    
     for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
-        dic={"label":category,"value":"category","children":children_hierarchy}
+        dic={"label":category,"value":category,"children":children_hierarchy}
         parent_hierarchy_main.append(dic)
     
     for category in BPC_Account[BPC_Account["Type"]=="Second"]["Category"].unique():
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
-        dic={"label":category,"value":0,"children":children_hierarchy}
+        dic={"label":category,"value":category,"children":children_hierarchy}
         parent_hierarchy_second.append(dic)
         
     col1,col2=st.columns(2)    
