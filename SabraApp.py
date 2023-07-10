@@ -387,7 +387,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
-        dic={"label":category,"value":0,"children":children_hierarchy}
+        dic={"label":category,"value":category,"children":children_hierarchy}
         parent_hierarchy_main.append(dic)
     
     for category in BPC_Account[BPC_Account["Type"]=="Second"]["Category"].unique():
