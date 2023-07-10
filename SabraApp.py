@@ -452,7 +452,7 @@ def Sheet_Process(sheet_name,account_mapping):
         new_tenant_account_list=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
         new_tenant_account_list=list(filter(lambda x:x!="",new_tenant_account_list))
    
-        if len(new_accounts)==0:
+        if len(new_tenant_account_list)==0:
             return account_mapping
         else:
             account_mapping=Manage_Account_Mapping(account_mapping,new_tenant_account_list)
