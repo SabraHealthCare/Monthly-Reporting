@@ -642,7 +642,7 @@ def Manage_Account_Mapping(new_tenant_account_list=[]):
             st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
         else:
             #insert new record into account_mapping in the bottom
-            new_records = pd.DataFrame {'Sabra_Account': Sabra_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_Second_Account} 
+            new_records = pd.DataFrame ({'Sabra_Account': Sabra_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_Second_Account} )
             account_mapping=pd.concat([account_mapping, new_records], axis=0)
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
