@@ -366,8 +366,9 @@ def Map_New_Account(PL,account_mapping,sheet_name):
     drop_down_list=["No need to map"]+list(account_mapping["Sabra_Account"].unique())
     new_account_len=len(new_accounts)
     for account_i in range(new_account_len):
-        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
         
+        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
+        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
     if st.button('Submit account mapping'):
         with st.spinner('Updating mapping...'):
         # update account_mapping list, insert new accounts into account_mapping
@@ -641,6 +642,7 @@ def Manage_Mapping_Main():
             
     if st.button("Map account"):
             if new_tenant_account and Sabra_account:
+                #append new record in account_mapping
                 account_mapping.loc[len(account_mapping)] =[Sabra_account,new_tenant_account,Sabra_Second_Account]    
                 Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
                 st.success("{} was mapped to Sabra account——{}".format(new_tenant_account,Sabra_account))
