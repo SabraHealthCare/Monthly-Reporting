@@ -383,7 +383,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     BPC_Account= pd.read_excel(BPCName['Body'].read(), sheet_name='BPC_Account')
     for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
-            dic={"label":account,"value":BPC_Name[BPC_Name["Sabra_Account"]==account]["BPC_Name"].item()}
+            dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hire.append(dic)
     
     dic={"label":category,"value":0,"children":children_hierarchy}
