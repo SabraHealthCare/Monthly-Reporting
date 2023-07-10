@@ -354,8 +354,68 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
          data = BytesIO(tmp.read())
     
     s3.upload_fileobj(data,bucket,key)
-    st.success('Successfully uploaded to S3')    
+    st.success('Successfully uploaded to S3')  
+
+def Manage_Property_Mapping():
+    # property_sheetname mapping
+    with col1:
+        new_sheetname=st.text_input("Enter sheetname of new property")
+    with col2: 
+        Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
+
+    if st.button("Submit Property mapping"):
+        if new_sheetname and Sabra_property_name:
+            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
+            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
+            st.succss("Sheet '{}' was mapped to property {}.".format(new_sheetname,Sabra_property_name))
+        elif new_sheetname and not Sabra_property_name:
+            st.warrning("Please select property")
+        elif new_sheetname and not Sabra_property_name:
+            st.warrning("Please enter sheet name")
+        return entity_mapping
+
+            
+def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
+    #sabra account-tenant account mapping
+    children_hierarchy=[]
+    parent_hierarchy=["No need to map"]
+    BPCName = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
+    BPC_Account= pd.read_excel(BPCName['Body'].read(), sheet_name='BPC_Account')
+    for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
+        for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
+            dic={"label":account,"value":BPC_Name[BPC_Name["Sabra_Account"]==account]["BPC_Name"].item()}
+            children_hire.append(dic)
     
+    dic={"label":category,"value":0,"children":children_hierarchy}
+    parent_hierarchy.append(dic)
+
+    col1,col2=st.columns(2)    
+    with col1:
+        if new_tenant_account_list==[]:
+            new_tenant_account_list=[st.text_input("Enter new tenant account:")]
+    Sabra_account=[]
+    Sabra_Second_Account=[]
+    for i in range(len(new_tenant_account_list)):
+        col1,col2=st.columns(2)    
+        with col1:
+            with st.expander("Map {} to Sabra main account".format(new_tenant_account_list[i])):
+                Sabra_account[i]= streamlit_tree_select.tree_select(parent_hierarchy)
+                
+        with col2:
+            with st.expander("Map {} to Sabra Second account".format(new_tenant_account_list[i])):
+                Sabra_Second_Account[i]= streamlit_tree_select.tree_select(children_hierarchy)
+       
+    if st.button("Submit Account Mapping"):
+        blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_account))))
+        if len(blank_sabra_account_index)>0:
+            st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
+        else:
+            #insert new record into account_mapping in the bottom
+            new_records = pd.DataFrame ({'Sabra_Account': Sabra_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_Second_Account} )
+            account_mapping=pd.concat([account_mapping, new_records], axis=0)
+            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+            st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
+            return account_mapping    
 def Map_New_Account(PL,account_mapping,sheet_name):
     new_accounts=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
     new_accounts=list(filter(lambda x:x!="",new_accounts))
@@ -389,13 +449,7 @@ def Map_New_Account(PL,account_mapping,sheet_name):
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             return account_mapping
             
-def Update_Property_Mapping(entity_mapping,Property_Name,sheet_name):
-    # update sheet name in entity_mapping
-    entity_mapping.loc[entity_mapping["Property_Name"]==Property_Name,"Sheet_Name"]=sheet_name            
-    # update account_mapping workbook       
-    Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-    return entity_mapping
-    
+
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
         tenantAccount_col_no=Identify_Tenant_Account_Col(PL,account_mapping,sheet_name)
@@ -424,14 +478,16 @@ def Sheet_Process(sheet_name,account_mapping):
     
         # remove columns what are all zero/blank 
         PL=PL.fillna(0)
-        
         PL=PL.loc[:, (PL!= 0).any(axis=0)]
         
-        #PL=PL.loc[:,PL.apply(pd.Series.nunique) != 1]
-        
-       
-        #  new accounts don't counted yet
-        account_mapping=Map_New_Account(PL,account_mapping,sheet_name)
+        #  check if there are new tenant accounts
+        new_tenant_account_list=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
+        new_tenant_account_list=list(filter(lambda x:x!="",new_accounts))
+   
+        if len(new_accounts)==0:
+            return account_mapping
+        else:
+            account_mapping=Manage_Account_Mapping(account_mapping,new_tenant_account_list)
         
         return PL,account_mapping    
     
@@ -589,65 +645,7 @@ def Upload_Main(entity_mapping,account_mapping):
                         st.dataframe(selected_diff)
                         st.dataframe(selected_data)
                         
-def Manage_Property_Mapping():
-    # property_sheetname mapping
-    with col1:
-        new_sheetname=st.text_input("Enter sheetname of new property")
-    with col2: 
-        Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
 
-    if st.button("Submit Property mapping"):
-        if new_sheetname and Sabra_property_name:
-            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-            st.succss("Sheet '{}' was mapped to property {}.".format(new_sheetname,Sabra_property_name))
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please select property")
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please enter sheet name")
-        return entity_mapping
-def Manage_Account_Mapping(new_tenant_account_list=[]):
-    #sabra account-tenant account mapping
-    children_hierarchy=[]
-    parent_hierarchy=[]
-    BPCName = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
-    BPC_Account= pd.read_excel(BPCName['Body'].read(), sheet_name='BPC_Account')
-    for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
-        for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
-            dic={"label":account,"value":BPC_Name[BPC_Name["Sabra_Account"]==account]["BPC_Name"].item()}
-            children_hire.append(dic)
-    
-    dic={"label":category,"value":0,"children":children_hierarchy}
-    parent_hierarchy.append(dic)
-
-    col1,col2=st.columns(2)    
-    with col1:
-        if new_tenant_account_list==[]:
-            new_tenant_account_list=[st.text_input("Enter new tenant account:")]
-    Sabra_account=[]
-    Sabra_Second_Account=[]
-    for i in range(len(new_tenant_account_list)):
-        col1,col2=st.columns(2)    
-        with col1:
-            with st.expander("Map {} to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_account[i]= streamlit_tree_select.tree_select(parent_hierarchy)
-                
-        with col2:
-            with st.expander("Map {} to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_Second_Account[i]= streamlit_tree_select.tree_select(children_hierarchy)
-       
-    if st.button("Submit Account Mapping"):
-        blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_account))))
-        if len(blank_sabra_account_index)>0:
-            st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
-        else:
-            #insert new record into account_mapping in the bottom
-            new_records = pd.DataFrame ({'Sabra_Account': Sabra_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_Second_Account} )
-            account_mapping=pd.concat([account_mapping, new_records], axis=0)
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-            st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
-            return account_mapping
-            
     
 #----------------------------------website widges------------------------------------
   
