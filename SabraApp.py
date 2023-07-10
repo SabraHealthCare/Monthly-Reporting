@@ -378,13 +378,14 @@ def Manage_Property_Mapping():
 def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     st.subheader("Please complete mapping for below tenant accounts:")
     #sabra account-tenant account mapping
-    children_hierarchy=[]
+   
     parent_hierarchy_main=[{'label': "No need to map","value":0}]
     parent_hierarchy_second=[{'label': "No need to map","value":0}]
     BPCAccount = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
     BPC_Account= pd.read_excel(BPCAccount['Body'].read(), sheet_name='BPC_Account')
     
     for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
+        children_hierarchy=[]
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
@@ -392,6 +393,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         parent_hierarchy_main.append(dic)
     
     for category in BPC_Account[BPC_Account["Type"]=="Second"]["Category"].unique():
+        children_hierarchy=[]
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
