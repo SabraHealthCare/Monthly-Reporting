@@ -416,39 +416,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
             return account_mapping    
-def Map_New_Account(PL,account_mapping,sheet_name):
-    new_accounts=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
-    new_accounts=list(filter(lambda x:x!="",new_accounts))
-   
-    if len(new_accounts)==0:
-        return account_mapping
-    maplist=[]
-    drop_down_list=["No need to map"]+list(account_mapping["Sabra_Account"].unique())
-    new_account_len=len(new_accounts)
-    for account_i in range(new_account_len):
-        
-        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
-        maplist.append(st.selectbox(new_accounts[account_i],drop_down_list))
-    if st.button('Submit account mapping'):
-        with st.spinner('Updating mapping...'):
-        # update account_mapping list, insert new accounts into account_mapping
-            
-            len_mapping=len(account_mapping.index)
-            j=0
-            for i in range(new_account_len):
-                if maplist[i]!="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_Account"]=maplist[i]
-                    account_mapping.loc[len_mapping+j,"Tenant_Account"]=new_accounts[i]
-                    j+=1
-                elif maplist[i]=="No need to map":
-                    account_mapping.loc[len_mapping+j,"Sabra_Account"]="No need to map"
-                    account_mapping.loc[len_mapping+j,"Tenant_Account"]=new_accounts[i]
-                    j+=1
-                   
-            # update account_mapping workbook       
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-            return account_mapping
-            
+
 
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
@@ -482,7 +450,7 @@ def Sheet_Process(sheet_name,account_mapping):
         
         #  check if there are new tenant accounts
         new_tenant_account_list=[x if x not in list(account_mapping["Tenant_Account"]) and not x!=x else "" for x in PL.index]
-        new_tenant_account_list=list(filter(lambda x:x!="",new_accounts))
+        new_tenant_account_list=list(filter(lambda x:x!="",new_tenant_account_list))
    
         if len(new_accounts)==0:
             return account_mapping
