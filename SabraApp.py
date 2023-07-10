@@ -376,34 +376,42 @@ def Manage_Property_Mapping():
 
             
 def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
+    st.subheader("Please complete mapping for below tenant accounts:")
     #sabra account-tenant account mapping
     children_hierarchy=[]
-    parent_hierarchy=["No need to map"]
+    parent_hierarchy_main=[{'label': "No need to map",'value': 0}]
+    parent_hierarchy_second=[{'label': "No need to map",'value': 0}]
     BPCAccount = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
     BPC_Account= pd.read_excel(BPCAccount['Body'].read(), sheet_name='BPC_Account')
     for category in BPC_Account[BPC_Account["Type"]=="Main"]["Category"].unique():
         for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
             dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
             children_hierarchy.append(dic)
+        dic={"label":category,"value":0,"children":children_hierarchy}
+        parent_hierarchy_main.append(dic)
     
-    dic={"label":category,"value":0,"children":children_hierarchy}
-    parent_hierarchy.append(dic)
-
+    for category in BPC_Account[BPC_Account["Type"]=="Second"]["Category"].unique():
+        for account in BPC_Account[BPC_Account["Category"]==category]["Sabra_Account"]:
+            dic={"label":account,"value":BPC_Account[BPC_Account["Sabra_Account"]==account]["BPC_Account"].item()}
+            children_hierarchy.append(dic)
+        dic={"label":category,"value":0,"children":children_hierarchy}
+        parent_hierarchy_second.append(dic)
+        
     col1,col2=st.columns(2)    
     with col1:
         if new_tenant_account_list==[]:
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
-    Sabra_account=[]
-    Sabra_Second_Account=[]
+    Sabra_main_account=[]
+    Sabra_second_account=[]
     for i in range(len(new_tenant_account_list)):
         col1,col2=st.columns(2)    
         with col1:
-            with st.expander("Map {} to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_account[i]= streamlit_tree_select.tree_select(parent_hierarchy)
+            with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
+                Sabra_main_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_main)
                 
         with col2:
             with st.expander("Map {} to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_Second_Account[i]= streamlit_tree_select.tree_select(children_hierarchy)
+                Sabra_second_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_second)
        
     if st.button("Submit Account Mapping"):
         blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_account))))
@@ -411,7 +419,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
         else:
             #insert new record into account_mapping in the bottom
-            new_records = pd.DataFrame ({'Sabra_Account': Sabra_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_Second_Account} )
+            new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_second_account} )
             account_mapping=pd.concat([account_mapping, new_records], axis=0)
             Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
             st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
