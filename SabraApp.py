@@ -414,9 +414,10 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         with col2:
             with st.expander("Map {} to Sabra Second account".format(new_tenant_account_list[i])):
                 Sabra_second_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_second)
-       
+    st.write(Sabra_main_account)  
+    st.write(Sabra_second_account)
     if st.button("Submit Account Mapping"):
-        blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_account))))
+        blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_main_account))))
         if len(blank_sabra_account_index)>0:
             st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
         else:
