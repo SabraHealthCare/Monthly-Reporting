@@ -376,7 +376,7 @@ def Manage_Property_Mapping():
 
             
 def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
-    st.subheader("Please complete mapping for below tenant accounts:")
+    st.warning("Please complete mapping for below tenant accounts:")
     #sabra account-tenant account mapping
    
     parent_hierarchy_main=[{'label': "No need to map","value":0}]
@@ -412,7 +412,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 Sabra_main_account[i]=streamlit_tree_select.tree_select(parent_hierarchy_main)
                 
         with col2:
-            with st.expander("Map {} to Sabra Second account".format(new_tenant_account_list[i])):
+            with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
                 Sabra_second_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_second)
     
     if st.button("Submit Account Mapping"):
