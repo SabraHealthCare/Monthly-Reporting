@@ -416,18 +416,27 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         
         if st.button("Submit Account Mapping"):
             if len(Sabra_main_account['checked'])>1:
-                st.warning("One to One mapping is allowed. More than one accounts selected.")
-            elif len(Sabra_main_account['checked'])==0:
+                st.warning("One to One mapping is allowed. More than one Sabra main accounts selected.")
+            elif Sabra_main_account['checked']==[]:
                 st.warning("Please select Sabra main account for {}".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
             elif len(Sabra_main_account['checked'])==1:
                 Sabra_main_account=Sabra_main_account['checked'][0]
-                st.write(Sabra_main_account,new_tenant_account_list[i],Sabra_second_account["checked"])
-                #insert new record into account_mapping in the bottom
-                new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account_list[i], 'Sabra_Second_Account': Sabra_second_account['checked'][0]} )
-                st.dateframe(new_records)
-                #account_mapping=pd.concat([account_mapping, new_records], axis=0)
-                #Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-                #st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
+
+            if len(Sabra_second_account['checked'])>1:
+                st.warning("Only one to one mapping is allowed. More than one Sabra second accounts selected.")
+            elif len(Sabra_second_account['checked'])==1:
+                Sabra_second_account=Sabra_second_account['checked'][0]
+            else Sabra_second_account['checked']==[]:
+                Sabra_second_account=''
+
+            
+            st.write(Sabra_main_account,new_tenant_account_list[i],Sabra_second_account)
+            #insert new record into account_mapping in the bottom
+            new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account_list[i], 'Sabra_Second_Account': Sabra_second_account} )
+            st.dateframe(new_records)
+            #account_mapping=pd.concat([account_mapping, new_records], axis=0)
+            #Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+            #st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
             return account_mapping    
 
 
