@@ -379,8 +379,8 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     st.warning("Please complete mapping for below tenant accounts:")
     #sabra account-tenant account mapping
    
-    parent_hierarchy_main=[{'label': "No need to map","value":0}]
-    parent_hierarchy_second=[{'label': "No need to map","value":0}]
+    parent_hierarchy_main=[{'label': "No need to map","value":"No need to map"}]
+    parent_hierarchy_second=[{'label': "No need to map","value":"No need to map"}]
     BPCAccount = s3.get_object(Bucket=bucket_mapping, Key="Initial_info.xlsx")
     BPC_Account= pd.read_excel(BPCAccount['Body'].read(), sheet_name='BPC_Account')
     
@@ -405,7 +405,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         if new_tenant_account_list==[]:
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
     
-    for i in range(len(new_tenant_account_list)):
+    for i in range (1):#(len(new_tenant_account_list)):
         col1,col2=st.columns(2)    
         with col1:
             with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
@@ -428,17 +428,10 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 Sabra_second_account=Sabra_second_account['checked'][0]
             elif Sabra_second_account['checked']==[]:
                 Sabra_second_account=''
-
             
-            st.write(Sabra_main_account,new_tenant_account_list[i],Sabra_second_account)
             #insert new record into account_mapping in the bottom
-            new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account_list[i], 'Sabra_Second_Account': Sabra_second_account} )
-            st.dateframe(new_records)
-            #account_mapping=pd.concat([account_mapping, new_records], axis=0)
-            #Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-            #st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
-            return account_mapping    
-
+            account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
+    return account_mapping    
 
 def Sheet_Process(sheet_name,account_mapping):
         PL = pd.read_excel(uploaded_file,sheet_name=sheet_name,header=None)
