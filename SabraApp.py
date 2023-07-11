@@ -404,7 +404,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     with col1:
         if new_tenant_account_list==[]:
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
-    Sabra_main_account==[0]*len(new_tenant_account_list)
+    Sabra_main_account=[0]*len(new_tenant_account_list)
     Sabra_second_account=[0]*len(new_tenant_account_list)
     for i in range(len(new_tenant_account_list)):
         col1,col2=st.columns(2)    
