@@ -410,8 +410,8 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         col1,col2=st.columns(2)    
         with col1:
             with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main)
-            #with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i+1])):
+                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,disabled=True)
+            with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i+1])):
                 #Sabra_main_account1=streamlit_tree_select.tree_select(parent_hierarchy_main)
                 
         with col2:
