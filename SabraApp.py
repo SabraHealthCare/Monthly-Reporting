@@ -404,7 +404,8 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     with col1:
         if new_tenant_account_list==[]:
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
-    Sabra_main_account=Sabra_second_account=[0]*len(new_tenant_account_list)
+    Sabra_main_account==[0]*len(new_tenant_account_list)
+    Sabra_second_account=[0]*len(new_tenant_account_list)
     for i in range(len(new_tenant_account_list)):
         col1,col2=st.columns(2)    
         with col1:
@@ -417,8 +418,8 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
     
     if st.button("Submit Account Mapping"):
         st.write(Sabra_main_account)  
-        st.write(Sabra_second_account)
-        blank_sabra_account_index=list(filter(lambda x:Sabra_account[x]=='',range(len(Sabra_main_account))))
+        #st.write(Sabra_second_account)
+        blank_sabra_account_index=list(filter(lambda x:Sabra_main_account[x]=='',range(len(Sabra_main_account))))
         if len(blank_sabra_account_index)>0:
             st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
         else:
