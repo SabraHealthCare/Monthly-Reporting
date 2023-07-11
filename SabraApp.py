@@ -413,7 +413,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         with col2:
             with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
                 Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second)
-    
+        
         if st.button("Submit Account Mapping"):
             if len(Sabra_main_account['checked'])>1:
                 st.warning("One to One mapping is allowed. More than one accounts selected.")
@@ -421,7 +421,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 st.warning("Please select Sabra main account for {}".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
             elif len(Sabra_main_account['checked'])==1:
                 Sabra_main_account=Sabra_main_account['checked'][0]
-                st.write(Sabra_main_account,new_tenant_account_list[i],Sabra_second_account['checked'][0])
+                st.write(Sabra_main_account,new_tenant_account_list[i],Sabra_second_account["checked"])
                 #insert new record into account_mapping in the bottom
                 new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account_list[i], 'Sabra_Second_Account': Sabra_second_account['checked'][0]} )
                 st.dateframe(new_records)
