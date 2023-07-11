@@ -398,21 +398,23 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             children_hierarchy.append(dic)
         dic={"label":category,"value":category,"children":children_hierarchy}
         parent_hierarchy_second.append(dic)
-        
+
+    
     col1,col2=st.columns(2)    
     with col1:
         if new_tenant_account_list==[]:
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
-    
+    count=0
     for i in range (len(new_tenant_account_list)):
         col1,col2=st.columns(2)    
         with col1:
             with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=i)
+                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=count)
+                count+=1
         with col2:
             with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=i)
-               
+                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
+                count+=1
         if st.button("Submit Account Mapping"):
             if len(Sabra_main_account['checked'])>1:
                 st.warning("One to One mapping is allowed. More than one Sabra main accounts selected.")
