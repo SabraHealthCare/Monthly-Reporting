@@ -413,7 +413,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
 
         with col2:
             with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,,key=i)
+                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=i)
             
         
         if st.button("Submit Account Mapping"):
