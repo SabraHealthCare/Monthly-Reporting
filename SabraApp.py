@@ -417,8 +417,14 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 Sabra_second_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_second)
     
     if st.button("Submit Account Mapping"):
-        st.write(Sabra_main_account)  
-        #st.write(Sabra_second_account)
+        st.write(Sabra_main_account[0]['checked'])  
+        st.write(Sabra_second_account[0]['checked'])
+        if len(Sabra_main_account[0]['checked'])>1:
+            st.warning("You have selected more than one Sabra accounts. One to One mapping is allowed. ")
+        elif len(test[0]['checked'])==0:
+        elif len(test[0]['checked'])==1:
+            Sabra=test[0]['checked'][0]
+        
         blank_sabra_account_index=list(filter(lambda x:Sabra_main_account[x]=='',range(len(Sabra_main_account))))
         if len(blank_sabra_account_index)>0:
             st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
