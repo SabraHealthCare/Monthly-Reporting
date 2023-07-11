@@ -410,30 +410,29 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         col1,col2=st.columns(2)    
         with col1:
             with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_main_account[i]=streamlit_tree_select.tree_select(parent_hierarchy_main)
+                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main)
                 
         with col2:
             with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_second_account[i]= streamlit_tree_select.tree_select(parent_hierarchy_second)
+                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second)
     
-    if st.button("Submit Account Mapping"):
-        st.write(Sabra_main_account[0]['checked'])  
-        st.write(Sabra_second_account[0]['checked'])
-        if len(Sabra_main_account[0]['checked'])>1:
-            st.warning("You have selected more than one Sabra accounts. One to One mapping is allowed. ")
-        elif len(test[0]['checked'])==0:
-        elif len(test[0]['checked'])==1:
-            Sabra=test[0]['checked'][0]
+        if st.button("Submit Account Mapping"):
+            st.write(Sabra_main_account[0]['checked'])  
+            st.write(Sabra_second_account[0]['checked'])
+            if len(Sabra_main_account[0]['checked'])>1:
+                st.warning("You have selected more than one Sabra accounts. One to One mapping is allowed. ")
+            elif len(test[0]['checked'])==0:
+                st.warning("Please select Sabra main account for {}".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
+            elif len(test[0]['checked'])==1:
+                Sabra=test[0]['checked'][0]
         
-        blank_sabra_account_index=list(filter(lambda x:Sabra_main_account[x]=='',range(len(Sabra_main_account))))
-        if len(blank_sabra_account_index)>0:
-            st.warning("Please select Sabra main account for {} and re-submit".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
-        else:
+        
+        
             #insert new record into account_mapping in the bottom
-            new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_second_account} )
-            account_mapping=pd.concat([account_mapping, new_records], axis=0)
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
-            st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
+            #new_records = pd.DataFrame ({'Sabra_Account': Sabra_main_account, 'Tenant_Account': new_tenant_account, 'Sabra_Second_Account': Sabra_second_account} )
+            #account_mapping=pd.concat([account_mapping, new_records], axis=0)
+            #Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+            #st.success("{} mapped to Sabra accounts——{}".format(",".join(new_tenant_account_list)))
             return account_mapping    
 
 
