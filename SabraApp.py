@@ -428,7 +428,8 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
             account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
-    
+    st.write(account_mapping)
+    Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
     return account_mapping      
 
 def Sheet_Process(sheet_name,account_mapping):
@@ -440,7 +441,7 @@ def Sheet_Process(sheet_name,account_mapping):
             return False,account_mapping
         date_header=Identify_Month_Row(PL,tenantAccount_col_no,sheet_name)
         if len(date_header[0])==1 and date_header[0]==[0]:
-            st.write("didn't find date row")
+            st.warning("Can't identify date header! Please add date header to P&L")
             return False,account_mapping
         
         PL.columns=date_header[0]
@@ -469,7 +470,6 @@ def Sheet_Process(sheet_name,account_mapping):
             return account_mapping
         else:
             account_mapping=Manage_Account_Mapping(account_mapping,new_tenant_account_list)
-        
         return PL,account_mapping    
     
 def Aggregat_PL(PL,account_mapping,entity):
