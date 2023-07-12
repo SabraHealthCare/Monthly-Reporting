@@ -432,6 +432,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
             account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
+    
     return account_mapping    
 
 def Sheet_Process(sheet_name,account_mapping):
