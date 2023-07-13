@@ -395,14 +395,13 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
         dic={"label":category,"value":category,"children":children_hierarchy}
         parent_hierarchy_second.append(dic)
 
-    
+    col1,col2=st.columns(2)    
+        with col1:
+            if new_tenant_account_list==[]:
+                new_tenant_account_list=[st.text_input("Enter new tenant account:")]
    
     count=0
     for i in range (len(new_tenant_account_list)):
-        col1,col2=st.columns(2)    
-        with col1:
-        if new_tenant_account_list==[]:
-            new_tenant_account_list=[st.text_input("Enter new tenant account:")]
         with st.form(key=count):
             col1,col2=st.columns(2) 
             with col1:
