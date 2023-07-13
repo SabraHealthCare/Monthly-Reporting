@@ -402,29 +402,31 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             new_tenant_account_list=[st.text_input("Enter new tenant account:")]
     count=0
     for i in range (len(new_tenant_account_list)):
-        col1,col2=st.columns(2)    
-        with col1:
-            with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
-                Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=count)
-                count+=1
-        with col2:
-            with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
-                Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
-                count+=1
-        if st.button("Submit {} Mapping".format(new_tenant_account_list[i])):
-            if len(Sabra_main_account['checked'])>1:
-                st.warning("One to One mapping is allowed. More than one Sabra main accounts selected.")
-            elif Sabra_main_account['checked']==[]:
-                st.warning("Please select Sabra main account for '{}'".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
-            elif len(Sabra_main_account['checked'])==1:
-                Sabra_main_account=Sabra_main_account['checked'][0]
-        
-            if len(Sabra_second_account['checked'])>1:
-                st.warning("Only one to one mapping is allowed. More than one Sabra second accounts selected.")
-            elif len(Sabra_second_account['checked'])==1:
-                Sabra_second_account=Sabra_second_account['checked'][0]
-            elif Sabra_second_account['checked']==[]:
-                Sabra_second_account=''
+        with st.form(key=count):
+            col1,col2=st.columns(2) 
+            with col1:
+               with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
+                    Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=count)
+                    count+=1
+                    #submitted = st.form_submit_button("Submit {} Mapping".format(new_tenant_account_list[i]))
+
+            
+            #with st.expander("Map '{}' to Sabra main account".format(new_tenant_account_list[i])):
+                #Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=count)
+                #count+=1
+            with col2:
+               with st.expander("Map '{}' to Sabra second account".format(new_tenant_account_list[i])):
+                    Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
+                    count+=1
+            submitted = st.form_submit_button("Submit '{}' Mapping".format(new_tenant_account_list[i]))
+
+
+
+            
+            #with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
+                #Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
+                #count+=1
+
             st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
             account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
