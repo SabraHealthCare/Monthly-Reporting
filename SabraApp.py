@@ -426,7 +426,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             #with st.expander("Map '{}' to Sabra Second account".format(new_tenant_account_list[i])):
                 #Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
                 #count+=1
-            if submitted：
+            if submitted:
                 st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
             #account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
