@@ -330,11 +330,11 @@ def Identify_Month_Row(PL,tenantAccount_col_no,sheet_name):
 def Upload_file_to_S3(file,bucket,key):
     try:
         s3.upload_fileobj(file,bucket,key)
-        st.success('Successfully uploaded to S3')
+        st.success('Successfully uploaded {} to S3'.format(file.name))
         return True
     except FileNotFoundError:
         time.sleep(6)
-        st.error('Fail to upload to S3')
+        st.error('Fail to upload {} to S3'.format(file.name))
         return False 
      
 def Update_Sheet_inS3(bucket,key,sheet_name,df):  
@@ -440,10 +440,12 @@ def Sheet_Process(sheet_name,account_mapping):
     
         if tenantAccount_col_no==None:
             st.write("Fail to identify tenant account in sheet '"+sheet_name+"'")
-            return False,account_mapping
+            st.stop()
+            #return False,account_mapping
         date_header=Identify_Month_Row(PL,tenantAccount_col_no,sheet_name)
         if len(date_header[0])==1 and date_header[0]==[0]:
             st.warning("Can't identify date header! Please add date header to P&L")
+            st.stop()
             return False,account_mapping
         
         PL.columns=date_header[0]
