@@ -420,7 +420,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 if len(Sabra_main_account['checked'])>1:
                     st.warning("One to One mapping is allowed. More than one Sabra main accounts selected.")
                 elif Sabra_main_account['checked']==[]:
-                    st.warning("Please select Sabra main account for '{}'".format(",".join([new_tenant_account_list[i] for i in blank_sabra_account_index])))
+                    st.warning("Please select Sabra main account for '{}'".format(new_tenant_account_list[i])
                 elif len(Sabra_main_account['checked'])==1:
                     Sabra_main_account=Sabra_main_account['checked'][0]
             
