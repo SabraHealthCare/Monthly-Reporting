@@ -414,9 +414,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                with st.expander("Sabra second account"):
                     Sabra_second_account= streamlit_tree_select.tree_select(parent_hierarchy_second,only_leaf_checkboxes=True,key=count)
                     count+=1
-            submitted = st.form_submit_button("$$
-                                                Submit
-                                              $$")
+            submitted = st.form_submit_button("Submit")
             
             if submitted:
                 if len(Sabra_main_account['checked'])>1:
