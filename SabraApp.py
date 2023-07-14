@@ -402,7 +402,7 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
    
     count=0
     for i in range (len(new_tenant_account_list)):
-        st.write("Map '{}' to Sabra main account".format(new_tenant_account_list[i])) 
+        st.write("Map **'{}'** to Sabra account".format(new_tenant_account_list[i])) 
         with st.form(key=str(i)):
             col1,col2=st.columns(2) 
             with col1:
