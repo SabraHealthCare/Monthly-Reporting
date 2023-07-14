@@ -419,19 +419,22 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
             if submitted:
                 if len(Sabra_main_account['checked'])>1:
                     st.warning("One to One mapping is allowed. More than one Sabra main accounts selected.")
+                    st.stop()
                 elif Sabra_main_account['checked']==[]:
                     st.warning("Please select Sabra main account for '{}'".format(new_tenant_account_list[i]))
+                    st.stop()
                 elif len(Sabra_main_account['checked'])==1:
                     Sabra_main_account=Sabra_main_account['checked'][0]
             
                 if len(Sabra_second_account['checked'])>1:
                     st.warning("Only one to one mapping is allowed. More than one Sabra second accounts selected.")
+                    st.stop()
                 elif len(Sabra_second_account['checked'])==1:
                     Sabra_second_account=Sabra_second_account['checked'][0]
                 elif Sabra_second_account['checked']==[]:
                     Sabra_second_account=''
 
-
+                
                 st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
             #account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
