@@ -353,7 +353,7 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     st.success('Successfully uploaded to S3')  
 
 def Manage_Property_Mapping():
-    # property_sheetname mapping
+    # map property-sheetname
     with col1:
         new_sheetname=st.text_input("Enter sheetname of new property")
     with col2: 
@@ -402,10 +402,10 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
    
     count=0
     for i in range (len(new_tenant_account_list)):
+        st.write("Map '{}' to Sabra main account".format(new_tenant_account_list[i])) 
         with st.form(key=str(count)):
             col1,col2=st.columns(2) 
             with col1:
-               st.write("Map '{}' to Sabra main account".format(new_tenant_account_list[i])) 
                with st.expander("Sabra main account"):
                     Sabra_main_account=streamlit_tree_select.tree_select(parent_hierarchy_main,only_leaf_checkboxes=True,key=count)
                     count+=1 
