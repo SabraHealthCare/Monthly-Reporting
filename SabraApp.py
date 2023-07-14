@@ -352,23 +352,37 @@ def Update_Sheet_inS3(bucket,key,sheet_name,df):
     s3.upload_fileobj(data,bucket,key)
     st.success('Successfully uploaded to S3')  
 
-def Manage_Property_Mapping():
+def Manage_New_Property_Mapping(map_property_list=[]):
     # map property-sheetname
-    with col1:
-        new_sheetname=st.text_input("Enter sheetname of new property")
-    with col2: 
-        Sabra_property_name=st.selectbox("Map property name",['']+list(entity_mapping["Property_Name"].unique()))
+    #all the new properties are supposed to be in entity_mapping. 
+    #ask operator to map all the properties with blank sheet_name in entity_mapping
 
-    if st.button("Submit Property mapping"):
-        if new_sheetname and Sabra_property_name:
-            entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
-            Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)
-            st.succss("Sheet '{}' was mapped to property {}.".format(new_sheetname,Sabra_property_name))
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please select property")
-        elif new_sheetname and not Sabra_property_name:
-            st.warrning("Please enter sheet name")
-        return entity_mapping
+    if map_property_list==[]:
+        map_property_list=list(entity_mapping[entity_mapping["Sheet_Name"]!=entity_mapping["Sheet_Name"]]["Property_Name"])
+
+    for i in range(len(map_property_list)):
+        Sabra_property_name=map_property_list[i]
+        with st.form(key=str(i)):
+            with col1:
+                st.write(Sabra_property_name)
+            with col2: 
+                new_sheetname=st.text_input("Enter sheetname for '{}'".format(Sabra_property_name))
+            submitted = st.form_submit_button("Submit")
+            
+            if submitted:
+                if new_sheetname and Sabra_property_name:
+                    entity_mapping.loc[entity_mapping["Property_Name"]==Sabra_property_name,"Sheet_Name"]=new_sheetname        
+                    st.succss("Sheet '{}' was mapped to property {}.".format(new_sheetname,Sabra_property_name))
+                    
+                elif not new_sheetname:
+                    st.warrning("Please enter sheet name")
+                    st.stop()
+                #elif not Sabra_property_name:
+                    #st.warrning("Please select property in the right box")
+                    #st.stop()    
+            
+    Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_entity_mapping,entity_mapping)            
+    return entity_mapping
 
             
 def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
@@ -402,7 +416,6 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
    
     count=0
     for i in range (len(new_tenant_account_list)):
-
         st.warning("#### Map **'{}'** to Sabra account".format(new_tenant_account_list[i])) 
         with st.form(key=str(i)):
             col1,col2=st.columns(2) 
@@ -437,9 +450,9 @@ def Manage_Account_Mapping(account_mapping,new_tenant_account_list=[]):
                 
                 st.success("Successfully mapped '{}' to '{}'".format(new_tenant_account_list[i],Sabra_main_account))
             #insert new record into account_mapping in the bottom
-            #account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
-    st.write(account_mapping)
-    #Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
+            account_mapping.loc[len(account_mapping.index)]=[Sabra_main_account,new_tenant_account_list[i],Sabra_second_account]
+
+    Update_Sheet_inS3(bucket_mapping,mapping_path,sheet_name_account_mapping,account_mapping)
     return account_mapping      
 
 def Sheet_Process(sheet_name,account_mapping):
@@ -654,8 +667,8 @@ if choice=="Upload P&L" and operator!='select operator':
         Upload_Main(entity_mapping,account_mapping)
 elif choice=="Manage Mapping" and operator!='select operator':
     st.subheader("Manage Property Mapping")
-    entity_mapping=Manage_Property_Mapping()
-    st.subheader("Manage Account Mapping")
+    entity_mapping=Manage_New_Property_Mapping()
+    st.subheader("Manage Property Mapping")
     account_mapping=Manage_Account_Mapping()
 
     with st.expander("View Sabra-{} Property Mapping".format(operator)):
